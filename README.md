@@ -42,6 +42,19 @@ Watch on every device, play from your PC or phone, record, save clips and go liv
 > [!NOTE]
 > Tested on Nintendo Switch firmware **23.5.0** with **Atmosphère 1.12.2|E** (emuMMC). Other versions may work too; if you try one, an issue with the result is welcome.
 
+## Screenshots
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshot-playing.jpg" alt="NXBeam showing a game at 1280x720 and 60 fps over USB"></td>
+    <td width="50%"><img src="docs/screenshot-connect.jpg" alt="NXBeam connection screen with the Automatic, USB and Network switch"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Playing over USB: 1280x720, 60 fps</sub></td>
+    <td align="center"><sub>Pick Automatic, USB or Network in one click</sub></td>
+  </tr>
+</table>
+
 ## Download
 
 Grab the files from **[Releases](https://github.com/harisratnopambudi/nxbeam/releases/latest)**:
