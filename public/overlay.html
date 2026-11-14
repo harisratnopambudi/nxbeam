@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NXBeam overlay</title>
+<style>
+  html, body { margin: 0; height: 100%; background: transparent; overflow: hidden; font-family: "Bahnschrift", "Segoe UI", sans-serif; }
+  body.video { background: #000; }
+  #video { position: absolute; inset: 0; margin: auto; display: block; }
+  .pad { position: absolute; width: var(--w, 320px); }
+  .pad.br { right: 24px; bottom: 24px; } .pad.bl { left: 24px; bottom: 24px; }
+  .pad.tr { right: 24px; top: 24px; } .pad.tl { left: 24px; top: 24px; }
+  .pad.center { left: 50%; top: 50%; transform: translate(-50%, -50%); }
+  .pad svg { width: 100%; height: auto; display: block; }
+  .body { fill: rgba(21, 27, 36, 0.78); stroke: rgba(228, 234, 242, 0.25); stroke-width: 2; }
+  .b { fill: rgba(228, 234, 242, 0.12); stroke: rgba(228, 234, 242, 0.45); stroke-width: 1.5; transition: fill 40ms; }
+  .b.on { fill: #f2b84b; stroke: #f2b84b; }
+  .lbl { fill: rgba(228, 234, 242, 0.85); font-size: 13px; font-weight: 600; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+  .on + .lbl { fill: #2a1d05; }
+  .ring { fill: rgba(228, 234, 242, 0.06); stroke: rgba(228, 234, 242, 0.3); stroke-width: 1.5; }
+  .stick { fill: rgba(228, 234, 242, 0.55); }
+  .stick.on { fill: #f2b84b; }
+  .idle { opacity: 0.35; transition: opacity 0.6s; }
+</style>
+</head>
+<body>
+<canvas id="video" hidden></canvas>
+<div class="pad br" id="pad">
+  <svg viewBox="0 0 320 190" aria-label="Controller input">
+    <path class="body" d="M70 30h180c40 0 62 30 66 70l4 46c3 30-30 44-50 22l-26-28H96l-26 28c-20 22-53 8-50-22l4-46c4-40 26-70 46-70z"/>
+    <rect class="b" data-b="8" x="40" y="4" width="56" height="16" rx="8"/><text class="lbl" x="68" y="12">ZL</text>
+    <rect class="b" data-b="6" x="100" y="10" width="40" height="14" rx="7"/><text class="lbl" x="120" y="17">L</text>
+    <rect class="b" data-b="7" x="180" y="10" width="40" height="14" rx="7"/><text class="lbl" x="200" y="17">R</text>
+    <rect class="b" data-b="9" x="224" y="4" width="56" height="16" rx="8"/><text class="lbl" x="252" y="12">ZR</text>
+    <circle class="ring" cx="78" cy="78" r="26"/><circle class="stick" id="ls" data-b="4" cx="78" cy="78" r="13"/>
+    <circle class="ring" cx="206" cy="122" r="26"/><circle class="stick" id="rs" data-b="5" cx="206" cy="122" r="13"/>
+    <rect class="b" data-b="13" x="104" y="96" width="18" height="18" rx="3"/>
+    <rect class="b" data-b="15" x="104" y="136" width="18" height="18" rx="3"/>
+    <rect class="b" data-b="12" x="84" y="116" width="18" height="18" rx="3"/>
+    <rect class="b" data-b="14" x="124" y="116" width="18" height="18" rx="3"/>
+    <circle class="b" data-b="2" cx="246" cy="58" r="12"/><text class="lbl" x="246" y="58">X</text>
+    <circle class="b" data-b="3" cx="222" cy="80" r="12"/><text class="lbl" x="222" y="80">Y</text>
+    <circle class="b" data-b="0" cx="270" cy="80" r="12"/><text class="lbl" x="270" y="80">A</text>
+    <circle class="b" data-b="1" cx="246" cy="102" r="12"/><text class="lbl" x="246" y="102">B</text>
+    <circle class="b" data-b="11" cx="130" cy="58" r="8"/><text class="lbl" x="130" y="58">&#8722;</text>
+    <circle class="b" data-b="10" cx="190" cy="58" r="8"/><text class="lbl" x="190" y="58">+</text>
+    <rect class="b" data-b="19" x="136" y="78" width="14" height="14" rx="3"/>
+    <circle class="b" data-b="18" cx="177" cy="85" r="8"/>
+  </svg>
+</div>
+<script type="module" src="/js/overlay.js"></script>
+</body>
+</html>

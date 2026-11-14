@@ -1,0 +1,12 @@
+Perubahan pada sysmodule (untuk kepatuhan GPL-2.0)
+
+Sysmodule streaming di paket ini adalah Switch Frame Tap karya Tomas Uribe
+(GPL-2.0). Kode sumber asli: https://github.com/TomasUribe/switch-frame-tap
+
+Satu-satunya perubahan: nama folder di dalam data teks program, diganti
+dengan teks yang panjangnya sama persis, sehingga tidak ada kode yang bergeser:
+  config/switch-frame-tap          -> NXBeam/console-settings
+  switch/switch-frame-tap          -> NXBeam/console-captures
+  switch-frame-tap-sound           -> NXBeam-streaming-sound
+  switch-frame-tap                 -> NXBeam-streaming
+Skrip yang melakukan perubahan ini: make-switch-pack.py (folder ini).

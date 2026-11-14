@@ -1,0 +1,43 @@
+NXBeam untuk Switch
+===================
+
+PASANG (cukup 2 folder)
+1. Matikan Switch, colok SD card ke PC.
+2. Salin folder "atmosphere", "NXBeam" dan "switch" ke root SD card. Pilih "Replace" bila ditanya.
+3. Nyalakan Switch (Atmosphere). Tunggu sekitar 30 detik setelah menu HOME,
+   lalu buka NXBeam di PC.
+
+Tidak ada aplikasi atau menu di Switch: semuanya berjalan otomatis.
+Setting ada di NXBeam/console-settings/config.ini
+(bawaan: mode Jaringan, 1080p, memori cepat, suara game, kontrol dari NXBeam).
+
+GANTI MODE DARI SWITCH
+  Buka menu overlay (Ultrahand: ZL + ZR + D-pad Bawah), pilih NXBeam,
+  pilih "Mode USB" atau "Mode Jaringan", lalu "Restart Switch".
+  Butuh Ultrahand Overlay (atau Tesla Menu) dengan nx-ovlloader.
+
+GANTI MODE DARI PC (bawaan: Jaringan)
+  Salin config.ini dari NXBeam/ganti-mode/usb atau NXBeam/ganti-mode/jaringan
+  ke NXBeam/console-settings/ (timpa), lalu restart Switch.
+  USB hanya saat Switch dipegang. Saat di dock pakai Jaringan.
+
+GANTI KE 720P (bila fps sering di bawah 30 di dock)
+  Buka NXBeam/console-settings/config.ini dengan Notepad,
+  ubah "max_resolution = 1080" menjadi "max_resolution = 720", simpan, restart.
+
+SUARA DI GAME YANG MEMBLOKIR REKAMAN (opsional)
+  Salin folder "atmosphere" dari NXBeam/opsional-suara-game-tanpa-rekam ke root SD,
+  lalu restart. Mematikan: hapus atmosphere/exefs_patches/NXBeam-streaming-sound.
+
+SCREENSHOT & LOG
+  Screenshot dari konsol: NXBeam/console-captures/screenshots
+  Log bila ada masalah:   NXBeam/console-settings/log.txt
+
+PINDAH DARI INSTALASI SWITCH FRAME TAP LAMA
+  Hapus folder config/switch-frame-tap dan switch/switch-frame-tap (tidak dipakai lagi).
+
+COPOT
+  Hapus atmosphere/contents/0100000000000C20, atmosphere/contents/0100000000000C21
+  dan folder NXBeam, lalu restart.
+
+Lisensi dan perubahan: lihat folder NXBeam/lisensi.

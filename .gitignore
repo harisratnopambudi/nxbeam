@@ -1,0 +1,4 @@
+node_modules/
+nxbeam.config.json
+*.log
+dist/

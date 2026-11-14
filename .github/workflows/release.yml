@@ -1,0 +1,82 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  pc-windows:
+    name: PC viewer (Windows, portable)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies (ffmpeg and USB included)
+        run: npm ci --omit=dev --no-fund --no-audit
+      - name: Self-test
+        run: node tools/selftest.js
+      - name: Assemble the portable folder
+        shell: pwsh
+        run: |
+          $dst = "dist/NXBeam"
+          New-Item -ItemType Directory -Force -Path "$dst/runtime" | Out-Null
+          Copy-Item -Recurse src, public, tools, node_modules, package.json, LICENSE, "Start NXBeam.bat" $dst
+          Copy-Item (Get-Command node).Source "$dst/runtime/node.exe"
+          Copy-Item package.json "$dst/node_modules/.nxbeam-package.json"
+          if (-not (Test-Path "$dst/node_modules/ffmpeg-static/ffmpeg.exe")) { throw "ffmpeg.exe missing" }
+          Compress-Archive -Path $dst -DestinationPath dist/NXBeam-PC-Windows.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pc-windows
+          path: dist/NXBeam-PC-Windows.zip
+
+  switch-pack:
+    name: Switch SD pack
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add the NXBeam overlay
+        run: |
+          curl -fsSL -o overlay.zip https://github.com/harisratnopambudi/nxbeam-overlay/releases/download/latest/NXBeam-overlay.zip
+          unzip -o overlay.zip -d switch-pack
+      - name: Zip for the SD card
+        run: |
+          find switch-pack -name .keep -delete
+          cd switch-pack && zip -r ../NXBeam-Switch.zip atmosphere NXBeam switch
+      - uses: actions/upload-artifact@v4
+        with:
+          name: switch-pack
+          path: NXBeam-Switch.zip
+
+  release:
+    name: Publish
+    needs: [pc-windows, switch-pack]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: assets
+          merge-multiple: true
+      - name: Source for Linux / macOS
+        run: zip -r assets/NXBeam-PC-source.zip src public tools package.json package-lock.json LICENSE start.sh "Start NXBeam.bat" README.md
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || 'latest' }}
+          name: NXBeam ${{ github.ref_type == 'tag' && github.ref_name || '(latest build)' }}
+          generate_release_notes: true
+          make_latest: true
+          files: assets/*.zip
+          body: |
+            ## Unduhan
+            | File | Untuk |
+            |---|---|
+            | **NXBeam-PC-Windows.zip** | Viewer di PC Windows. Portable: ekstrak, lalu klik `Start NXBeam.bat`. Tidak perlu memasang Node.js. |
+            | **NXBeam-Switch.zip** | Ekstrak ke root SD card Switch (folder `atmosphere`, `NXBeam`, `switch`). |
+            | NXBeam-PC-source.zip | Linux / macOS (butuh Node.js 18+): jalankan `./start.sh`. |

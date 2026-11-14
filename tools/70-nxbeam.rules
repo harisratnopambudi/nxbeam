@@ -1,0 +1,3 @@
+# NXBeam: let the logged-in user open the Switch (Switch Frame Tap, USB ID 1209:5f1e)
+# sudo cp tools/70-nxbeam.rules /etc/udev/rules.d/ && sudo udevadm control --reload && sudo udevadm trigger
+SUBSYSTEM=="usb", ATTR{idVendor}=="1209", ATTR{idProduct}=="5f1e", MODE="0666", TAG+="uaccess"
