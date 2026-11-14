@@ -9,8 +9,9 @@ Watch on every device, play from your PC or phone, record, save clips and go liv
 
 <br>
 
-[![Tested on firmware 23.5.0](https://img.shields.io/badge/TESTED%20ON%20FIRMWARE-23.5.0-58c68e?style=for-the-badge&logo=nintendoswitch&logoColor=white)](#tested-on)
-[![Tested on Atmosphère 1.12.2|E](https://img.shields.io/badge/ATMOSPH%C3%88RE-1.12.2%7CE-6a4fb6?style=for-the-badge)](#tested-on)
+<img src="docs/tested-on.svg" width="760" alt="Tested and working on Nintendo Switch firmware 23.5.0 and Atmosphère 1.12.2|E (emuMMC)">
+
+<br>
 
 [![Release](https://img.shields.io/github/v/release/harisratnopambudi/nxbeam?label=release&color=f2b84b)](https://github.com/harisratnopambudi/nxbeam/releases/latest)
 [![Build](https://github.com/harisratnopambudi/nxbeam/actions/workflows/release.yml/badge.svg)](https://github.com/harisratnopambudi/nxbeam/actions/workflows/release.yml)
@@ -32,26 +33,8 @@ Watch on every device, play from your PC or phone, record, save clips and go liv
 
 <br>
 
-## Tested on
-
-<table>
-  <tr>
-    <td align="center" width="50%">
-      <img src="https://img.shields.io/badge/-Nintendo%20Switch-e60012?style=flat-square&logo=nintendoswitch&logoColor=white" alt=""><br>
-      <sub>FIRMWARE</sub><br>
-      <h2>23.5.0</h2>
-    </td>
-    <td align="center" width="50%">
-      <img src="https://img.shields.io/badge/-Atmosph%C3%A8re-6a4fb6?style=flat-square" alt=""><br>
-      <sub>CUSTOM FIRMWARE</sub><br>
-      <h2>1.12.2|E</h2>
-      <sub>emuMMC</sub>
-    </td>
-  </tr>
-</table>
-
 > [!NOTE]
-> Other firmware and Atmosphère versions may work, but these are the versions NXBeam has been tested with. If you run it on something else, an issue with the result is welcome.
+> Tested on Nintendo Switch firmware **23.5.0** with **Atmosphère 1.12.2|E** (emuMMC). Other versions may work too; if you try one, an issue with the result is welcome.
 
 ## Download
 
