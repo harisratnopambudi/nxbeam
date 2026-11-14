@@ -648,8 +648,7 @@ async function loadSettings() {
   $('#adjBright').value = adj.bright; $('#adjContrast').value = adj.contrast; $('#adjSat').value = adj.sat;
   $('#adjSharp').value = adj.sharp; $('#adjAudio').value = adj.audioMs; $('#adjAudioOut').textContent = `${adj.audioMs} ms`;
   const base = `${location.protocol}//${location.host}`;
-  $('#ovlInput').textContent = `${base}/overlay`;
-  $('#ovlVideo').textContent = `${base}/overlay?video=1`;
+  $('#ovlVideo').textContent = `${base}/overlay`;
   $('#keyTable').innerHTML = KEY_HELP.map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join('');
   try {
     const lan = await api('/api/lan');

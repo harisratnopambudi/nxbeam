@@ -45,7 +45,7 @@ Setelah itu buka `http://localhost:8090`. NXBeam menemukan Switch sendiri, dan p
 | **Frame rate mengikuti game** | 60 fps bila stabil, dikunci 30 fps yang rata bila tidak. |
 | **Simpan klip** | Simpan 30 detik terakhir sebagai MP4, satu klik atau tombol `C`. |
 | **Rekam & siaran** | MP4 dan RTMP (YouTube, Twitch), kualitas asli atau 1080p60. |
-| **Overlay OBS** | Video dan tampilan tombol yang ditekan, latar transparan. |
+| **Overlay OBS** | `http://localhost:8090/overlay`: video dan suara game saja, siap untuk Browser Source. |
 | **Diagnosa** | Menunjukkan apakah frame hilang di konsol, di jaringan, atau di PC. |
 | **Menu di Switch** | Overlay NXBeam: Mode USB / Jaringan, layar Switch mati saat streaming, restart. |
 

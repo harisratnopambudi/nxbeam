@@ -135,11 +135,11 @@ Gamepad memakai posisi tombol, bukan labelnya: tombol bawah selalu menjadi B Swi
 
 ## OBS
 
-Tambahkan **Browser Source** di OBS:
+Tambahkan **Browser Source** di OBS dengan URL **`http://localhost:8090/overlay`**:
 
-- `http://localhost:8090/overlay`: tampilan tombol saja, latar transparan, diletakkan di atas sumber video lain.
-- `http://localhost:8090/overlay?video=1`: video + suara + tampilan tombol. Centang "Control audio via OBS".
-- Parameter tambahan: `pos=br|bl|tr|tl|center`, `size=320`, `pad=0` (sembunyikan tombol), `audio=0`.
+- Isinya hanya video dan suara game, tanpa tombol atau menu.
+- Atur **Width 1920** dan **Height 1080**, lalu centang **Control audio via OBS** supaya suara game masuk ke OBS.
+- Parameter opsional: `audio=0` (tanpa suara), `pad=1` (tampilkan juga tombol yang ditekan), `video=0&pad=1` (hanya tombol, latar transparan).
 
 ## Mencoba tanpa konsol
 

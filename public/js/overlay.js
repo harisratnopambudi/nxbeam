@@ -1,14 +1,15 @@
 /*
- * OBS overlay: /overlay            button display on a transparent page
- *              /overlay?video=1    video (with sound) + button display
- * Options: pos=br|bl|tr|tl|center, size=320, pad=0 (hide the button display), audio=0
+ * OBS overlay: /overlay          the game's video with sound, nothing else
+ * Options: audio=0 (no sound), pad=1 (also show the buttons pressed),
+ *          video=0&pad=1 (only the buttons, transparent), pos=br|bl|tr|tl|center, size=320
  */
 import { AudioPlayer } from './player.js';
 import { StreamView } from './view.js';
 
 const q = new URLSearchParams(location.search);
-const withVideo = q.get('video') === '1';
-const withPad = q.get('pad') !== '0';
+// video (with sound) by default; the button display only on request (?pad=1)
+const withVideo = q.get('video') !== '0';
+const withPad = q.get('pad') === '1';
 const padEl = document.getElementById('pad');
 padEl.className = `pad ${q.get('pos') || 'br'}`;
 padEl.style.setProperty('--w', `${Number(q.get('size')) || 320}px`);
