@@ -1,6 +1,6 @@
 # NXBeam overlay
 
-The NXBeam menu in the Switch overlay (Ultrahand / Tesla): pick **USB mode** or **Network mode**, toggle **Screen off while streaming**, then **Restart Switch**. It is built by this repo's workflow and ships inside `NXBeam-Switch.zip` (`switch/.overlays/nxbeam.ovl`).
+The NXBeam menu in the Switch overlay (Ultrahand / Tesla): pick **USB mode** or **Network mode**, toggle **Layar mati saat streaming** (Switch screen off while streaming), then **Restart Switch**. It is built by this repo's workflow and ships inside `NXBeam-Switch.zip` (`switch/.overlays/nxbeam.ovl`).
 
 Build locally with devkitPro:
 

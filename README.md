@@ -86,7 +86,8 @@ Then open `http://localhost:8090`. NXBeam finds the Switch by itself. Other devi
 | **Record & go live** | MP4 and RTMP (YouTube, Twitch), as sent by the console or scaled to 1080p60. |
 | **OBS** | `http://localhost:8090/overlay`: the game's video and sound only, ready for a Browser Source. |
 | **Diagnostics** | Tells you whether frames are lost on the console, on the network or on the PC. |
-| **Switch menu** | NXBeam overlay: USB / Network mode, Switch screen off while streaming, restart. |
+| **Switch menu** | NXBeam overlay: USB / Network mode, restart. |
+| **Switch screen off** | Turn the console's screen off while it streams (saves battery when you play on the PC), one toggle in the overlay. |
 
 ## Setup
 
@@ -99,7 +100,25 @@ NXBeam/console-settings/config.ini      settings
 switch/.overlays/nxbeam.ovl             NXBeam menu in the overlay
 ```
 
-Open the overlay (**ZL + ZR + D-pad Down**), pick **NXBeam**, choose **USB mode** or **Network mode**, toggle **Screen off while streaming**, then **Restart Switch**.
+Open the overlay (**ZL + ZR + D-pad Down**) and pick **NXBeam**:
+
+```
+NXBeam                           Mode koneksi
+---------------------------------------------
+Mode sekarang: Jaringan
+  Mode USB
+  Mode Jaringan                         Aktif
+Layar
+  Layar mati saat streaming          On / Off
+Perubahan berlaku setelah restart
+  Restart Switch
+```
+
+| Menu item | What it does |
+|---|---|
+| **Mode USB** / **Mode Jaringan** | How the Switch connects to NXBeam: USB cable or network. |
+| **Layar mati saat streaming** | **On**: the Switch screen goes dark while a stream runs (saves battery; play on the PC). **Off**: the screen stays on. |
+| **Restart Switch** | Applies the changes. |
 
 - **Network**: works docked or handheld; NXBeam finds the console on its own.
 - **USB**: handheld only (the dock uses the port). On Windows it needs the WinUSB driver once, see below.
