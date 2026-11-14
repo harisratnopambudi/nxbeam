@@ -1,7 +1,10 @@
 name: Release
 
+# every push to main publishes the version in package.json (v<version>);
+# pushing again with the same version updates that release
 on:
   push:
+    branches: [main]
     tags: ['v*']
   workflow_dispatch:
 
@@ -60,6 +63,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Version
+        id: ver
+        run: echo "tag=v$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
       - uses: actions/download-artifact@v4
         with:
           path: assets
@@ -68,8 +74,9 @@ jobs:
         run: zip -r assets/NXBeam-PC-source.zip src public tools package.json package-lock.json LICENSE start.sh "Start NXBeam.bat" README.md
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || 'latest' }}
-          name: NXBeam ${{ github.ref_type == 'tag' && github.ref_name || '(latest build)' }}
+          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || steps.ver.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          name: NXBeam ${{ github.ref_type == 'tag' && github.ref_name || steps.ver.outputs.tag }}
           generate_release_notes: true
           make_latest: true
           files: assets/*.zip

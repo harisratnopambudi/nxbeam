@@ -66,7 +66,7 @@ Panduan lengkap (USB dan Zadig, 1080p60, OBS, siaran, tips kelancaran): **[docs/
 
 ## Build
 
-- Rilis dibuat oleh GitHub Actions setiap ada tag `v*`, misalnya `git tag v1.11.0 && git push --tags`.
+- Rilis dibuat otomatis oleh GitHub Actions setiap push ke `main`, dengan versi diambil dari `package.json` (misalnya `v1.11.0`).
 - Overlay Switch dibangun di repo **[nxbeam-overlay](https://github.com/harisratnopambudi/nxbeam-overlay)**.
 - Jalankan dari kode: `npm install && npm start`. Uji tanpa konsol: `npm run simulate`. Tes: `npm test`.
 
