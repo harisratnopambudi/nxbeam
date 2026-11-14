@@ -1,8 +1,8 @@
 # NXBeam overlay
 
-Menu NXBeam di overlay Switch (Ultrahand / Tesla): pilih **Mode USB** atau **Mode Jaringan**, nyalakan atau matikan **Layar mati saat streaming**, lalu **Restart Switch**. Dibangun otomatis oleh workflow repo ini dan sudah termasuk di `NXBeam-Switch.zip` (`switch/.overlays/nxbeam.ovl`).
+The NXBeam menu in the Switch overlay (Ultrahand / Tesla): pick **USB mode** or **Network mode**, toggle **Screen off while streaming**, then **Restart Switch**. It is built by this repo's workflow and ships inside `NXBeam-Switch.zip` (`switch/.overlays/nxbeam.ovl`).
 
-Build lokal dengan devkitPro:
+Build locally with devkitPro:
 
 ```bash
 cd overlay
@@ -10,4 +10,4 @@ git clone --depth 1 https://github.com/WerWolv/libtesla libs/libtesla
 make
 ```
 
-Lisensi: GPL-2.0 (libtesla, Tesla-Template oleh WerWolv).
+License: GPL-2.0 (libtesla and Tesla-Template by WerWolv).

@@ -1,92 +1,117 @@
 <div align="center">
 
-<img src="public/icon.svg" width="96" alt="NXBeam">
+<img src="public/icon.svg" width="104" alt="NXBeam logo">
 
 # NXBeam
 
-**Stream Nintendo Switch ke browser: tonton di banyak perangkat, main dari PC atau ponsel, rekam, simpan klip, dan siaran langsung.**
+### Stream your Nintendo Switch to any browser.
+Watch on every device, play from your PC or phone, record, save clips and go live.
+
+<br>
+
+[![Tested on firmware 23.5.0](https://img.shields.io/badge/TESTED%20ON%20FIRMWARE-23.5.0-58c68e?style=for-the-badge&logo=nintendoswitch&logoColor=white)](#-tested-on)
+[![Tested on Atmosphère 1.12.2|E](https://img.shields.io/badge/ATMOSPH%C3%88RE-1.12.2%7CE-6a4fb6?style=for-the-badge)](#-tested-on)
 
 [![Release](https://img.shields.io/github/v/release/harisratnopambudi/nxbeam?label=release&color=f2b84b)](https://github.com/harisratnopambudi/nxbeam/releases/latest)
 [![Build](https://github.com/harisratnopambudi/nxbeam/actions/workflows/release.yml/badge.svg)](https://github.com/harisratnopambudi/nxbeam/actions/workflows/release.yml)
 [![Downloads](https://img.shields.io/github/downloads/harisratnopambudi/nxbeam/total?color=58c68e)](https://github.com/harisratnopambudi/nxbeam/releases)
-[![License](https://img.shields.io/badge/license-MIT%20%2B%20GPL--2.0-blue)](#lisensi)
+[![License](https://img.shields.io/badge/license-MIT%20%2B%20GPL--2.0-blue)](#-license)
 
 ![Windows](https://img.shields.io/badge/Windows-portable-0078d4?logo=windows&logoColor=white)
 ![Linux](https://img.shields.io/badge/Linux-Node.js-fcc624?logo=linux&logoColor=black)
 ![macOS](https://img.shields.io/badge/macOS-Node.js-000000?logo=apple&logoColor=white)
-![Nintendo Switch](https://img.shields.io/badge/Nintendo%20Switch-Atmosph%C3%A8re-e60012?logo=nintendoswitch&logoColor=white)
-![USB + Network](https://img.shields.io/badge/koneksi-USB%20%7C%20Jaringan-2d3948)
-![1080p60](https://img.shields.io/badge/hingga-1080p%2060fps-6a4fb6)
+![USB + Network](https://img.shields.io/badge/link-USB%20%7C%20Network-2d3948)
+![1080p60](https://img.shields.io/badge/up%20to-1080p%2060fps-e60012)
 ![Haris DevLab](https://img.shields.io/badge/by-Haris%20DevLab-151b24)
 
-[![Tested firmware](https://img.shields.io/badge/diuji-FW%2023.5.0-58c68e?logo=nintendoswitch&logoColor=white)](#kompatibilitas)
-[![Tested Atmosphère](https://img.shields.io/badge/diuji-Atmosph%C3%A8re%201.12.2%7CE-58c68e)](#kompatibilitas)
+<br>
+
+**[Download](https://github.com/harisratnopambudi/nxbeam/releases/latest)** &nbsp;&nbsp;|&nbsp;&nbsp; **[Features](#-features)** &nbsp;&nbsp;|&nbsp;&nbsp; **[Setup](#-setup)** &nbsp;&nbsp;|&nbsp;&nbsp; **[Full guide (Indonesian)](docs/PANDUAN.md)**
 
 </div>
 
----
+<br>
 
-## Unduh
+## ✓ Tested on
 
-Ambil dua file dari **[Releases](https://github.com/harisratnopambudi/nxbeam/releases/latest)**:
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="https://img.shields.io/badge/-Nintendo%20Switch-e60012?style=flat-square&logo=nintendoswitch&logoColor=white" alt=""><br>
+      <sub>FIRMWARE</sub><br>
+      <h2>23.5.0</h2>
+    </td>
+    <td align="center" width="50%">
+      <img src="https://img.shields.io/badge/-Atmosph%C3%A8re-6a4fb6?style=flat-square" alt=""><br>
+      <sub>CUSTOM FIRMWARE</sub><br>
+      <h2>1.12.2|E</h2>
+      <sub>emuMMC</sub>
+    </td>
+  </tr>
+</table>
 
-| File | Untuk | Cara pakai |
+> [!NOTE]
+> Other firmware and Atmosphère versions may work, but these are the versions NXBeam has been tested with. If you run it on something else, an issue with the result is welcome.
+
+## ⬇ Download
+
+Grab the files from **[Releases](https://github.com/harisratnopambudi/nxbeam/releases/latest)**:
+
+| File | For | How |
 |---|---|---|
-| **`NXBeam-Switch.zip`** | SD card Switch | Ekstrak ke **root SD card** (folder `atmosphere`, `NXBeam`, `switch`), lalu nyalakan Switch. |
-| **`NXBeam-PC-Windows.zip`** | Viewer di PC Windows | Ekstrak, lalu klik **`Start NXBeam.bat`**. Portable: Node.js, ffmpeg, dan USB sudah termasuk. |
-| `NXBeam-PC-source.zip` | Linux / macOS | Butuh Node.js 18+, jalankan `./start.sh`. |
+| **`NXBeam-Switch.zip`** | The Switch SD card | Extract to the **root of the SD card** (`atmosphere`, `NXBeam`, `switch`) and power on. |
+| **`NXBeam-PC-Windows.zip`** | The viewer on a Windows PC | Extract and run **`Start NXBeam.bat`**. Portable: Node.js, ffmpeg and USB support are included. |
+| `NXBeam-PC-source.zip` | Linux / macOS | Needs Node.js 18+. Run `./start.sh`. |
 
-Setelah itu buka `http://localhost:8090`. NXBeam menemukan Switch sendiri. Perangkat lain di WiFi yang sama bisa ikut menonton dengan membuka alamat IP PC tersebut, yang tertera di jendela NXBeam (misalnya `http://192.168.1.10:8090`).
+Then open `http://localhost:8090`. NXBeam finds the Switch by itself. Other devices on the same Wi-Fi can watch too: open the PC's address shown in the NXBeam window, for example `http://192.168.1.10:8090`.
 
-## Fitur
+## ★ Features
 
 | | |
 |---|---|
-| **Banyak penonton** | PC, laptop, ponsel, tablet, TV: cukup browser, tanpa install. |
-| **Main dari mana saja** | Gamepad, keyboard, atau stik layar sentuh di ponsel, dengan serah-terima kontrol. |
-| **Mode Main** | Satu klik: suara, kontrol, layar penuh, penghitung fps. |
-| **Frame rate mengikuti game** | 60 fps bila stabil, dikunci 30 fps yang rata bila tidak. |
-| **Simpan klip** | Simpan 30 detik terakhir sebagai MP4, satu klik atau tombol `C`. |
-| **Rekam & siaran** | MP4 dan RTMP (YouTube, Twitch), kualitas asli atau 1080p60. |
-| **Overlay OBS** | `http://localhost:8090/overlay`: video dan suara game saja, siap untuk Browser Source. |
-| **Diagnosa** | Menunjukkan apakah frame hilang di konsol, di jaringan, atau di PC. |
-| **Menu di Switch** | Overlay NXBeam: Mode USB / Jaringan, layar Switch mati saat streaming, restart. |
+| **Many viewers at once** | PC, laptop, phone, tablet, TV. Just a browser, nothing to install. |
+| **Play from anywhere** | Gamepad, keyboard or an on-screen touch controller on a phone, with control handover between devices. |
+| **Play mode** | One click: sound on, controller taken, fullscreen, a small fps counter. |
+| **Frame rate that follows the game** | 60 fps when the game holds it; an even, locked 30 fps when it does not. |
+| **Smooth on Wi-Fi** | Adaptive frame pacing and an audio buffer that absorbs bursts and clock drift. |
+| **Instant replay** | Save the last 30 seconds as MP4 with one click (or `C`). |
+| **Record & go live** | MP4 and RTMP (YouTube, Twitch), as sent by the console or scaled to 1080p60. |
+| **OBS** | `http://localhost:8090/overlay`: the game's video and sound only, ready for a Browser Source. |
+| **Diagnostics** | Tells you whether frames are lost on the console, on the network or on the PC. |
+| **Switch menu** | NXBeam overlay: USB / Network mode, Switch screen off while streaming, restart. |
 
-## Kompatibilitas
+## ⚙ Setup
 
-Sudah diuji di:
-
-| Komponen | Versi |
-|---|---|
-| Firmware Switch | **23.5.0** |
-| Atmosphère | **1.12.2\|E** (emuMMC) |
-
-## Di Switch
-
-Butuh Atmosphère, serta Ultrahand Overlay atau Tesla Menu untuk menu NXBeam. Di SD card:
+**On the Switch** you need Atmosphère, plus Ultrahand Overlay (or Tesla Menu) for the NXBeam menu. The pack puts this on the SD card:
 
 ```
-atmosphere/contents/0100000000000C20/   sysmodule streaming (tanpa UI)
-atmosphere/contents/0100000000000C21/   peluncurnya saat boot
-NXBeam/console-settings/config.ini      setting
-switch/.overlays/nxbeam.ovl             menu NXBeam di overlay
+atmosphere/contents/0100000000000C20/   streaming sysmodule (no UI)
+atmosphere/contents/0100000000000C21/   its boot launcher
+NXBeam/console-settings/config.ini      settings
+switch/.overlays/nxbeam.ovl             NXBeam menu in the overlay
 ```
 
-Buka overlay (**ZL + ZR + D-pad Bawah**), pilih **NXBeam**: **Mode USB** / **Mode Jaringan**, **Layar mati saat streaming**, lalu **Restart Switch**.
+Open the overlay (**ZL + ZR + D-pad Down**), pick **NXBeam**, choose **USB mode** or **Network mode**, toggle **Screen off while streaming**, then **Restart Switch**.
 
-Panduan lengkap (USB dan Zadig, 1080p60, OBS, siaran, tips kelancaran): **[docs/PANDUAN.md](docs/PANDUAN.md)**.
+- **Network**: works docked or handheld; NXBeam finds the console on its own.
+- **USB**: handheld only (the dock uses the port). On Windows, install the WinUSB driver once with [Zadig](https://zadig.akeo.ie/) for USB ID `1209 5F1E`.
 
-## Build
+The full guide (USB, 1080p60, OBS, live streaming, smoothness tips) is in **[docs/PANDUAN.md](docs/PANDUAN.md)** (Indonesian).
 
-- Rilis dibuat otomatis oleh GitHub Actions setiap push ke `main`, dengan versi diambil dari `package.json` (misalnya `v1.11.0`).
-- Overlay Switch ada di folder [`overlay/`](overlay) dan dibangun dalam workflow yang sama.
-- Jalankan dari kode: `npm install && npm start`. Uji tanpa konsol: `npm run simulate`. Tes: `npm test`.
+## 🛠 Build
 
-## Lisensi
+- Every push to `main` builds and publishes a release from the version in `package.json` (GitHub Actions: Windows portable build, the Switch overlay in `devkitpro/devkita64`, and the SD pack).
+- The Switch overlay lives in [`overlay/`](overlay).
+- From source: `npm install && npm start`. Without a console: `npm run simulate`. Tests: `npm test`.
 
-- Aplikasi PC NXBeam: **MIT**, Haris DevLab.
-- Sysmodule streaming di `switch-pack/`: **[Switch Frame Tap](https://github.com/TomasUribe/switch-frame-tap)** oleh Tomas Uribe, **GPL-2.0**. Satu-satunya perubahan adalah nama folder di dalam program (lihat `switch-pack/NXBeam/lisensi/PERUBAHAN.txt` dan `tools/make-switch-pack.py`).
-- Patch suara: [dvr-patches](https://github.com/exelix11/dvr-patches) oleh exelix11, BSD-3-Clause.
-- Overlay (`overlay/`): GPL-2.0, memakai libtesla oleh WerWolv.
+## 📄 License
 
-<div align="center"><sub>Dibuat oleh <b>Haris DevLab</b> (harisdevlab.online)</sub></div>
+- **NXBeam PC app**: MIT, Haris DevLab.
+- **Streaming sysmodule** in `switch-pack/`: [Switch Frame Tap](https://github.com/TomasUribe/switch-frame-tap) by Tomas Uribe, **GPL-2.0**. The only change is the folder names inside the program (see `switch-pack/NXBeam/lisensi/PERUBAHAN.txt` and `tools/make-switch-pack.py`).
+- **Sound patches**: [dvr-patches](https://github.com/exelix11/dvr-patches) by exelix11, BSD-3-Clause.
+- **Switch overlay** (`overlay/`): GPL-2.0, built on libtesla by WerWolv.
+
+<div align="center">
+<br>
+<sub>Made by <b>Haris DevLab</b> (harisdevlab.online)</sub>
+</div>
