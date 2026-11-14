@@ -39,15 +39,32 @@ jobs:
           name: pc-windows
           path: dist/NXBeam-PC-Windows.zip
 
+  overlay:
+    name: Switch overlay
+    runs-on: ubuntu-latest
+    container: devkitpro/devkita64:latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build nxbeam.ovl
+        working-directory: overlay
+        run: |
+          git clone --depth 1 https://github.com/WerWolv/libtesla libs/libtesla
+          make -j"$(nproc)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: overlay
+          path: overlay/nxbeam.ovl
+
   switch-pack:
     name: Switch SD pack
+    needs: overlay
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Add the NXBeam overlay
-        run: |
-          curl -fsSL -o overlay.zip https://github.com/harisratnopambudi/nxbeam-overlay/releases/download/latest/NXBeam-overlay.zip
-          unzip -o overlay.zip -d switch-pack
+      - uses: actions/download-artifact@v4
+        with:
+          name: overlay
+          path: switch-pack/switch/.overlays
       - name: Zip for the SD card
         run: |
           find switch-pack -name .keep -delete
@@ -70,6 +87,8 @@ jobs:
         with:
           path: assets
           merge-multiple: true
+      - name: Keep only the release zips
+        run: find assets -type f ! -name '*.zip' -delete
       - name: Source for Linux / macOS
         run: zip -r assets/NXBeam-PC-source.zip src public tools package.json package-lock.json LICENSE start.sh "Start NXBeam.bat" README.md
       - uses: softprops/action-gh-release@v2

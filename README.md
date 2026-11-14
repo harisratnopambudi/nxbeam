@@ -67,7 +67,7 @@ Panduan lengkap (USB dan Zadig, 1080p60, OBS, siaran, tips kelancaran): **[docs/
 ## Build
 
 - Rilis dibuat otomatis oleh GitHub Actions setiap push ke `main`, dengan versi diambil dari `package.json` (misalnya `v1.11.0`).
-- Overlay Switch dibangun di repo **[nxbeam-overlay](https://github.com/harisratnopambudi/nxbeam-overlay)**.
+- Overlay Switch ada di folder [`overlay/`](overlay) dan dibangun dalam workflow yang sama.
 - Jalankan dari kode: `npm install && npm start`. Uji tanpa konsol: `npm run simulate`. Tes: `npm test`.
 
 ## Lisensi
@@ -75,6 +75,6 @@ Panduan lengkap (USB dan Zadig, 1080p60, OBS, siaran, tips kelancaran): **[docs/
 - Aplikasi PC NXBeam: **MIT**, Haris DevLab.
 - Sysmodule streaming di `switch-pack/`: **[Switch Frame Tap](https://github.com/TomasUribe/switch-frame-tap)** oleh Tomas Uribe, **GPL-2.0**. Satu-satunya perubahan adalah nama folder di dalam program (lihat `switch-pack/NXBeam/lisensi/PERUBAHAN.txt` dan `tools/make-switch-pack.py`).
 - Patch suara: [dvr-patches](https://github.com/exelix11/dvr-patches) oleh exelix11, BSD-3-Clause.
-- Overlay: [nxbeam-overlay](https://github.com/harisratnopambudi/nxbeam-overlay), GPL-2.0 (libtesla).
+- Overlay (`overlay/`): GPL-2.0, memakai libtesla oleh WerWolv.
 
 <div align="center"><sub>Dibuat oleh <b>Haris DevLab</b> (harisdevlab.online)</sub></div>
