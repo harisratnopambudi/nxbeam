@@ -100,7 +100,7 @@ NXBeam/console-settings/config.ini      settings
 switch/.overlays/nxbeam.ovl             NXBeam menu in the overlay
 ```
 
-Open the overlay (**ZL + ZR + D-pad Down**) and pick **NXBeam**:
+Open the overlay with your overlay combo and pick **NXBeam**. The combo depends on your setup: Ultrahand's default is **ZL + ZR + D-pad Down**, Tesla's is **L + D-pad Down + R3** (right stick pressed), and either can be changed in the overlay's settings.
 
 ```
 NXBeam                           Mode koneksi

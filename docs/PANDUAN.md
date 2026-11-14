@@ -37,7 +37,7 @@ NXBeam/console-settings/config.ini      setting, sudah disetel untuk NXBeam
 NXBeam/console-captures/screenshots/    screenshot dari konsol
 ```
 
-Untuk ganti mode, pakai overlay **NXBeam** di Switch (ZL + ZR + D-pad Bawah), atau salin `config.ini` dari `NXBeam/ganti-mode/`, lalu restart Switch.
+Untuk ganti mode, pakai overlay **NXBeam** di Switch (dengan kombinasi tombol overlay Anda: bawaan Ultrahand ZL + ZR + D-pad Bawah, bawaan Tesla L + D-pad Bawah + R3, atau kombinasi yang sudah Anda ubah), atau salin `config.ini` dari `NXBeam/ganti-mode/`, lalu restart Switch.
 
 Paket ini dibuat dengan `tools/make-switch-pack.py` dari `exefs.nsp` Switch Frame Tap (GPL-2.0, Tomas Uribe). Satu-satunya perubahan adalah nama folder di dalam program, diganti dengan teks yang panjangnya sama persis. Untuk versi baru Switch Frame Tap: `python3 tools/make-switch-pack.py C20/exefs.nsp C21/exefs.nsp OUT --dvr dvr-patches`.
 

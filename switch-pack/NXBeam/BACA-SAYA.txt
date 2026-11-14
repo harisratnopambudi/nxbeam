@@ -12,7 +12,8 @@ Setting ada di NXBeam/console-settings/config.ini
 (bawaan: mode Jaringan, 1080p, memori cepat, suara game, kontrol dari NXBeam).
 
 GANTI MODE DARI SWITCH
-  Buka menu overlay (Ultrahand: ZL + ZR + D-pad Bawah), pilih NXBeam,
+  Buka menu overlay dengan kombinasi tombol Anda (bawaan Ultrahand:
+  ZL + ZR + D-pad Bawah; bawaan Tesla: L + D-pad Bawah + R3), pilih NXBeam,
   pilih "Mode USB" atau "Mode Jaringan", lalu "Restart Switch".
   Butuh Ultrahand Overlay (atau Tesla Menu) dengan nx-ovlloader.
 
