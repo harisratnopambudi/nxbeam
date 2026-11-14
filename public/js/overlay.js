@@ -16,6 +16,12 @@ padEl.style.setProperty('--w', `${Number(q.get('size')) || 320}px`);
 padEl.hidden = !withPad;
 
 let player = null, audio = null;
+// a browser without WebCodecs (an old OBS) cannot show the video: say so instead of a black page
+if (withVideo && typeof window.VideoDecoder !== 'function') {
+  const m = document.getElementById('msg');
+  m.hidden = false;
+  m.textContent = 'This browser cannot decode the video (no WebCodecs). Update OBS to version 30 or newer.';
+}
 if (withVideo) {
   document.body.classList.add('video');
   const cv = document.getElementById('video');

@@ -191,7 +191,8 @@ function createServer(hub, config, saveConfig) {
       if (!file.startsWith(PUBLIC)) { res.writeHead(403); return res.end(); }
       fs.readFile(file, (err, data) => {
         if (err) { res.writeHead(404); return res.end('not found'); }
-        res.writeHead(200, { 'content-type': MIME[path.extname(file)] || 'application/octet-stream', 'cache-control': 'no-cache' });
+        // no-store: OBS browser sources keep old scripts otherwise
+        res.writeHead(200, { 'content-type': MIME[path.extname(file)] || 'application/octet-stream', 'cache-control': 'no-store, max-age=0' });
         res.end(data);
       });
     } catch (e) {
