@@ -53,6 +53,12 @@ Watch on every device, play from your PC or phone, record, save clips and go liv
     <td align="center"><sub>Playing over USB: 1280x720, 60 fps</sub></td>
     <td align="center"><sub>Pick Automatic, USB or Network in one click</sub></td>
   </tr>
+  <tr>
+    <td colspan="2"><img src="docs/screenshot-obs.jpg" alt="OBS Studio with the NXBeam overlay as a Browser Source showing the game video"></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><sub>OBS Studio: <code>http://localhost:8090/overlay</code> as a Browser Source, the game's video and sound only</sub></td>
+  </tr>
 </table>
 
 ## Download
