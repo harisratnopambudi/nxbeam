@@ -19,6 +19,9 @@
 ![1080p60](https://img.shields.io/badge/hingga-1080p%2060fps-6a4fb6)
 ![Haris DevLab](https://img.shields.io/badge/by-Haris%20DevLab-151b24)
 
+[![Tested firmware](https://img.shields.io/badge/diuji-FW%2023.5.0-58c68e?logo=nintendoswitch&logoColor=white)](#kompatibilitas)
+[![Tested Atmosphère](https://img.shields.io/badge/diuji-Atmosph%C3%A8re%201.12.2%7CE-58c68e)](#kompatibilitas)
+
 </div>
 
 ---
@@ -48,6 +51,15 @@ Setelah itu buka `http://localhost:8090`. NXBeam menemukan Switch sendiri. Peran
 | **Overlay OBS** | `http://localhost:8090/overlay`: video dan suara game saja, siap untuk Browser Source. |
 | **Diagnosa** | Menunjukkan apakah frame hilang di konsol, di jaringan, atau di PC. |
 | **Menu di Switch** | Overlay NXBeam: Mode USB / Jaringan, layar Switch mati saat streaming, restart. |
+
+## Kompatibilitas
+
+Sudah diuji di:
+
+| Komponen | Versi |
+|---|---|
+| Firmware Switch | **23.5.0** |
+| Atmosphère | **1.12.2\|E** (emuMMC) |
 
 ## Di Switch
 
