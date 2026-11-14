@@ -47,7 +47,7 @@ Setelah itu buka `http://localhost:8090`. NXBeam menemukan Switch sendiri, dan p
 | **Rekam & siaran** | MP4 dan RTMP (YouTube, Twitch), kualitas asli atau 1080p60. |
 | **Overlay OBS** | Video dan tampilan tombol yang ditekan, latar transparan. |
 | **Diagnosa** | Menunjukkan apakah frame hilang di konsol, di jaringan, atau di PC. |
-| **Menu di Switch** | Overlay NXBeam untuk memilih Mode USB / Jaringan. |
+| **Menu di Switch** | Overlay NXBeam: Mode USB / Jaringan, layar Switch mati saat streaming, restart. |
 
 ## Di Switch
 
@@ -60,7 +60,7 @@ NXBeam/console-settings/config.ini      setting
 switch/.overlays/nxbeam.ovl             menu NXBeam di overlay
 ```
 
-Ganti mode: buka overlay (**ZL + ZR + D-pad Bawah**), pilih **NXBeam**, lalu **Mode USB** / **Mode Jaringan**, kemudian **Restart Switch**.
+Buka overlay (**ZL + ZR + D-pad Bawah**), pilih **NXBeam**: **Mode USB** / **Mode Jaringan**, **Layar mati saat streaming**, lalu **Restart Switch**.
 
 Panduan lengkap (USB dan Zadig, 1080p60, OBS, siaran, tips kelancaran): **[docs/PANDUAN.md](docs/PANDUAN.md)**.
 

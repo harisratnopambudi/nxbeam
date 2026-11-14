@@ -1,6 +1,6 @@
 # NXBeam overlay
 
-Menu NXBeam di overlay Switch (Ultrahand / Tesla): pilih **Mode USB** atau **Mode Jaringan**, lalu **Restart Switch**. Dibangun otomatis oleh workflow repo ini dan sudah termasuk di `NXBeam-Switch.zip` (`switch/.overlays/nxbeam.ovl`).
+Menu NXBeam di overlay Switch (Ultrahand / Tesla): pilih **Mode USB** atau **Mode Jaringan**, nyalakan atau matikan **Layar mati saat streaming**, lalu **Restart Switch**. Dibangun otomatis oleh workflow repo ini dan sudah termasuk di `NXBeam-Switch.zip` (`switch/.overlays/nxbeam.ovl`).
 
 Build lokal dengan devkitPro:
 

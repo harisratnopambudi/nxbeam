@@ -307,6 +307,3 @@ body.fs.idle { cursor: none; }
 .play-hud b { color: var(--text); }
 .play-hud.low b { color: var(--rec); }
 
-.sw-mode { margin-top: 0; justify-self: start; }
-.sw-steps { margin: 0; padding-left: 18px; font-size: 13px; color: var(--muted); display: grid; gap: 6px; }
-.sw-steps li::marker { color: var(--beam); }

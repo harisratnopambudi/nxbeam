@@ -38,9 +38,10 @@ std::string ReadConfig() {
     return s;
 }
 
-/* "usb" or "network" from the connection = ... line */
-std::string CurrentMode() {
+/* the value of `key = value`, or def when the key is not there */
+std::string GetKey(const char *key, const char *def) {
     const std::string s = ReadConfig();
+    const size_t klen = std::strlen(key);
     size_t pos = 0;
     while (pos < s.size()) {
         size_t end = s.find('\n', pos);
@@ -49,20 +50,25 @@ std::string CurrentMode() {
         pos = end + 1;
         size_t k = line.find_first_not_of(" \t");
         if (k == std::string::npos || line[k] == '#') { continue; }
-        if (line.compare(k, 10, "connection") != 0) { continue; }
+        if (line.compare(k, klen, key) != 0) { continue; }
         size_t eq = line.find('=', k);
+        if (line.find_first_not_of(" \t", k + klen) != eq) { continue; }
         if (eq == std::string::npos) { continue; }
         std::string v = line.substr(eq + 1);
         v.erase(0, v.find_first_not_of(" \t"));
         v.erase(v.find_last_not_of(" \t\r") + 1);
         return v;
     }
-    return "usb";   /* the sysmodule's own default */
+    return def;
 }
 
-/* rewrite only the connection line, keep every other setting */
-bool SetMode(const char *mode) {
+/* "usb" or "network"; the sysmodule's own default is usb */
+std::string CurrentMode() { return GetKey("connection", "usb"); }
+
+/* rewrite only the key's line, keep every other setting */
+bool SetKey(const char *key, const std::string &value) {
     const std::string s = ReadConfig();
+    const size_t klen = std::strlen(key);
     std::string out;
     bool done = false;
     size_t pos = 0;
@@ -73,9 +79,10 @@ bool SetMode(const char *mode) {
         std::string line = s.substr(pos, end - pos);
         pos = end + 1;
         size_t k = line.find_first_not_of(" \t");
-        if (k != std::string::npos && line[k] != '#' && line.compare(k, 10, "connection") == 0) {
+        if (k != std::string::npos && line[k] != '#' && line.compare(k, klen, key) == 0 &&
+            line.find_first_not_of(" \t", k + klen) == line.find('=', k)) {
             const bool cr = !line.empty() && line.back() == '\r';
-            line = std::string("connection = ") + mode + (cr ? "\r" : "");
+            line = std::string(key) + " = " + value + (cr ? "\r" : "");
             done = true;
         }
         out += line;
@@ -83,7 +90,7 @@ bool SetMode(const char *mode) {
     }
     if (!done) {
         if (!out.empty() && out.back() != '\n') { out += '\n'; }
-        out += std::string("connection = ") + mode + "\n";
+        out += std::string(key) + " = " + value + "\n";
     }
     mkdir("sdmc:/NXBeam", 0777);
     mkdir(ConfigDir, 0777);
@@ -93,6 +100,8 @@ bool SetMode(const char *mode) {
     std::fclose(f);
     return ok;
 }
+
+bool SetMode(const char *mode) { return SetKey("connection", mode); }
 
 const char *Label(const std::string &mode) {
     return mode == "network" ? "Jaringan" : mode == "usb" ? "USB" : "Lainnya";
@@ -118,7 +127,14 @@ public:
         list->addItem(usb);
         list->addItem(net);
 
-        list->addItem(new tsl::elm::CategoryHeader("Mode berlaku setelah restart"));
+        list->addItem(new tsl::elm::CategoryHeader("Layar"));
+        auto screen = new tsl::elm::ToggleListItem("Layar mati saat streaming", GetKey("screen_off", "0") == "1", "On", "Off");
+        screen->setStateChangedListener([this](bool on) {
+            if (!SetKey("screen_off", on ? "1" : "0")) { this->header->setText("Gagal menyimpan ke SD card"); }
+        });
+        list->addItem(screen);
+
+        list->addItem(new tsl::elm::CategoryHeader("Perubahan berlaku setelah restart"));
         auto restart = new tsl::elm::ListItem("Restart Switch");
         restart->setClickListener([](u64 keys) {
             if (!(keys & HidNpadButton_A)) { return false; }

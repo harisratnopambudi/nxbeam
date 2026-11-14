@@ -722,53 +722,6 @@ const onAdj = () => {
   player.setAdjust(adj); player.setMode(adj.smooth); audio.targetMs = adj.audioMs; store.set('adjust', adj);
 };
 ['#adjBright', '#adjContrast', '#adjSat', '#adjSharp', '#adjAudio', '#setSmooth', '#setFpsCap'].forEach((s) => { $(s).oninput = onAdj; $(s).onchange = onAdj; });
-/* ------------------------------------------------------------ Switch setup: config.ini for the sysmodule */
-let swMode = store.get('swMode', 'network');
-function renderSwMode() {
-  $$('[data-swmode]').forEach((b) => { b.classList.toggle('on', b.dataset.swmode === swMode); b.setAttribute('aria-checked', String(b.dataset.swmode === swMode)); });
-}
-$$('[data-swmode]').forEach((b) => {
-  b.onclick = () => {
-    swMode = b.dataset.swmode; store.set('swMode', swMode);
-    $('#swQuality').value = swMode === 'usb' ? 'high' : 'medium';
-    renderSwMode();
-  };
-});
-$('#swRes').value = store.get('swRes', '1080');
-$('#swQuality').value = store.get('swQuality', swMode === 'usb' ? 'high' : 'medium');
-$('#swScreenOff').checked = store.get('swScreenOff', false);
-renderSwMode();
-$('#btnSwConfig').onclick = () => {
-  const res = $('#swRes').value, q = $('#swQuality').value, off = $('#swScreenOff').checked;
-  store.set('swRes', res); store.set('swQuality', q); store.set('swScreenOff', off);
-  // only the keys NXBeam needs; every other key keeps the sysmodule's default
-  const ini = [
-    '# NXBeam - streaming settings for the Switch (https://harisdevlab.online).',
-    '# Copy to the SD card as /NXBeam/console-settings/config.ini and restart the Switch.',
-    '# connection: usb | network  (read at boot)',
-    `connection = ${swMode}`,
-    '# quality: high | medium | low',
-    `quality = ${q}`,
-    '# max_resolution: 1080 | 720',
-    `max_resolution = ${res}`,
-    '# memory_boost: copies 1080p frames faster at stock clocks',
-    'memory_boost = 1',
-    '# audio: game sound in the stream',
-    'audio = 1',
-    '# viewer_input: NXBeam plays the console as an extra Pro Controller',
-    'viewer_input = 1',
-    '# screen_off: the Switch screen goes dark while a stream runs',
-    `screen_off = ${off ? 1 : 0}`,
-    '',
-  ].join('\r\n');
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([ini], { type: 'text/plain' }));
-  a.download = 'config.ini';
-  document.body.append(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-  toast(t('swSaved', swMode === 'usb' ? 'USB' : t('mNet')), 'ok');
-};
-
 $('#setLight').onchange = (e) => { adj.light = e.target.checked; store.set('adjust', adj); player.setAdjust({ light: adj.light }); };
 $('#setWorker').onchange = (e) => { store.set('worker', e.target.checked); location.reload(); };
 $('#btnResetPic').onclick = () => {
