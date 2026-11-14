@@ -102,7 +102,24 @@ switch/.overlays/nxbeam.ovl             NXBeam menu in the overlay
 Open the overlay (**ZL + ZR + D-pad Down**), pick **NXBeam**, choose **USB mode** or **Network mode**, toggle **Screen off while streaming**, then **Restart Switch**.
 
 - **Network**: works docked or handheld; NXBeam finds the console on its own.
-- **USB**: handheld only (the dock uses the port). On Windows, install the WinUSB driver once with [Zadig](https://zadig.akeo.ie/) for USB ID `1209 5F1E`.
+- **USB**: handheld only (the dock uses the port). On Windows it needs the WinUSB driver once, see below.
+
+### USB driver on Windows (once)
+
+<img src="docs/zadig.png" width="560" align="right" alt="Zadig window: device list, USB ID fields, WinUSB as the target driver and the Install / Reinstall button">
+
+1. Put the Switch in **USB mode** from the NXBeam overlay and restart it, then plug the USB-C cable in (handheld).
+2. Download and open **[Zadig](https://zadig.akeo.ie/)**.
+3. Menu **Options > List All Devices**.
+4. In the device list, pick the one whose **USB ID is `1209` `5F1E`**.
+5. Set the target driver (right of the green arrow) to **WinUSB**.
+6. Click **Install Driver** (or **Reinstall Driver**) and wait for it to finish.
+
+<sub>The screenshot shows a different device as an example. Yours must read <b>1209 5F1E</b>; installing WinUSB on another device (a mouse, a keyboard) stops it from working.</sub>
+
+If NXBeam still does not see the Switch, use **Check USB devices** on its connection screen: it lists what the PC sees and says what is missing.
+
+<br clear="right">
 
 The full guide (USB, 1080p60, OBS, live streaming, smoothness tips) is in **[docs/PANDUAN.md](docs/PANDUAN.md)** (Indonesian).
 
