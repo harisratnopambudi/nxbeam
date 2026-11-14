@@ -15,7 +15,7 @@ Watch on every device, play from your PC or phone, record, save clips and go liv
 
 <img src="docs/nxbeam-in-action.jpg" width="760" alt="NXBeam on a PC monitor, connected to a handheld Switch over USB at 1280x720 and 61 fps">
 <br>
-<sub>A Switch Lite over USB, streamed to the browser at 1280x720, 61 fps.</sub>
+<sub>A handheld Switch over USB, streamed to the browser at 1280x720, 61 fps.</sub>
 
 <br>
 
