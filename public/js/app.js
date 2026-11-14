@@ -650,17 +650,6 @@ async function loadSettings() {
   const base = `${location.protocol}//${location.host}`;
   $('#ovlVideo').textContent = `${base}/overlay`;
   $('#keyTable').innerHTML = KEY_HELP.map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join('');
-  try {
-    const lan = await api('/api/lan');
-    $('#qrList').innerHTML = '';
-    for (const u of lan.urls) {
-      const d = document.createElement('div');
-      d.className = 'qr';
-      d.innerHTML = `<div>${u.qr}</div><span></span>`;
-      d.querySelector('span').textContent = u.url;
-      $('#qrList').append(d);
-    }
-  } catch { /* optional */ }
 }
 
 function renderTargets(list) {

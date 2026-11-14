@@ -5,7 +5,6 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { WebSocketServer } = require('ws');
-const QR = require('qrcode');
 
 const PUBLIC = path.join(__dirname, '..', 'public');
 const MIME = {
@@ -110,29 +109,6 @@ function createServer(hub, config, saveConfig) {
     if (p === '/api/session') return json(res, 200, { authed: authed(req), pinSet: !!config.pin });
     if (!authed(req)) return json(res, 401, { error: 'login required' });
 
-    if (p === '/api/lan') {
-      const { localSubnets } = require('./sources');
-      const port = server.address().port;
-      const urls = localSubnets().map((s) => `http://${s.self}:${port}`);
-      const qrs = await Promise.all(urls.map((u) => QR.toString(u, { type: 'svg', margin: 1, color: { dark: '#0b0f14', light: '#ffffff' } })));
-      return json(res, 200, { urls: urls.map((u, i) => ({ url: u, qr: qrs[i] })) });
-    }
-    if (p === '/api/usb') {
-      const d = require('./sources').usbDiagnostics();
-      const hex = (n) => n.toString(16).padStart(4, '0');
-      d.devices = d.devices.map((x) => ({ ...x, id: `${hex(x.vid)}:${hex(x.pid)}`,
-        kind: x.vid === 0x1209 && x.pid === 0x5f1e ? 'sft' : x.vid === 0x057e ? 'nintendo' : 'other' }));
-      d.problem = hub.usbProblem || null;
-      d.platform = process.platform;
-      return json(res, 200, d);
-    }
-    if (p === '/api/mode' && req.method === 'POST') {
-      const { mode } = JSON.parse((await body(req)).toString() || '{}');
-      if (!['auto', 'network', 'usb'].includes(mode)) return json(res, 400, { error: 'bad mode' });
-      if (config.connection.mode !== mode) { config.connection.mode = mode; saveConfig(); hub.applyConnectionMode(); }
-      else hub.reconnect();
-      return json(res, 200, { mode });
-    }
     if (p === '/api/state') return json(res, 200, { state: hub.publicState(), stats: hub.statsSnapshot(), history: hub.stats.history });
     if (p === '/api/config' && req.method === 'GET') return json(res, 200, publicConfig());
     if (p === '/api/config' && req.method === 'POST') {

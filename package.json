@@ -1,6 +1,6 @@
 {
   "name": "nxbeam",
-  "version": "1.12.1",
+  "version": "1.12.2",
   "description": "NXBeam - stream hub for Nintendo Switch Atmosphere streaming sysmodules: browser viewer, multi-viewer, controller from any device, replay clips, recording and restreaming",
   "main": "src/index.js",
   "scripts": {
@@ -12,7 +12,6 @@
   "author": "Haris DevLab",
   "license": "MIT",
   "dependencies": {
-    "qrcode": "^1.5.4",
     "ws": "^8.23.0"
   },
   "optionalDependencies": {

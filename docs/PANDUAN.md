@@ -54,7 +54,7 @@ npm install
 npm start
 ```
 
-Browser akan terbuka di `http://localhost:8090`. NXBeam menemukan konsol sendiri (beacon UDP 9951, lalu memindai jaringan lokal bila beacon diblokir router). Dari ponsel, buka **Pengaturan > Perangkat lain** dan pindai QR-nya.
+Browser akan terbuka di `http://localhost:8090`. NXBeam menemukan konsol sendiri (beacon UDP 9951, lalu memindai jaringan lokal bila beacon diblokir router). Dari ponsel, buka alamat IP PC yang tertera di jendela NXBeam, misalnya `http://192.168.1.10:8090`.
 
 Opsi baris perintah:
 

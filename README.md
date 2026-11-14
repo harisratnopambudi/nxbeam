@@ -33,7 +33,7 @@ Ambil dua file dari **[Releases](https://github.com/harisratnopambudi/nxbeam/rel
 | **`NXBeam-PC-Windows.zip`** | Viewer di PC Windows | Ekstrak, lalu klik **`Start NXBeam.bat`**. Portable: Node.js, ffmpeg, dan USB sudah termasuk. |
 | `NXBeam-PC-source.zip` | Linux / macOS | Butuh Node.js 18+, jalankan `./start.sh`. |
 
-Setelah itu buka `http://localhost:8090`. NXBeam menemukan Switch sendiri, dan perangkat lain di WiFi yang sama bisa ikut menonton lewat kode QR di Pengaturan.
+Setelah itu buka `http://localhost:8090`. NXBeam menemukan Switch sendiri. Perangkat lain di WiFi yang sama bisa ikut menonton dengan membuka alamat IP PC tersebut, yang tertera di jendela NXBeam (misalnya `http://192.168.1.10:8090`).
 
 ## Fitur
 
