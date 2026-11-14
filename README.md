@@ -9,13 +9,13 @@ Watch on every device, play from your PC or phone, record, save clips and go liv
 
 <br>
 
-[![Tested on firmware 23.5.0](https://img.shields.io/badge/TESTED%20ON%20FIRMWARE-23.5.0-58c68e?style=for-the-badge&logo=nintendoswitch&logoColor=white)](#-tested-on)
-[![Tested on Atmosphère 1.12.2|E](https://img.shields.io/badge/ATMOSPH%C3%88RE-1.12.2%7CE-6a4fb6?style=for-the-badge)](#-tested-on)
+[![Tested on firmware 23.5.0](https://img.shields.io/badge/TESTED%20ON%20FIRMWARE-23.5.0-58c68e?style=for-the-badge&logo=nintendoswitch&logoColor=white)](#tested-on)
+[![Tested on Atmosphère 1.12.2|E](https://img.shields.io/badge/ATMOSPH%C3%88RE-1.12.2%7CE-6a4fb6?style=for-the-badge)](#tested-on)
 
 [![Release](https://img.shields.io/github/v/release/harisratnopambudi/nxbeam?label=release&color=f2b84b)](https://github.com/harisratnopambudi/nxbeam/releases/latest)
 [![Build](https://github.com/harisratnopambudi/nxbeam/actions/workflows/release.yml/badge.svg)](https://github.com/harisratnopambudi/nxbeam/actions/workflows/release.yml)
 [![Downloads](https://img.shields.io/github/downloads/harisratnopambudi/nxbeam/total?color=58c68e)](https://github.com/harisratnopambudi/nxbeam/releases)
-[![License](https://img.shields.io/badge/license-MIT%20%2B%20GPL--2.0-blue)](#-license)
+[![License](https://img.shields.io/badge/license-MIT%20%2B%20GPL--2.0-blue)](#license)
 
 ![Windows](https://img.shields.io/badge/Windows-portable-0078d4?logo=windows&logoColor=white)
 ![Linux](https://img.shields.io/badge/Linux-Node.js-fcc624?logo=linux&logoColor=black)
@@ -26,13 +26,13 @@ Watch on every device, play from your PC or phone, record, save clips and go liv
 
 <br>
 
-**[Download](https://github.com/harisratnopambudi/nxbeam/releases/latest)** &nbsp;&nbsp;|&nbsp;&nbsp; **[Features](#-features)** &nbsp;&nbsp;|&nbsp;&nbsp; **[Setup](#-setup)** &nbsp;&nbsp;|&nbsp;&nbsp; **[Full guide (Indonesian)](docs/PANDUAN.md)**
+**[Download](https://github.com/harisratnopambudi/nxbeam/releases/latest)** &nbsp;&nbsp;|&nbsp;&nbsp; **[Features](#features)** &nbsp;&nbsp;|&nbsp;&nbsp; **[Setup](#setup)** &nbsp;&nbsp;|&nbsp;&nbsp; **[Full guide (Indonesian)](docs/PANDUAN.md)**
 
 </div>
 
 <br>
 
-## ✓ Tested on
+## Tested on
 
 <table>
   <tr>
@@ -53,7 +53,7 @@ Watch on every device, play from your PC or phone, record, save clips and go liv
 > [!NOTE]
 > Other firmware and Atmosphère versions may work, but these are the versions NXBeam has been tested with. If you run it on something else, an issue with the result is welcome.
 
-## ⬇ Download
+## Download
 
 Grab the files from **[Releases](https://github.com/harisratnopambudi/nxbeam/releases/latest)**:
 
@@ -65,7 +65,7 @@ Grab the files from **[Releases](https://github.com/harisratnopambudi/nxbeam/rel
 
 Then open `http://localhost:8090`. NXBeam finds the Switch by itself. Other devices on the same Wi-Fi can watch too: open the PC's address shown in the NXBeam window, for example `http://192.168.1.10:8090`.
 
-## ★ Features
+## Features
 
 | | |
 |---|---|
@@ -80,7 +80,7 @@ Then open `http://localhost:8090`. NXBeam finds the Switch by itself. Other devi
 | **Diagnostics** | Tells you whether frames are lost on the console, on the network or on the PC. |
 | **Switch menu** | NXBeam overlay: USB / Network mode, Switch screen off while streaming, restart. |
 
-## ⚙ Setup
+## Setup
 
 **On the Switch** you need Atmosphère, plus Ultrahand Overlay (or Tesla Menu) for the NXBeam menu. The pack puts this on the SD card:
 
@@ -98,13 +98,13 @@ Open the overlay (**ZL + ZR + D-pad Down**), pick **NXBeam**, choose **USB mode*
 
 The full guide (USB, 1080p60, OBS, live streaming, smoothness tips) is in **[docs/PANDUAN.md](docs/PANDUAN.md)** (Indonesian).
 
-## 🛠 Build
+## Build
 
 - Every push to `main` builds and publishes a release from the version in `package.json` (GitHub Actions: Windows portable build, the Switch overlay in `devkitpro/devkita64`, and the SD pack).
 - The Switch overlay lives in [`overlay/`](overlay).
 - From source: `npm install && npm start`. Without a console: `npm run simulate`. Tests: `npm test`.
 
-## 📄 License
+## License
 
 - **NXBeam PC app**: MIT, Haris DevLab.
 - **Streaming sysmodule** in `switch-pack/`: [Switch Frame Tap](https://github.com/TomasUribe/switch-frame-tap) by Tomas Uribe, **GPL-2.0**. The only change is the folder names inside the program (see `switch-pack/NXBeam/lisensi/PERUBAHAN.txt` and `tools/make-switch-pack.py`).
