@@ -13,6 +13,12 @@ Watch on every device, play from your PC or phone, record, save clips and go liv
 
 <br>
 
+<img src="docs/nxbeam-in-action.jpg" width="760" alt="NXBeam on a PC monitor, connected to a handheld Switch over USB at 1280x720 and 61 fps">
+<br>
+<sub>A Switch Lite over USB, streamed to the browser at 1280x720, 61 fps.</sub>
+
+<br>
+
 [![Release](https://img.shields.io/github/v/release/harisratnopambudi/nxbeam?label=release&color=f2b84b)](https://github.com/harisratnopambudi/nxbeam/releases/latest)
 [![Build](https://github.com/harisratnopambudi/nxbeam/actions/workflows/release.yml/badge.svg)](https://github.com/harisratnopambudi/nxbeam/actions/workflows/release.yml)
 [![Downloads](https://img.shields.io/github/downloads/harisratnopambudi/nxbeam/total?color=58c68e)](https://github.com/harisratnopambudi/nxbeam/releases)
