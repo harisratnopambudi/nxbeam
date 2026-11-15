@@ -60,10 +60,32 @@ const hub = new Hub(config, saveConfig);
 hub.on('log', (m) => console.log(`[hub] ${m}`));
 const server = createServer(hub, config, saveConfig);
 
+/*
+ * Open the web app in the default browser. Never fatal: a PC whose PATH lacks
+ * cmd.exe (or a headless box) just gets the address printed above.
+ */
 const openBrowser = (u) => {
   if (flag('no-open') || process.env.NXBEAM_NO_OPEN) return;
-  const cmd = process.platform === 'win32' ? ['cmd', ['/c', 'start', '', u]] : process.platform === 'darwin' ? ['open', [u]] : ['xdg-open', [u]];
-  try { spawn(cmd[0], cmd[1], { detached: true, stdio: 'ignore' }).unref(); } catch { /* headless */ }
+  let tries;
+  if (process.platform === 'win32') {
+    const sys = path.join(process.env.SystemRoot || process.env.windir || 'C:\\Windows', 'System32');
+    tries = [
+      [process.env.ComSpec || path.join(sys, 'cmd.exe'), ['/c', 'start', '""', u], { windowsVerbatimArguments: true }],
+      [path.join(sys, 'rundll32.exe'), ['url.dll,FileProtocolHandler', u], {}],
+      [path.join(process.env.SystemRoot || 'C:\\Windows', 'explorer.exe'), [u], {}],
+    ];
+  } else {
+    tries = [[process.platform === 'darwin' ? 'open' : 'xdg-open', [u], {}]];
+  }
+  const attempt = (i) => {
+    if (i >= tries.length) { console.log(`  Open ${u} in your browser.`); return; }
+    const [cmd, args, opts] = tries[i];
+    let child;
+    try { child = spawn(cmd, args, { detached: true, stdio: 'ignore', windowsHide: true, ...opts }); } catch { attempt(i + 1); return; }
+    child.on('error', () => attempt(i + 1));
+    child.unref();
+  };
+  attempt(0);
 };
 
 server.on('listening', () => {
