@@ -67,6 +67,7 @@ class MainActivity : Activity() {
         hubInput.setOnEditorActionListener { _, id, _ -> if (id == EditorInfo.IME_ACTION_GO) { openHub(); true } else false }
         findViewById<View>(R.id.rescan).setOnClickListener { rescan() }
         usbConnect.setOnClickListener { connectUsb() }
+        findViewById<View>(R.id.usbCheck).setOnClickListener { usbCheck() }
 
         modeButtons = listOf(R.id.modeLatency, R.id.modeBalanced, R.id.modeSmooth).map { findViewById(it) }
         modeButtons.forEachIndexed { i, b -> b.setOnClickListener { prefs.pictureMode = i; showMode() } }
@@ -196,8 +197,34 @@ class MainActivity : Activity() {
     private fun showUsb() {
         if (!packageManager.hasSystemFeature(PackageManager.FEATURE_USB_HOST)) return
         val dev = UsbSource.find(usb)
-        usbStatus.setText(if (dev != null) R.string.usb_present else R.string.usb_absent)
+        val nintendo = usb.deviceList.values.any { it.vendorId == NINTENDO_VID }
+        usbStatus.setText(when {
+            dev != null -> R.string.usb_present
+            nintendo -> R.string.usb_switch_not_nxbeam
+            else -> R.string.usb_absent
+        })
         usbStatus.setTextColor(getColor(if (dev != null) R.color.ok else R.color.text))
+    }
+
+    /* everything this device sees on USB, and what it means */
+    private fun usbCheck() {
+        val list = usb.deviceList.values.toList()
+        val lines = list.joinToString("\n") { d ->
+            val name = listOfNotNull(d.manufacturerName, d.productName).joinToString(" ").ifBlank { "-" }
+            "%04X:%04X  %s".format(d.vendorId, d.productId, name)
+        }
+        val verdict = when {
+            list.any { it.vendorId == Proto.USB_VID && it.productId == Proto.USB_PID } -> getString(R.string.usb_check_ok)
+            list.any { it.vendorId == NINTENDO_VID } -> getString(R.string.usb_switch_not_nxbeam)
+            list.isEmpty() -> getString(R.string.usb_check_none)
+            else -> getString(R.string.usb_check_other)
+        }
+        AlertDialog.Builder(this)
+            .setTitle(R.string.usb_check)
+            .setMessage(if (lines.isEmpty()) verdict else lines + "\n\n" + verdict)
+            .setPositiveButton(android.R.string.ok, null)
+            .show()
+        showUsb()
     }
 
     private fun connectUsb() {
@@ -271,5 +298,6 @@ class MainActivity : Activity() {
     companion object {
         const val ACTION_PERMISSION = "com.harisdevlab.nxbeam.USB_PERMISSION"
         const val REQ_PLAY = 7
+        const val NINTENDO_VID = 0x057E
     }
 }

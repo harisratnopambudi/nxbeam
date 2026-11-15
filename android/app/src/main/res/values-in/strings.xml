@@ -59,4 +59,9 @@
     <string name="pad_active">Controller tersambung ke Switch</string>
     <string name="pad_not_taken">Switch belum menerima input controller. Aktifkan input viewer di konsol.</string>
     <string name="stats_line">%1$d fps   %2$.1f Mbps   %3$dx%4$d\ndecode %5$.0f ms   drop %6$d   suara putus %7$d</string>
+    <string name="usb_check">Cek USB</string>
+    <string name="usb_switch_not_nxbeam">Switch tersambung, tapi NXBeam di Switch belum dalam mode USB. Pilih Mode USB di overlay NXBeam lalu restart Switch.</string>
+    <string name="usb_check_ok">Switch dengan NXBeam terdeteksi. Ketuk Sambung lewat USB.</string>
+    <string name="usb_check_none">Perangkat ini tidak melihat apa pun di USB, artinya perangkat ini tidak sedang menjadi host. Dengan kabel USB-C ke USB-C, Switch bisa mengambil peran host atau hanya mengisi daya. Pakai adaptor OTG (USB-C ke USB-A) dengan kabel USB-A ke USB-C.</string>
+    <string name="usb_check_other">Switch tidak ada di daftar ini. Cek kabelnya dan pastikan Switch dalam mode handheld dengan NXBeam di mode USB.</string>
 </resources>
