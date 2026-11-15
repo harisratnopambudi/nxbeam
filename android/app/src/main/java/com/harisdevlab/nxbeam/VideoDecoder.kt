@@ -99,46 +99,58 @@ class VideoDecoder(
     private fun configure() {
         stopCodec()
         val (sps, pps) = params ?: return
-        val fmt = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, width, height).apply {
+        // level 0: every low-latency key, 1: without vendor keys, 2: the plain format
+        fun format(level: Int) = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, width, height).apply {
             setByteBuffer("csd-0", java.nio.ByteBuffer.wrap(H264.withStartCode(sps)))
             setByteBuffer("csd-1", java.nio.ByteBuffer.wrap(H264.withStartCode(pps)))
             setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, maxOf(2 shl 20, width * height))
-            if (Build.VERSION.SDK_INT >= 30) setInteger(MediaFormat.KEY_LOW_LATENCY, 1)
-            setInteger(MediaFormat.KEY_PRIORITY, 0)
-            setInteger(MediaFormat.KEY_OPERATING_RATE, Short.MAX_VALUE.toInt())
-            // vendor switches for low-latency decode (ignored where unknown)
-            setInteger("vendor.qti-ext-dec-low-latency.enable", 1)
-            setInteger("vendor.qti-ext-dec-picture-order.enable", 1)
-            setInteger("vendor.rtc-ext-dec-low-latency.enable", 1)
-            setInteger("vendor.low-latency.enable", 1)
+            if (level < 2) {
+                if (Build.VERSION.SDK_INT >= 30) setInteger(MediaFormat.KEY_LOW_LATENCY, 1)
+                setInteger(MediaFormat.KEY_PRIORITY, 0)
+                setInteger(MediaFormat.KEY_OPERATING_RATE, Short.MAX_VALUE.toInt())
+            }
+            if (level < 1) {
+                setInteger("vendor.qti-ext-dec-low-latency.enable", 1)
+                setInteger("vendor.qti-ext-dec-picture-order.enable", 1)
+                setInteger("vendor.rtc-ext-dec-low-latency.enable", 1)
+                setInteger("vendor.low-latency.enable", 1)
+            }
         }
         val name = pickDecoder()
         val c = try { if (name != null) MediaCodec.createByCodecName(name) else MediaCodec.createDecoderByType(MediaFormat.MIMETYPE_VIDEO_AVC) }
             catch (e: Exception) { return }
-        c.setCallback(object : MediaCodec.Callback() {
-            override fun onInputBufferAvailable(mc: MediaCodec, index: Int) {
-                if (mc !== codec) return
-                freeInputs.add(index); pump()
+        c.setCallback(callback, handler)
+        // some decoders refuse the low-latency keys (the emulator's does): step down
+        var ok = false
+        for (level in 0..2) {
+            try {
+                c.configure(format(level), surface, null, 0)
+                ok = true
+                break
+            } catch (e: Exception) {
+                try { c.reset() } catch (_: Exception) { }
+                c.setCallback(callback, handler)
             }
-            override fun onOutputBufferAvailable(mc: MediaCodec, index: Int, info: MediaCodec.BufferInfo) {
-                if (mc !== codec) return
-                show(mc, index, info)
-            }
-            override fun onError(mc: MediaCodec, e: MediaCodec.CodecException) {
-                if (mc === codec) restart()
-            }
-            override fun onOutputFormatChanged(mc: MediaCodec, format: MediaFormat) { }
-        }, handler)
-        try {
-            c.configure(fmt, surface, null, 0)
-        } catch (e: Exception) {
-            // some decoders refuse the vendor keys: try once more without them
-            fmt.keys.filter { it.startsWith("vendor.") }.forEach { fmt.removeKey(it) }
-            try { c.configure(fmt, surface, null, 0) } catch (e2: Exception) { c.release(); return }
         }
+        if (!ok) { c.release(); return }
         c.start()
         codec = c
         lastShowNs = 0
+    }
+
+    private val callback = object : MediaCodec.Callback() {
+        override fun onInputBufferAvailable(mc: MediaCodec, index: Int) {
+            if (mc !== codec) return
+            freeInputs.add(index); pump()
+        }
+        override fun onOutputBufferAvailable(mc: MediaCodec, index: Int, info: MediaCodec.BufferInfo) {
+            if (mc !== codec) return
+            show(mc, index, info)
+        }
+        override fun onError(mc: MediaCodec, e: MediaCodec.CodecException) {
+            if (mc === codec) restart()
+        }
+        override fun onOutputFormatChanged(mc: MediaCodec, format: MediaFormat) { }
     }
 
     private fun show(mc: MediaCodec, index: Int, info: MediaCodec.BufferInfo) {

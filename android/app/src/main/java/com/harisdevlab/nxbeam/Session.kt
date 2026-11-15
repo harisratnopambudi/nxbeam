@@ -192,12 +192,14 @@ class Session(private val context: Context, val target: Target, private val ui: 
             val df = if (frames >= lastFrames) frames - lastFrames else frames
             lastBytes = bytes; lastFrames = frames
             val rec = recorder
-            ui.onStats(Stats(
+            val st = Stats(
                 fps = df.toInt(), mbps = db * 8f / 1_000_000f, width = width, height = height,
                 decodeMs = d?.decodeMs ?: 0f, dropped = d?.dropped ?: 0, audioUnderruns = audio.underruns,
                 recordingSec = if (rec != null) ((System.nanoTime() - recordStart) / 1_000_000_000L).toInt() else -1,
                 takesInput = takesInput,
-            ))
+            )
+            if (st.fps > 0 || st.mbps > 0f) android.util.Log.i("NXBeam", "stats $st")
+            ui.onStats(st)
             if (running) main.postDelayed(this, 1000)
         }
     }

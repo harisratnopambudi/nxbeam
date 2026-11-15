@@ -23,6 +23,7 @@ adb shell ls -la /sdcard/Movies/NXBeam/ > $OUT/movies.txt 2>&1
 f=$(adb shell ls /sdcard/Movies/NXBeam/ 2>/dev/null | tr -d '\r' | head -1)
 [ -n "$f" ] && adb pull "/sdcard/Movies/NXBeam/$f" $OUT/recording.mp4
 adb logcat -d > $OUT/logcat-direct.txt
+adb logcat -d -s NXBeam > $OUT/stats-direct.txt
 adb shell am force-stop com.harisdevlab.nxbeam
 sleep 3
 
@@ -34,6 +35,7 @@ adb shell am start -W -a android.intent.action.VIEW -d "nxbeam://hub/10.0.2.2:80
 sleep 20
 shot hub
 adb logcat -d > $OUT/logcat-hub.txt
+adb logcat -d -s NXBeam > $OUT/stats-hub.txt
 adb shell am force-stop com.harisdevlab.nxbeam
 
 # 3. the home screen
