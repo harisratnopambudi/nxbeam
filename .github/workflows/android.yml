@@ -4,7 +4,7 @@ name: Android check
 on:
   push:
     branches-ignore: [main]
-    paths: ['android/**', '.github/workflows/android.yml', 'package.json']
+    paths: ['android/**', '.github/workflows/android.yml', 'tools/android-e2e.sh', 'package.json']
   workflow_dispatch:
 
 permissions:
