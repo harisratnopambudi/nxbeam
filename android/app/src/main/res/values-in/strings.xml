@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tagline">Layar Nintendo Switch di perangkat ini</string>
+
+    <string name="wifi_searching">Mencari Switch di jaringan ini…</string>
+    <string name="wifi_none">Belum ada Switch yang ditemukan. Pastikan Switch dalam mode Jaringan dan tersambung ke Wi-Fi yang sama, atau masukkan IP-nya.</string>
+    <string name="wifi_found">Pilih Switch untuk mulai.</string>
+    <string name="wifi_no_network">Perangkat ini belum tersambung ke Wi-Fi.</string>
+    <string name="wifi_ip_hint">IP Switch, contoh 192.168.1.20</string>
+    <string name="search_again">Cari lagi</string>
+    <string name="connect">Sambung</string>
+    <string name="last_used">Terakhir dipakai</string>
+
+    <string name="usb_body">Sambungkan Switch dengan kabel USB-C. HP atau TV box harus mendukung USB OTG, dan Switch harus dalam mode USB.</string>
+    <string name="usb_present">Switch terdeteksi lewat USB.</string>
+    <string name="usb_absent">Tidak ada Switch di USB.</string>
+    <string name="usb_no_host">Perangkat ini tidak mendukung USB OTG.</string>
+    <string name="usb_connect">Sambung lewat USB</string>
+    <string name="usb_denied">Akses USB tidak diizinkan.</string>
+
+    <string name="hub_title">NXBeam di PC</string>
+    <string name="hub_body">Tonton tampilan NXBeam yang sedang jalan di PC. Pakai alamat yang tertulis di jendela NXBeam pada PC.</string>
+    <string name="hub_hint">Alamat PC, contoh 192.168.1.10:8090</string>
+    <string name="open">Buka</string>
+    <string name="pin_title">PIN NXBeam ini</string>
+
+    <string name="settings_title">Pemutaran</string>
+    <string name="mode_label">Gambar</string>
+    <string name="mode_latency">Tercepat</string>
+    <string name="mode_balanced">Seimbang</string>
+    <string name="mode_smooth">Paling halus</string>
+    <string name="mode_help">Tercepat menampilkan setiap frame begitu tiba. Seimbang dan Paling halus menunggu sedikit agar gerakan tetap rata saat Wi-Fi sibuk.</string>
+    <string name="audio_label">Suara game</string>
+    <string name="pad_label">Pakai controller untuk Switch</string>
+    <string name="pad_help">Controller yang tersambung ke perangkat ini berfungsi sebagai controller Switch saat bermain.</string>
+
+    <string name="link_connecting">Menyambung ke %1$s</string>
+    <string name="link_connecting_usb">Menyambung lewat USB</string>
+    <string name="link_waiting">Tersambung. Menunggu gambar…</string>
+    <string name="link_lost">Sambungan terputus. Menyambung ulang…</string>
+    <string name="fail_refused">Switch menolak sambungan. Apakah Switch dalam mode Jaringan dan sudah selesai menyala?</string>
+    <string name="fail_timeout">Tidak ada jawaban. Pastikan Switch dan perangkat ini ada di jaringan yang sama.</string>
+    <string name="fail_absent">Tidak ada Switch di USB. Colokkan kabelnya dan atur overlay NXBeam ke mode USB.</string>
+    <string name="fail_permission">Butuh izin akses USB. Kembali lalu ketuk Sambung lewat USB.</string>
+    <string name="fail_busy">Sambungan USB sedang dipakai aplikasi lain.</string>
+    <string name="fail_pin">NXBeam ini meminta PIN.</string>
+    <string name="retrying">Mencoba lagi…</string>
+
+    <string name="back">Kembali</string>
+    <string name="record">Rekam</string>
+    <string name="stop_record">Berhenti merekam</string>
+    <string name="screenshot">Screenshot</string>
+    <string name="sound">Suara</string>
+    <string name="stats">Statistik</string>
+    <string name="saved_recording">Rekaman disimpan di Movies/NXBeam</string>
+    <string name="saved_screenshot">Screenshot disimpan di Pictures/NXBeam</string>
+    <string name="save_failed">File gagal disimpan</string>
+    <string name="storage_needed">Butuh izin penyimpanan untuk menyimpan file</string>
+    <string name="pad_active">Controller tersambung ke Switch</string>
+    <string name="pad_not_taken">Switch belum menerima input controller. Aktifkan input viewer di konsol.</string>
+    <string name="stats_line">%1$d fps   %2$.1f Mbps   %3$dx%4$d\ndecode %5$.0f ms   drop %6$d   suara putus %7$d</string>
+</resources>

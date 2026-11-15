@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- the NXBeam console sysmodule in USB mode: 1209:5F1E -->
+    <usb-device vendor-id="4617" product-id="24350"/>
+</resources>

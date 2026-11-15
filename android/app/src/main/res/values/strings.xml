@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NXBeam</string>
+    <string name="tagline">Your Nintendo Switch on this screen</string>
+
+    <string name="wifi_title">Wi-Fi</string>
+    <string name="wifi_searching">Looking for a Switch on this network…</string>
+    <string name="wifi_none">No Switch found yet. Check that the Switch is in Network mode and on the same Wi-Fi, or enter its IP.</string>
+    <string name="wifi_found">Tap a Switch to start.</string>
+    <string name="wifi_no_network">Not connected to a Wi-Fi network.</string>
+    <string name="wifi_ip_hint">Switch IP, for example 192.168.1.20</string>
+    <string name="search_again">Search again</string>
+    <string name="connect">Connect</string>
+    <string name="last_used">Last used</string>
+    <string name="console_found">Nintendo Switch</string>
+
+    <string name="usb_title">USB</string>
+    <string name="usb_body">Connect the Switch with a USB-C cable. Your phone or TV box needs USB OTG, and the Switch must be in USB mode.</string>
+    <string name="usb_present">Switch detected on USB.</string>
+    <string name="usb_absent">No Switch on USB.</string>
+    <string name="usb_no_host">This device does not support USB OTG.</string>
+    <string name="usb_connect">Connect over USB</string>
+    <string name="usb_denied">USB access was not allowed.</string>
+
+    <string name="hub_title">NXBeam on a PC</string>
+    <string name="hub_body">Watch what NXBeam on your PC is showing. Use the address shown in the PC window.</string>
+    <string name="hub_hint">PC address, for example 192.168.1.10:8090</string>
+    <string name="open">Open</string>
+    <string name="pin_title">PIN for this NXBeam</string>
+    <string name="pin_hint">PIN</string>
+
+    <string name="settings_title">Playback</string>
+    <string name="mode_label">Picture</string>
+    <string name="mode_latency">Fastest</string>
+    <string name="mode_balanced">Balanced</string>
+    <string name="mode_smooth">Smoothest</string>
+    <string name="mode_help">Fastest shows each frame the moment it arrives. Balanced and Smoothest wait a little to keep motion even on busy Wi-Fi.</string>
+    <string name="audio_label">Game sound</string>
+    <string name="pad_label">Use a controller on the Switch</string>
+    <string name="pad_help">A controller connected to this device acts as a Switch controller while playing.</string>
+    <string name="footer">NXBeam %1$s, Haris DevLab</string>
+
+    <string name="link_connecting">Connecting to %1$s</string>
+    <string name="link_connecting_usb">Connecting over USB</string>
+    <string name="link_waiting">Connected. Waiting for the picture…</string>
+    <string name="link_lost">Connection lost. Reconnecting…</string>
+    <string name="fail_refused">The Switch refused the connection. Is it in Network mode, and has it finished starting up?</string>
+    <string name="fail_timeout">No answer. Check that the Switch and this device are on the same network.</string>
+    <string name="fail_absent">No Switch on USB. Plug it in and set the NXBeam overlay to USB mode.</string>
+    <string name="fail_permission">USB access is needed. Go back and tap Connect over USB.</string>
+    <string name="fail_busy">Another app is using the USB connection.</string>
+    <string name="fail_pin">This NXBeam asks for a PIN.</string>
+    <string name="retrying">Trying again…</string>
+
+    <string name="back">Back</string>
+    <string name="record">Record</string>
+    <string name="stop_record">Stop recording</string>
+    <string name="screenshot">Screenshot</string>
+    <string name="sound">Sound</string>
+    <string name="stats">Stats</string>
+    <string name="saved_recording">Recording saved to Movies/NXBeam</string>
+    <string name="saved_screenshot">Screenshot saved to Pictures/NXBeam</string>
+    <string name="save_failed">Could not save the file</string>
+    <string name="storage_needed">Storage access is needed to save files</string>
+    <string name="pad_active">Controller connected to the Switch</string>
+    <string name="pad_not_taken">The Switch is not taking controller input. Turn on viewer input on the console.</string>
+    <string name="stats_line">%1$d fps   %2$.1f Mbps   %3$dx%4$d\ndecode %5$.0f ms   dropped %6$d   audio gaps %7$d</string>
+</resources>

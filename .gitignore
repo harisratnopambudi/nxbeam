@@ -2,3 +2,9 @@ node_modules/
 nxbeam.config.json
 *.log
 dist/
+
+# Android build output
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties

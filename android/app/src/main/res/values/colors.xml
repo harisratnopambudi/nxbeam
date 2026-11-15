@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="base">#151B24</color>
+    <color name="panel">#1D2530</color>
+    <color name="raise">#252F3C</color>
+    <color name="line">#2D3948</color>
+    <color name="text">#E4EAF2</color>
+    <color name="muted">#8F9CAE</color>
+    <color name="beam">#F2B84B</color>
+    <color name="beam_ink">#2A1D05</color>
+    <color name="rec">#EF5A6F</color>
+    <color name="ok">#58C68E</color>
+    <color name="scrim">#B3151B24</color>
+</resources>
