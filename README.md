@@ -103,11 +103,11 @@ One APK for phones, tablets and Android TV / Google TV boxes. It talks to the Sw
 <table>
   <tr>
     <td width="34%"><img src="docs/android-phone.png" alt="NXBeam Android app home screen on a phone: Wi-Fi with a Switch found, USB and NXBeam on a PC"></td>
-    <td width="66%"><img src="docs/android-tv.png" alt="NXBeam Android app on a TV-sized screen"><br><br><img src="docs/android-player.png" alt="NXBeam Android player with controls and stats"></td>
+    <td width="66%"><img src="docs/android-tv.png" alt="NXBeam Android app on a wide, TV-sized screen"></td>
   </tr>
   <tr>
     <td align="center"><sub>Phone: the Switch is found on Wi-Fi</sub></td>
-    <td align="center"><sub>Android TV, and the player with its controls</sub></td>
+    <td align="center"><sub>On a wide screen such as a TV, the same app in one centered column</sub></td>
   </tr>
 </table>
 
