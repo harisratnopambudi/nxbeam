@@ -114,8 +114,11 @@ One APK for phones, tablets and Android TV / Google TV boxes. It talks to the Sw
 | Way to connect | How |
 |---|---|
 | **Wi-Fi** | Switch in **Network** mode, same Wi-Fi. The app finds it; tap it. Or type its IP. |
-| **USB OTG** | Switch in **USB** mode, a USB-C to USB-C cable from the phone to the Switch (handheld). Android asks to open NXBeam when the Switch is plugged in. The phone must support USB OTG; if nothing shows up, use an OTG adapter (USB-C male to USB-A female) with a USB-A to USB-C cable, so the phone is surely the host. |
+| **USB OTG** | Switch in **USB** mode, handheld. Connect with an **OTG adapter (USB-C male to USB-A female) on the phone plus a USB-A to USB-C cable** to the Switch, the same cable you would use on a PC. Android asks to open NXBeam when the Switch is plugged in. |
 | **NXBeam on a PC** | Type the PC address shown in the NXBeam window, for example `192.168.1.10:8090`. Watches what the PC is showing. |
+
+> [!IMPORTANT]
+> **A USB-C to USB-C cable does not work.** The Switch keeps the host role (or just charges the phone), so the phone never sees it, and the "USB controlled by: This device" switch on Samsung and other phones fails because the Switch refuses the role swap. The USB-A end of an OTG adapter makes the phone the host from the start. **Check USB** in the app shows what the phone sees.
 
 - **Picture**: *Fastest* shows each frame the moment it arrives; *Balanced* and *Smoothest* wait a few frames to keep motion even on busy Wi-Fi.
 - **Record** saves MP4 (the console's H.264 untouched, sound in AAC) to **Movies/NXBeam**; **Screenshot** goes to **Pictures/NXBeam**.
