@@ -186,7 +186,7 @@ Switch (sysmodule) --TCP 9950 / USB--> NXBeam hub (Node.js) --WebSocket--> brows
   1. Di aplikasi Switch Frame Tap, set **Connection** ke **USB viewer**, lalu restart konsol. Konsol hanya melayani satu jenis koneksi per boot: kalau setting-nya Network, USB tidak akan mengirim apa-apa.
   2. Switch dalam **mode genggam**. Saat di dock, port USB-nya dipakai dock.
   3. Gunakan kabel USB-C yang mendukung data.
-  4. **Windows:** pasang driver WinUSB sekali dengan [Zadig](https://zadig.akeo.ie/). Pilih Options > List All Devices, pilih perangkat dengan USB ID `1209 5F1E`, pilih WinUSB, lalu klik Install Driver.
+  4. **Windows:** pasang driver WinUSB sekali dengan [Zadig](https://zadig.akeo.ie/). Klik **Options** lalu **List All Devices**, kemudian pilih **Switch Frame Tap** (USB ID `1209 5F1E`), pilih WinUSB, lalu klik Install Driver.
   5. **Linux:** `sudo cp tools/70-nxbeam.rules /etc/udev/rules.d/ && sudo udevadm control --reload && sudo udevadm trigger`.
   6. Di NXBeam, pilih **Pengaturan > Koneksi > Mode: USB saja** (atau Otomatis), lalu klik Simpan. Kalau ada masalah, layar NXBeam menampilkan penyebabnya: tidak terdeteksi, driver, izin, atau sedang dipakai program lain.
 - Konsol hanya melayani satu koneksi. Tutup viewer bawaan sebelum menjalankan NXBeam.
