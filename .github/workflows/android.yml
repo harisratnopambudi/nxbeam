@@ -57,6 +57,7 @@ jobs:
           api-level: 30
           target: google_apis
           arch: x86_64
+          profile: pixel_6
           disable-animations: true
           script: ./tools/android-e2e.sh
       - name: Check the recording

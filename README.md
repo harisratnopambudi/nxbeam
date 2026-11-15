@@ -5,7 +5,7 @@
 # NXBeam
 
 ### Stream your Nintendo Switch to any browser.
-Watch on every device, play from your PC or phone, record, save clips and go live.
+Watch in any browser or in the Android app on phones and TVs, play from your PC or phone, record, save clips and go live.
 
 <br>
 
@@ -27,13 +27,14 @@ Watch on every device, play from your PC or phone, record, save clips and go liv
 ![Windows](https://img.shields.io/badge/Windows-portable-0078d4?logo=windows&logoColor=white)
 ![Linux](https://img.shields.io/badge/Linux-Node.js-fcc624?logo=linux&logoColor=black)
 ![macOS](https://img.shields.io/badge/macOS-portable-000000?logo=apple&logoColor=white)
+![Android](https://img.shields.io/badge/Android-phone%20%2B%20TV-3ddc84?logo=android&logoColor=white)
 ![USB + Network](https://img.shields.io/badge/link-USB%20%7C%20Network-2d3948)
 ![1080p60](https://img.shields.io/badge/up%20to-1080p%2060fps-e60012)
 ![Haris DevLab](https://img.shields.io/badge/by-Haris%20DevLab-151b24)
 
 <br>
 
-**[Download](https://github.com/harisratnopambudi/nxbeam/releases/latest)** &nbsp;&nbsp;|&nbsp;&nbsp; **[Features](#features)** &nbsp;&nbsp;|&nbsp;&nbsp; **[Setup](#setup)** &nbsp;&nbsp;|&nbsp;&nbsp; **[Full guide (Indonesian)](docs/PANDUAN.md)**
+**[Download](https://github.com/harisratnopambudi/nxbeam/releases/latest)** &nbsp;&nbsp;|&nbsp;&nbsp; **[Features](#features)** &nbsp;&nbsp;|&nbsp;&nbsp; **[Android app](#android-app-phones-and-tvs)** &nbsp;&nbsp;|&nbsp;&nbsp; **[Setup](#setup)** &nbsp;&nbsp;|&nbsp;&nbsp; **[Full guide (Indonesian)](docs/PANDUAN.md)**
 
 </div>
 
@@ -71,6 +72,7 @@ Grab the files from **[Releases](https://github.com/harisratnopambudi/nxbeam/rel
 | **`NXBeam-PC-Windows.zip`** | The viewer on a Windows PC | Extract and run **`Start NXBeam.bat`**. Portable: Node.js, ffmpeg and USB support are included. |
 | **`NXBeam-PC-macOS-AppleSilicon.zip`** | Mac with M1 / M2 / M3 / M4 | Extract, then **right-click `Start NXBeam.command` > Open** (only the first time; after that a double-click is enough). Portable like the Windows build. |
 | **`NXBeam-PC-macOS-Intel.zip`** | Mac with an Intel CPU | Same as above. |
+| **`NXBeam-Android.apk`** | Android phones, tablets and Android TV / Google TV (Android 8+) | Install the APK. Connects to the Switch on its own, no PC needed. See [Android app](#android-app-phones-and-tvs). |
 | `NXBeam-PC-source.zip` | Linux | Needs Node.js 18+. Run `./start.sh`. |
 
 On a Mac the first start may say the app is from an unidentified developer: right-click > **Open**, or allow it in **System Settings > Privacy & Security > Open Anyway**. USB needs no driver on macOS.
@@ -90,8 +92,36 @@ Then open `http://localhost:8090`. NXBeam finds the Switch by itself. Other devi
 | **Record & go live** | MP4 and RTMP (YouTube, Twitch), as sent by the console or scaled to 1080p60. |
 | **OBS** | `http://localhost:8090/overlay`: the game's video and sound only, ready for a Browser Source. |
 | **Diagnostics** | Tells you whether frames are lost on the console, on the network or on the PC. |
+| **Android app** | Phones and Android TV: straight to the Switch over Wi-Fi or USB OTG, no PC. Records MP4 and takes screenshots to the gallery. |
 | **Switch menu** | NXBeam overlay: USB / Network mode, restart. |
 | **Switch screen off** | Turn the console's screen off while it streams (saves battery when you play on the PC), one toggle in the overlay. |
+
+## Android app (phones and TVs)
+
+One APK for phones, tablets and Android TV / Google TV boxes. It talks to the Switch by itself, so no PC is needed.
+
+<table>
+  <tr>
+    <td width="34%"><img src="docs/android-phone.png" alt="NXBeam Android app home screen on a phone: Wi-Fi with a Switch found, USB and NXBeam on a PC"></td>
+    <td width="66%"><img src="docs/android-tv.png" alt="NXBeam Android app on a TV-sized screen"><br><br><img src="docs/android-player.png" alt="NXBeam Android player with controls and stats"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Phone: the Switch is found on Wi-Fi</sub></td>
+    <td align="center"><sub>Android TV, and the player with its controls</sub></td>
+  </tr>
+</table>
+
+| Way to connect | How |
+|---|---|
+| **Wi-Fi** | Switch in **Network** mode, same Wi-Fi. The app finds it; tap it. Or type its IP. |
+| **USB OTG** | Switch in **USB** mode, a USB-C to USB-C cable from the phone to the Switch (handheld). Android asks to open NXBeam when the Switch is plugged in. The phone must support USB OTG; if nothing shows up, use an OTG adapter (USB-C male to USB-A female) with a USB-A to USB-C cable, so the phone is surely the host. |
+| **NXBeam on a PC** | Type the PC address shown in the NXBeam window, for example `192.168.1.10:8090`. Watches what the PC is showing. |
+
+- **Picture**: *Fastest* shows each frame the moment it arrives; *Balanced* and *Smoothest* wait a few frames to keep motion even on busy Wi-Fi.
+- **Record** saves MP4 (the console's H.264 untouched, sound in AAC) to **Movies/NXBeam**; **Screenshot** goes to **Pictures/NXBeam**.
+- **Controller**: turn on *Use a controller on the Switch* and a controller paired to the phone or TV plays the Switch (buttons by position, so the bottom button is B).
+- **On a TV**: everything works with the remote. Press OK to show the player controls.
+- **Installing**: on a phone, open the APK and allow installs from that app when asked. On Android TV, install it with a file manager or the Downloader app, or copy it over with a USB stick.
 
 ## Setup
 

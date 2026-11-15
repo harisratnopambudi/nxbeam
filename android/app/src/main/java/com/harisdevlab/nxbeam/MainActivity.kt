@@ -12,6 +12,10 @@ import android.hardware.usb.UsbManager
 import android.os.Build
 import android.os.Bundle
 import android.text.InputType
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.RelativeSizeSpan
+import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
@@ -61,7 +65,7 @@ class MainActivity : Activity() {
         ipInput.setOnEditorActionListener { _, id, _ -> if (id == EditorInfo.IME_ACTION_GO) { connectIp(); true } else false }
         findViewById<Button>(R.id.hubConnect).setOnClickListener { openHub() }
         hubInput.setOnEditorActionListener { _, id, _ -> if (id == EditorInfo.IME_ACTION_GO) { openHub(); true } else false }
-        findViewById<Button>(R.id.rescan).setOnClickListener { rescan() }
+        findViewById<View>(R.id.rescan).setOnClickListener { rescan() }
         usbConnect.setOnClickListener { connectUsb() }
 
         modeButtons = listOf(R.id.modeLatency, R.id.modeBalanced, R.id.modeSmooth).map { findViewById(it) }
@@ -168,7 +172,12 @@ class MainActivity : Activity() {
         if (!found.add("$host:$port")) return
         wifiStatus.setText(R.string.wifi_found)
         val b = layoutInflater.inflate(R.layout.item_console, consoleList, false) as Button
-        b.text = getString(R.string.console_found) + "   " + host
+        b.text = SpannableStringBuilder(getString(R.string.console_found)).apply {
+            append("\n")
+            val at = length
+            append(host)
+            setSpan(RelativeSizeSpan(0.82f), at, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
         b.setOnClickListener { prefs.lastHost = host; play(Target(Target.WIFI, host, port)) }
         consoleList.addView(b)
         if (consoleList.childCount == 1 && !ipInput.hasFocus() && !hubInput.hasFocus()) b.requestFocus()

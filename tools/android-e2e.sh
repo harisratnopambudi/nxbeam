@@ -6,9 +6,6 @@ OUT=e2e
 mkdir -p $OUT
 adb install -r NXBeam-Android.apk
 adb logcat -c
-# a phone-sized screen for the screenshots
-adb shell wm size 1080x2340
-adb shell wm density 440
 
 shot() { adb exec-out screencap -p > "$OUT/$1.png"; }
 
@@ -19,7 +16,8 @@ shot direct
 # controls and stats on screen (focus starts on Back; Stats is the fifth button)
 adb shell input keyevent KEYCODE_DPAD_CENTER
 sleep 1
-for i in 1 2 3 4; do adb shell input keyevent KEYCODE_DPAD_RIGHT; done
+# the first key only leaves touch mode
+for i in 1 2 3 4 5; do adb shell input keyevent KEYCODE_DPAD_RIGHT; done
 adb shell input keyevent KEYCODE_DPAD_CENTER
 sleep 3
 shot player-controls
@@ -52,13 +50,9 @@ adb shell am force-stop com.harisdevlab.nxbeam
 adb shell am start -W -n com.harisdevlab.nxbeam/.MainActivity
 sleep 8
 shot home-phone
-adb shell am force-stop com.harisdevlab.nxbeam
-adb shell wm size 1920x1080
-adb shell wm density 320
-sleep 2
-adb shell am start -W -n com.harisdevlab.nxbeam/.MainActivity
-sleep 8
-shot home-tv
-adb shell wm size reset
-adb shell wm density reset
+# landscape: wide like a TV
+adb shell settings put system accelerometer_rotation 0
+adb shell settings put system user_rotation 1
+sleep 4
+shot home-wide
 exit 0
