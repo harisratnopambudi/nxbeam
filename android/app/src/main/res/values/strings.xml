@@ -15,7 +15,7 @@
     <string name="console_found">Nintendo Switch</string>
 
     <string name="usb_title">USB</string>
-    <string name="usb_body">Connect the Switch with a USB-C cable. Your phone or TV box needs USB OTG, and the Switch must be in USB mode.</string>
+    <string name="usb_body">Use an OTG adapter (USB-C to USB-A) on this device and a USB-A to USB-C cable to the Switch. A USB-C to USB-C cable does not work. The Switch must be handheld, in USB mode.</string>
     <string name="usb_present">Switch detected on USB.</string>
     <string name="usb_absent">No Switch on USB.</string>
     <string name="usb_no_host">This device does not support USB OTG.</string>
