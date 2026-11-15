@@ -102,17 +102,16 @@ switch/.overlays/nxbeam.ovl             NXBeam menu in the overlay
 
 Open the overlay with your overlay combo and pick **NXBeam**. The combo depends on your setup: Ultrahand's default is **ZL + ZR + D-pad Down**, Tesla's is **L + D-pad Down + R3** (right stick pressed), and either can be changed in the overlay's settings.
 
-```
-NXBeam                           Mode koneksi
----------------------------------------------
-Mode sekarang: Jaringan
-  Mode USB
-  Mode Jaringan                         Aktif
-Layar
-  Layar mati saat streaming          On / Off
-Perubahan berlaku setelah restart
-  Restart Switch
-```
+<table>
+  <tr>
+    <td width="50%"><img src="docs/switch-ultrahand.jpg" alt="Ultrahand overlay list with NXBeam 1.1.0"></td>
+    <td width="50%"><img src="docs/switch-overlay.jpg" alt="NXBeam overlay menu: Mode USB (active), Mode Jaringan, screen off while streaming, Restart Switch"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>NXBeam in the Ultrahand overlay list</sub></td>
+    <td align="center"><sub>The NXBeam menu: connection mode, screen off, restart</sub></td>
+  </tr>
+</table>
 
 | Menu item | What it does |
 |---|---|
