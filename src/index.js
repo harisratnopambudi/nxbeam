@@ -28,7 +28,7 @@ if (flag('help') || flag('h')) {
 const configFile = path.resolve(opt('config', path.join(process.cwd(), 'nxbeam.config.json')));
 const defaults = {
   port: 8090,
-  mediaDir: path.join(os.homedir(), 'Videos', 'NXBeam'),
+  mediaDir: path.join(os.homedir(), process.platform === 'darwin' ? 'Movies' : 'Videos', 'NXBeam'),
   replaySeconds: 30,
   lockSizeWhileRecording: true,
   recordPreset: 'source',

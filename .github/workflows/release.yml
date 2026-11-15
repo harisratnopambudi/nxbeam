@@ -39,6 +39,45 @@ jobs:
           name: pc-windows
           path: dist/NXBeam-PC-Windows.zip
 
+  pc-macos:
+    name: PC viewer (macOS, portable)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm ci --omit=dev --no-fund --no-audit
+      - name: Self-test
+        run: node tools/selftest.js
+      - name: Build Apple Silicon and Intel folders
+        run: |
+          set -e
+          NODEV=$(node -v)
+          for arch in arm64 x64; do
+            label=$([ $arch = arm64 ] && echo AppleSilicon || echo Intel)
+            dst="dist/$arch/NXBeam"
+            mkdir -p "$dst/runtime"
+            cp -R src public tools node_modules package.json LICENSE "Start NXBeam.command" "$dst/"
+            cp package.json "$dst/node_modules/.nxbeam-package.json"
+            # ffmpeg for this CPU
+            rm -f "$dst/node_modules/ffmpeg-static/ffmpeg"
+            (cd "$dst/node_modules/ffmpeg-static" && npm_config_arch=$arch npm_config_platform=darwin node install.js)
+            file "$dst/node_modules/ffmpeg-static/ffmpeg"
+            # the official, signed Node.js for this CPU
+            curl -fsSL "https://nodejs.org/dist/$NODEV/node-$NODEV-darwin-$arch.tar.gz" | tar -xz -C dist/$arch
+            cp "dist/$arch/node-$NODEV-darwin-$arch/bin/node" "$dst/runtime/node"
+            file "$dst/runtime/node"
+            chmod +x "$dst/runtime/node" "$dst/node_modules/ffmpeg-static/ffmpeg" "$dst/Start NXBeam.command"
+            (cd dist/$arch && ditto -c -k --keepParent NXBeam "../NXBeam-PC-macOS-$label.zip")
+          done
+          ls -la dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pc-macos
+          path: dist/NXBeam-PC-macOS-*.zip
+
   overlay:
     name: Switch overlay
     runs-on: ubuntu-latest
@@ -76,7 +115,7 @@ jobs:
 
   release:
     name: Publish
-    needs: [pc-windows, switch-pack]
+    needs: [pc-windows, pc-macos, switch-pack]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -90,7 +129,7 @@ jobs:
       - name: Keep only the release zips
         run: find assets -type f ! -name '*.zip' -delete
       - name: Source for Linux / macOS
-        run: zip -r assets/NXBeam-PC-source.zip src public tools package.json package-lock.json LICENSE start.sh "Start NXBeam.bat" README.md
+        run: zip -r assets/NXBeam-PC-source.zip src public tools package.json package-lock.json LICENSE start.sh "Start NXBeam.bat" "Start NXBeam.command" README.md
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_type == 'tag' && github.ref_name || steps.ver.outputs.tag }}
@@ -104,5 +143,7 @@ jobs:
             | File | Untuk |
             |---|---|
             | **NXBeam-PC-Windows.zip** | Viewer di PC Windows. Portable: ekstrak, lalu klik `Start NXBeam.bat`. Tidak perlu memasang Node.js. |
+            | **NXBeam-PC-macOS-AppleSilicon.zip** | Mac M1/M2/M3/M4. Portable: ekstrak, lalu klik kanan `Start NXBeam.command` > Open. |
+            | **NXBeam-PC-macOS-Intel.zip** | Mac Intel. Sama seperti di atas. |
             | **NXBeam-Switch.zip** | Ekstrak ke root SD card Switch (folder `atmosphere`, `NXBeam`, `switch`). |
-            | NXBeam-PC-source.zip | Linux / macOS (butuh Node.js 18+): jalankan `./start.sh`. |
+            | NXBeam-PC-source.zip | Linux (butuh Node.js 18+): jalankan `./start.sh`. |

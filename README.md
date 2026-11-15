@@ -26,7 +26,7 @@ Watch on every device, play from your PC or phone, record, save clips and go liv
 
 ![Windows](https://img.shields.io/badge/Windows-portable-0078d4?logo=windows&logoColor=white)
 ![Linux](https://img.shields.io/badge/Linux-Node.js-fcc624?logo=linux&logoColor=black)
-![macOS](https://img.shields.io/badge/macOS-Node.js-000000?logo=apple&logoColor=white)
+![macOS](https://img.shields.io/badge/macOS-portable-000000?logo=apple&logoColor=white)
 ![USB + Network](https://img.shields.io/badge/link-USB%20%7C%20Network-2d3948)
 ![1080p60](https://img.shields.io/badge/up%20to-1080p%2060fps-e60012)
 ![Haris DevLab](https://img.shields.io/badge/by-Haris%20DevLab-151b24)
@@ -69,7 +69,11 @@ Grab the files from **[Releases](https://github.com/harisratnopambudi/nxbeam/rel
 |---|---|---|
 | **`NXBeam-Switch.zip`** | The Switch SD card | Extract to the **root of the SD card** (`atmosphere`, `NXBeam`, `switch`) and power on. |
 | **`NXBeam-PC-Windows.zip`** | The viewer on a Windows PC | Extract and run **`Start NXBeam.bat`**. Portable: Node.js, ffmpeg and USB support are included. |
-| `NXBeam-PC-source.zip` | Linux / macOS | Needs Node.js 18+. Run `./start.sh`. |
+| **`NXBeam-PC-macOS-AppleSilicon.zip`** | Mac with M1 / M2 / M3 / M4 | Extract, then **right-click `Start NXBeam.command` > Open** (only the first time; after that a double-click is enough). Portable like the Windows build. |
+| **`NXBeam-PC-macOS-Intel.zip`** | Mac with an Intel CPU | Same as above. |
+| `NXBeam-PC-source.zip` | Linux | Needs Node.js 18+. Run `./start.sh`. |
+
+On a Mac the first start may say the app is from an unidentified developer: right-click > **Open**, or allow it in **System Settings > Privacy & Security > Open Anyway**. USB needs no driver on macOS.
 
 Then open `http://localhost:8090`. NXBeam finds the Switch by itself. Other devices on the same Wi-Fi can watch too: open the PC's address shown in the NXBeam window, for example `http://192.168.1.10:8090`.
 
