@@ -133,6 +133,19 @@ Saat memegang kontrol (dapat diubah di `public/js/input.js`):
 
 Gamepad memakai posisi tombol, bukan labelnya: tombol bawah selalu menjadi B Switch, tombol kanan menjadi A.
 
+## Aplikasi Android (HP dan Android TV)
+
+`NXBeam-Android.apk` di halaman Releases bisa dipasang di HP, tablet, dan Android TV / Google TV (Android 8 ke atas). Aplikasi ini tersambung langsung ke Switch, jadi tidak perlu PC.
+
+- **Wi-Fi**: Switch dalam mode Jaringan dan satu Wi-Fi dengan HP/TV. Switch akan muncul di daftar, tinggal pilih. Bisa juga ketik IP-nya.
+- **USB OTG**: Switch dalam mode USB, sambungkan kabel USB-C ke USB-C dari HP ke Switch (handheld). Saat dicolok, Android menawarkan membuka NXBeam. HP harus mendukung USB OTG. Kalau tidak terdeteksi, pakai adaptor OTG (USB-C ke USB-A) dengan kabel USB-A ke USB-C supaya HP pasti menjadi host.
+- **NXBeam di PC**: ketik alamat PC yang tertulis di jendela NXBeam, misalnya `192.168.1.10:8090`.
+- **Gambar**: *Tercepat* menampilkan frame begitu tiba (latensi paling rendah). *Seimbang* dan *Paling halus* menunggu beberapa frame agar gerakan rata saat Wi-Fi sibuk.
+- **Rekam** menyimpan MP4 ke folder **Movies/NXBeam**, **Screenshot** ke **Pictures/NXBeam**.
+- **Controller**: aktifkan *Pakai controller untuk Switch*, lalu controller yang tersambung ke HP/TV dipakai sebagai controller Switch.
+- **Di TV** semua bisa dengan remote. Tekan OK untuk memunculkan tombol pemutar.
+- **Memasang di Android TV**: pakai file manager atau aplikasi Downloader, atau salin APK lewat flashdisk.
+
 ## OBS
 
 Tambahkan **Browser Source** di OBS dengan URL **`http://localhost:8090/overlay`**:

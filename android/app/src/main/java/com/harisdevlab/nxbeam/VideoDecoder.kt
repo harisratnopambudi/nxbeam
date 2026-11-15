@@ -162,6 +162,18 @@ class VideoDecoder(
                 mc.releaseOutputBuffer(index, false); return
             }
             val delay = smoothingMs * 1_000_000L
+            /*
+             * A device that cannot keep up builds a backlog inside the decoder.
+             * Skip showing late frames, and after a run of them start over from
+             * the next keyframe, so the picture never drifts seconds behind.
+             */
+            if (now - arrival > delay + LATE_NS) {
+                mc.releaseOutputBuffer(index, false)
+                dropped++
+                if (++lateRun >= 20) { lateRun = 0; handler.post { catchUp() } }
+                return
+            }
+            lateRun = 0
             if (delay <= 0) {
                 mc.releaseOutputBuffer(index, true)
                 lastShowNs = now
@@ -175,6 +187,20 @@ class VideoDecoder(
             }
             framesShown++
         } catch (_: Exception) { }
+    }
+
+    private var lateRun = 0
+
+    private fun catchUp() {
+        val c = codec ?: return
+        try {
+            c.flush()
+            freeInputs.clear()
+            pending.clear()
+            c.start()
+        } catch (e: Exception) { restart(); return }
+        waitKey = true
+        onNeedKey()
     }
 
     private fun restart() {
@@ -191,6 +217,10 @@ class VideoDecoder(
         freeInputs.clear()
         try { c.stop() } catch (_: Exception) { }
         try { c.release() } catch (_: Exception) { }
+    }
+
+    companion object {
+        private const val LATE_NS = 200_000_000L
     }
 
     fun release() {
