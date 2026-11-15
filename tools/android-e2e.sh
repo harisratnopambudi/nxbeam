@@ -6,6 +6,9 @@ OUT=e2e
 mkdir -p $OUT
 adb install -r NXBeam-Android.apk
 adb logcat -c
+# a phone-sized screen for the screenshots
+adb shell wm size 1080x2340
+adb shell wm density 440
 
 shot() { adb exec-out screencap -p > "$OUT/$1.png"; }
 
@@ -13,6 +16,13 @@ shot() { adb exec-out screencap -p > "$OUT/$1.png"; }
 adb shell am start -W -a android.intent.action.VIEW -d "nxbeam://wifi/10.0.2.2:9950"
 sleep 20
 shot direct
+# controls and stats on screen (focus starts on Back; Stats is the fifth button)
+adb shell input keyevent KEYCODE_DPAD_CENTER
+sleep 1
+for i in 1 2 3 4; do adb shell input keyevent KEYCODE_DPAD_RIGHT; done
+adb shell input keyevent KEYCODE_DPAD_CENTER
+sleep 3
+shot player-controls
 # record a few seconds
 adb shell input keyevent KEYCODE_MEDIA_RECORD
 sleep 8
@@ -38,8 +48,17 @@ adb logcat -d > $OUT/logcat-hub.txt
 adb logcat -d -s NXBeam > $OUT/stats-hub.txt
 adb shell am force-stop com.harisdevlab.nxbeam
 
-# 3. the home screen
+# 3. the home screen, as a phone and as a TV
 adb shell am start -W -n com.harisdevlab.nxbeam/.MainActivity
-sleep 6
-shot home
+sleep 8
+shot home-phone
+adb shell am force-stop com.harisdevlab.nxbeam
+adb shell wm size 1920x1080
+adb shell wm density 320
+sleep 2
+adb shell am start -W -n com.harisdevlab.nxbeam/.MainActivity
+sleep 8
+shot home-tv
+adb shell wm size reset
+adb shell wm density reset
 exit 0

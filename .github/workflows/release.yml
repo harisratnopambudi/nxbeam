@@ -113,9 +113,30 @@ jobs:
           name: switch-pack
           path: NXBeam-Switch.zip
 
+  android:
+    name: Android app (phones and Android TV)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 8.14.3
+      - name: Build
+        run: gradle -p android --no-daemon assembleRelease
+      - name: Name the APK
+        run: cp android/app/build/outputs/apk/release/app-release.apk NXBeam-Android.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android
+          path: NXBeam-Android.apk
+
   release:
     name: Publish
-    needs: [pc-windows, pc-macos, switch-pack]
+    needs: [pc-windows, pc-macos, switch-pack, android]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -127,7 +148,7 @@ jobs:
           path: assets
           merge-multiple: true
       - name: Keep only the release zips
-        run: find assets -type f ! -name '*.zip' -delete
+        run: find assets -type f ! -name '*.zip' ! -name '*.apk' -delete
       - name: Source for Linux / macOS
         run: zip -r assets/NXBeam-PC-source.zip src public tools package.json package-lock.json LICENSE start.sh "Start NXBeam.bat" "Start NXBeam.command" README.md
       - uses: softprops/action-gh-release@v2
@@ -137,7 +158,9 @@ jobs:
           name: NXBeam ${{ github.ref_type == 'tag' && github.ref_name || steps.ver.outputs.tag }}
           generate_release_notes: true
           make_latest: true
-          files: assets/*.zip
+          files: |
+            assets/*.zip
+            assets/*.apk
           body: |
             ## Unduhan
             | File | Untuk |
@@ -145,5 +168,6 @@ jobs:
             | **NXBeam-PC-Windows.zip** | Viewer di PC Windows. Portable: ekstrak, lalu klik `Start NXBeam.bat`. Tidak perlu memasang Node.js. |
             | **NXBeam-PC-macOS-AppleSilicon.zip** | Mac M1/M2/M3/M4. Portable: ekstrak, lalu klik kanan `Start NXBeam.command` > Open. |
             | **NXBeam-PC-macOS-Intel.zip** | Mac Intel. Sama seperti di atas. |
+            | **NXBeam-Android.apk** | HP, tablet, dan Android TV / Google TV (Android 8 ke atas). Tersambung langsung ke Switch lewat Wi-Fi atau USB OTG tanpa PC, atau menonton NXBeam yang jalan di PC. |
             | **NXBeam-Switch.zip** | Ekstrak ke root SD card Switch (folder `atmosphere`, `NXBeam`, `switch`). |
             | NXBeam-PC-source.zip | Linux (butuh Node.js 18+): jalankan `./start.sh`. |
