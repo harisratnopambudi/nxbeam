@@ -82,12 +82,32 @@ class MainActivity : Activity() {
             usbStatus.setText(R.string.usb_no_host)
             usbConnect.isEnabled = false
         }
-        handleUsbIntent(intent)
+        handleIntent(intent)
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        handleUsbIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(i: Intent?) {
+        handleUsbIntent(i)
+        handleLink(i)
+    }
+
+    /* nxbeam://wifi/192.168.1.20  nxbeam://hub/192.168.1.10:8090  nxbeam://usb */
+    private fun handleLink(i: Intent?) {
+        val u = i?.data ?: return
+        if (u.scheme != "nxbeam") return
+        val addr = u.path?.trim('/') ?: ""
+        val host = addr.substringBefore(':')
+        val port = addr.substringAfter(':', "").toIntOrNull()
+        when (u.host) {
+            "wifi" -> if (host.isNotEmpty()) play(Target(Target.WIFI, host, port ?: Proto.NET_PORT))
+            "hub" -> if (host.isNotEmpty()) play(Target(Target.HUB, host, port ?: 8090, prefs.hubPin))
+            "usb" -> connectUsb()
+        }
+        i.data = null
     }
 
     /* the Switch was plugged in and Android opened NXBeam for it: permission comes with that */

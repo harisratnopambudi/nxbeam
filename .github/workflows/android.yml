@@ -28,3 +28,42 @@ jobs:
         with:
           name: android
           path: NXBeam-Android.apk
+
+  e2e:
+    name: Android app against the console simulator (emulator)
+    needs: android
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: android
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci --no-fund --no-audit
+      - name: Start the console simulator
+        run: nohup node tools/simulate-console.js --size 1280x720 --fps 60 --no-beacon > sim.log 2>&1 &
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          script: ./tools/android-e2e.sh
+      - name: Check the recording
+        if: always()
+        run: |
+          cp sim.log e2e/ || true
+          FF=node_modules/ffmpeg-static/ffmpeg
+          if [ -f e2e/recording.mp4 ]; then $FF -hide_banner -i e2e/recording.mp4 2>&1 | grep -E "Duration|Stream" | tee e2e/recording-info.txt; else echo "no recording"; fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e
+          path: e2e
