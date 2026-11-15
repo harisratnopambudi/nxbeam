@@ -33,6 +33,7 @@ class Session(private val context: Context, val target: Target, private val ui: 
         val fps: Int, val mbps: Float, val width: Int, val height: Int,
         val decodeMs: Float, val dropped: Long, val audioUnderruns: Int, val recordingSec: Int,
         val takesInput: Boolean,
+        val diag: String?,
     )
 
     private val main = Handler(Looper.getMainLooper())
@@ -197,8 +198,9 @@ class Session(private val context: Context, val target: Target, private val ui: 
                 decodeMs = d?.decodeMs ?: 0f, dropped = d?.dropped ?: 0, audioUnderruns = audio.underruns,
                 recordingSec = if (rec != null) ((System.nanoTime() - recordStart) / 1_000_000_000L).toInt() else -1,
                 takesInput = takesInput,
+                diag = src?.diag(),
             )
-            if (st.fps > 0 || st.mbps > 0f) android.util.Log.i("NXBeam", "stats $st")
+            if (st.fps > 0 || st.mbps > 0f || st.diag != null) android.util.Log.i("NXBeam", "stats $st")
             ui.onStats(st)
             if (running) main.postDelayed(this, 1000)
         }

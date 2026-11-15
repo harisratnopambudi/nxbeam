@@ -41,6 +41,9 @@ abstract class Source(protected val listener: SourceListener) {
     abstract fun sendPad(state: PadState?)
     abstract fun close()
 
+    /** a line for the waiting screen when the picture does not come */
+    open fun diag(): String? = null
+
     fun start(): Thread = Thread({
         try { run() } catch (e: Exception) {
             finish(e.message ?: e.javaClass.simpleName, null)
@@ -150,25 +153,50 @@ class UsbSource(
             if (ep.direction == UsbConstants.USB_DIR_IN) inEp = ep else outEp = ep
         }
         if (inEp == null) { finish("no USB IN endpoint", "error"); release(); return }
+        inSize = inEp.maxPacketSize
+        outSize = outEp?.maxPacketSize ?: 0
         startWriter()
         listener.onOpen()
 
-        /* four 256 KB reads queued at all times, so the console never waits between transfers */
+        /*
+         * Four 256 KB reads queued at all times, so the console never waits
+         * between transfers. Some Android USB stacks never complete those
+         * queued reads: when nothing has come after a few seconds, read with
+         * plain blocking transfers instead.
+         */
         val parser = StreamParser { h, p -> dispatch(h, p) }
+        val chunk = ByteArray(256 * 1024)
+        var reason = "the console left USB"
         val reqs = List(4) {
             UsbRequest().apply {
                 initialize(c, inEp)
                 clientData = ByteBuffer.allocateDirect(256 * 1024)
             }
         }
-        for (r in reqs) r.queue(r.clientData as ByteBuffer)
-        val chunk = ByteArray(256 * 1024)
-        var reason = "the console left USB"
+        var queued = 0
+        for (r in reqs) if (r.queue(r.clientData as ByteBuffer)) queued++
+        queueFailed = queued < reqs.size
+        val giveUpAsync = java.util.concurrent.atomic.AtomicBoolean(queued == 0)
+        Thread({
+            // nothing yet: ask again for the stream, and after 3 s change how we read
+            var waited = 0
+            while (!closed && bytesIn == 0L && waited < 3000) {
+                Thread.sleep(1000); waited += 1000
+                if (bytesIn == 0L && !closed) requestKeyframe(false)
+            }
+            if (!closed && bytesIn == 0L && !giveUpAsync.get()) {
+                giveUpAsync.set(true)
+                for (r in reqs) try { r.cancel() } catch (_: Exception) { }
+            }
+        }, "nxbeam-usb-watch").start()
+
         try {
-            while (!closed) {
+            while (!closed && !giveUpAsync.get()) {
                 val r = c.requestWait() ?: break
+                if (giveUpAsync.get()) break
                 val bb = r.clientData as ByteBuffer
                 val n = bb.position()
+                reads++
                 if (n > 0) {
                     bb.flip()
                     bb.get(chunk, 0, n)
@@ -180,9 +208,41 @@ class UsbSource(
             }
         } catch (e: Exception) { reason = "USB read: ${e.message}" }
         for (r in reqs) try { r.cancel(); r.close() } catch (_: Exception) { }
+
+        if (!closed && giveUpAsync.get()) {
+            readMode = "sync"
+            requestKeyframe(false)
+            val max = if (android.os.Build.VERSION.SDK_INT >= 28) chunk.size else 16384
+            var idle = 0
+            while (!closed) {
+                val n = c.bulkTransfer(inEp, chunk, max, 1000)
+                reads++
+                if (n > 0) {
+                    idle = 0
+                    bytesIn += n
+                    parser.push(chunk, 0, n)
+                } else if (++idle % 2 == 0) {
+                    if (find(manager) == null) break
+                    if (bytesIn == 0L) requestKeyframe(false)
+                }
+            }
+        }
         finish(reason, null)
         release()
     }
+
+    @Volatile private var readMode = "async"
+    @Volatile private var reads = 0L
+    @Volatile private var queueFailed = false
+    @Volatile private var cmdOk = 0
+    @Volatile private var cmdFail = 0
+
+    override fun diag(): String =
+        "USB $readMode${if (queueFailed) "*" else ""}: ${bytesIn / 1024} KB, $reads reads, " +
+            "cmd ok $cmdOk / fail $cmdFail, in ${inSize} out ${outSize}"
+
+    private var inSize = 0
+    private var outSize = 0
 
     /*
      * The console takes a request only while it has a buffer waiting for one,
@@ -195,10 +255,12 @@ class UsbSource(
                 val c = conn ?: break
                 val ep = outEp ?: break
                 var tries = if (isPad) 1 else 14
+                var sent = false
                 while (tries-- > 0 && !closed) {
-                    if (c.bulkTransfer(ep, b, b.size, 40) >= 0) break
+                    if (c.bulkTransfer(ep, b, b.size, 250) >= 0) { sent = true; break }
                     if (tries > 0) Thread.sleep(150)
                 }
+                if (sent) cmdOk++ else cmdFail++
             }
         }, "nxbeam-usb-tx").apply { start() }
     }

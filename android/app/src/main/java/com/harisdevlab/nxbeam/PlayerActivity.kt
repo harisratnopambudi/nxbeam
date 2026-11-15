@@ -173,6 +173,11 @@ class PlayerActivity : Activity(), SessionUi {
     }
 
     override fun onStats(s: Session.Stats) {
+        // while waiting on USB, show what the link is doing: it tells a cable problem from a console one
+        if (!playing && message.visibility == View.VISIBLE && s.diag != null) {
+            messageDetail.visibility = View.VISIBLE
+            messageDetail.text = listOf(consoleHead, s.diag).filter { it.isNotBlank() }.joinToString("\n")
+        }
         if (statsText.visibility == View.VISIBLE) {
             statsText.text = getString(R.string.stats_line, s.fps, s.mbps, s.width, s.height, s.decodeMs, s.dropped, s.audioUnderruns)
         }
