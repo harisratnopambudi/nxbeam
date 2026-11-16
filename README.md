@@ -31,7 +31,8 @@ Mirror the whole console, HOME menu included, to any browser or the Android app 
 ![USB + Network](https://img.shields.io/badge/link-USB%20%7C%20Network-2d3948)
 ![1080p60](https://img.shields.io/badge/up%20to-1080p%2060fps-e60012)
 ![Haris DevLab](https://img.shields.io/badge/by-Haris%20DevLab-151b24)
-[![Saweria](https://img.shields.io/badge/support-Saweria-faae2b)](https://saweria.co/harisratnopambudi)
+
+<a href="https://saweria.co/harisratnopambudi"><img src="docs/saweria.svg" width="300" alt="Support NXBeam on Saweria"></a>
 
 <br>
 
@@ -204,7 +205,7 @@ The full guide (USB, 1080p60, OBS, live streaming, smoothness tips) is in **[doc
 
 NXBeam is free. If it helps you, a tip keeps it going:
 
-<a href="https://saweria.co/harisratnopambudi"><img src="https://img.shields.io/badge/Saweria-Support%20NXBeam-faae2b?style=for-the-badge" alt="Support NXBeam on Saweria"></a>
+<a href="https://saweria.co/harisratnopambudi"><img src="docs/saweria.svg" width="300" alt="Support NXBeam on Saweria"></a>
 
 <div align="center">
 <br>
