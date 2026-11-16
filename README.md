@@ -171,7 +171,7 @@ Open the overlay with your overlay combo and pick **NXBeam**. The combo depends 
 5. Set the target driver (right of the green arrow) to **WinUSB**.
 6. Click **Install Driver** (or **Reinstall Driver**) and wait for it to finish.
 
-<p align="center"><img src="docs/zadig.png" width="575" alt="Zadig with the console selected, USB ID 1209 5F1E, driver WinUSB"></p>
+<p align="center"><img src="docs/zadig.png" width="575" alt="Zadig with NXBeam selected, USB ID 1209 5F1E, driver WinUSB installed"></p>
 
 <sub>Pick only the device that reads <b>1209 5F1E</b>: installing WinUSB on another device (a mouse, a keyboard) stops it from working.</sub>
 
