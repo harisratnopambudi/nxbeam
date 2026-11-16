@@ -164,13 +164,13 @@ Open the overlay with your overlay combo and pick **NXBeam**. The combo depends 
 1. Put the Switch in **USB mode** from the NXBeam overlay and restart it, then plug the USB-C cable in (handheld).
 2. Download and open **[Zadig](https://zadig.akeo.ie/)**.
 3. Click **Options**, then **List All Devices**, so the Switch shows up in the list.
-4. In the device list, pick **Switch Frame Tap** (its **USB ID is `1209` `5F1E`**).
+4. In the device list, pick **NXBeam** (its **USB ID is `1209` `5F1E`**). With a Switch pack older than v1.15 it is called **Switch Frame Tap**.
 5. Set the target driver (right of the green arrow) to **WinUSB**.
 6. Click **Install Driver** (or **Reinstall Driver**) and wait for it to finish.
 
-<p align="center"><img src="docs/zadig.png" width="575" alt="Zadig with Switch Frame Tap selected, USB ID 1209 5F1E, driver WinUSB"></p>
+<p align="center"><img src="docs/zadig.png" width="575" alt="Zadig with the console selected, USB ID 1209 5F1E, driver WinUSB"></p>
 
-<sub>The device is named <b>Switch Frame Tap</b> because NXBeam uses that sysmodule on the console. Pick only the device that reads <b>1209 5F1E</b>: installing WinUSB on another device (a mouse, a keyboard) stops it from working.</sub>
+<sub>Pick only the device that reads <b>1209 5F1E</b>: installing WinUSB on another device (a mouse, a keyboard) stops it from working.</sub>
 
 If NXBeam still does not see the Switch, use **Check USB devices** on its connection screen: it lists what the PC sees and says what is missing.
 
@@ -186,7 +186,7 @@ The full guide (USB, 1080p60, OBS, live streaming, smoothness tips) is in **[doc
 ## License
 
 - **NXBeam PC app**: MIT, Haris DevLab.
-- **Streaming sysmodule** in `switch-pack/`: [Switch Frame Tap](https://github.com/TomasUribe/switch-frame-tap) by Tomas Uribe, **GPL-2.0**. The only change is the folder names inside the program (see `switch-pack/NXBeam/lisensi/PERUBAHAN.txt` and `tools/make-switch-pack.py`).
+- **Streaming sysmodule** in `switch-pack/`: [Switch Frame Tap](https://github.com/TomasUribe/switch-frame-tap) by Tomas Uribe, **GPL-2.0**. The only changes are the folder names, the USB device name and the notice title inside the program (see `switch-pack/NXBeam/lisensi/PERUBAHAN.txt` and `tools/make-switch-pack.py`).
 - **Sound patches**: [dvr-patches](https://github.com/exelix11/dvr-patches) by exelix11, BSD-3-Clause.
 - **Switch overlay** (`overlay/`): GPL-2.0, built on libtesla by WerWolv.
 

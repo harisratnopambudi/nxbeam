@@ -11,9 +11,9 @@ whose folders are named for NXBeam:
   NXBeam/console-settings/config.ini      settings (was config/switch-frame-tap)
   NXBeam/console-captures/                screenshots (was switch/switch-frame-tap)
 
-The only change to the programs: the folder names inside their read-only
-data, replaced by strings of exactly the same length, so no code or data
-moves. The segment's SHA-256 in the NSO header is recomputed.
+The only change to the programs: the folder names, the USB device name and
+the notice title inside their read-only data, replaced by bytes of exactly the
+same length, so no code or data moves. The segment's SHA-256 in the NSO header is recomputed.
 
   python3 make-switch-pack.py C20/exefs.nsp C21/exefs.nsp OUTDIR [--dvr DIR]
 Needs: pip install lz4
@@ -23,7 +23,12 @@ import hashlib, os, re, struct, sys, shutil
 RULES = [(b'config/switch-frame-tap', b'NXBeam/console-settings'),
          (b'switch/switch-frame-tap', b'NXBeam/console-captures'),
          (b'switch-frame-tap-sound',  b'NXBeam-streaming-sound'),
-         (b'switch-frame-tap',        b'NXBeam-streaming')]
+         (b'switch-frame-tap',        b'NXBeam-streaming'),
+         # the name the PC shows for the console on USB (Zadig, Device Manager) and its webcam mode
+         (b'Switch Frame Tap\0\0\0\0\0\0\0\0' + b'0001', b'NXBeam' + b'\0' * 18 + b'0001'),
+         (b'\0Switch Frame Tap Camera\0', b'\0NXBeam Camera' + b'\0' * 11),
+         # the title of the console's on-screen notices; JSON whitespace keeps every later byte in place
+         (b'{"title":"Switch Frame Tap",', b'{"title":"NXBeam",' + b' ' * 10)]
 SEG = [(0x10, 0x60, 0xA0), (0x20, 0x64, 0xC0), (0x30, 0x68, 0xE0)]
 
 def pfs0_read(d):
