@@ -9,7 +9,7 @@ Mirror the whole console, HOME menu included, to any browser or the Android app 
 
 <br>
 
-<img src="docs/tested-on.svg" width="760" alt="Tested and working on Nintendo Switch firmware 23.5.0 and Atmosphère 1.12.2|E (emuMMC)">
+<img src="docs/tested-on.png" width="760" alt="Tested and working on Nintendo Switch firmware 23.5.0 and Atmosphère 1.12.2|E (emuMMC)">
 
 <br>
 
