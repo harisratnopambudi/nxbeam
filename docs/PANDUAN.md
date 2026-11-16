@@ -133,6 +133,15 @@ Saat memegang kontrol (dapat diubah di `public/js/input.js`):
 
 Gamepad memakai posisi tombol, bukan labelnya: tombol bawah selalu menjadi B Switch, tombol kanan menjadi A.
 
+### Tampilkan HOME menu dan overlay (beta)
+
+Bawaannya hanya game yang tampil. Supaya semua yang ada di layar Switch ikut tampil (mirroring penuh), buka overlay NXBeam lalu nyalakan di bagian **Tampilkan juga (beta)**, kemudian **Restart Switch**:
+
+- **HOME menu**: HOME menu, Album, dan layar sistem ikut tampil.
+- **Overlay sistem**: bar volume, quick settings, menu power, dan menu Tesla/Ultrahand ikut tampil di atas game. Overlay disalin 10-20 kali per detik, jadi gerakannya sedikit kurang halus dibanding game.
+
+Catatan: manual game, eShop, dan applet lain tetap menghentikan stream sementara. Fitur ini masih beta dari sysmodule-nya.
+
 ## Aplikasi Android (HP dan Android TV)
 
 `NXBeam-Android.apk` di halaman Releases bisa dipasang di HP, tablet, dan Android TV / Google TV (Android 8 ke atas). Aplikasi ini tersambung langsung ke Switch, jadi tidak perlu PC.

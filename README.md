@@ -94,6 +94,7 @@ Then open `http://localhost:8090`. NXBeam finds the Switch by itself. Other devi
 | **Diagnostics** | Tells you whether frames are lost on the console, on the network or on the PC. |
 | **Android app** | Phones and Android TV: straight to the Switch over Wi-Fi or USB OTG, no PC. Records MP4 and takes screenshots to the gallery. |
 | **Switch menu** | NXBeam overlay: USB / Network mode, restart. |
+| **Full mirroring** (beta) | Turn on **HOME menu** and **Overlay sistem** in the overlay and the stream shows everything on the console, not only the game. |
 | **Switch screen off** | Turn the console's screen off while it streams (saves battery when you play on the PC), one toggle in the overlay. |
 
 ## Android app (phones and TVs)
@@ -154,6 +155,8 @@ Open the overlay with your overlay combo and pick **NXBeam**. The combo depends 
 |---|---|
 | **Mode USB** / **Mode Jaringan** | How the Switch connects to NXBeam: USB cable or network. |
 | **Layar mati saat streaming** | **On**: the Switch screen goes dark while a stream runs (saves battery; play on the PC). **Off**: the screen stays on. |
+| **HOME menu** (beta) | **On**: the HOME menu, the Album and system screens stream too, not only games, so the viewer mirrors the whole console. |
+| **Overlay sistem** (beta) | **On**: the volume bar, quick settings, power menu and Tesla / Ultrahand menus appear in the stream on top of the game. |
 | **Restart Switch** | Applies the changes. |
 
 - **Network**: works docked or handheld; NXBeam finds the console on its own.

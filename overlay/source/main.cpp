@@ -134,6 +134,19 @@ public:
         });
         list->addItem(screen);
 
+        /* the sysmodule's beta switches: everything on the console, not only the game */
+        list->addItem(new tsl::elm::CategoryHeader("Tampilkan juga (beta)"));
+        auto home = new tsl::elm::ToggleListItem("HOME menu", GetKey("home_menu", "0") == "1", "On", "Off");
+        home->setStateChangedListener([this](bool on) {
+            if (!SetKey("home_menu", on ? "1" : "0")) { this->header->setText("Gagal menyimpan ke SD card"); }
+        });
+        list->addItem(home);
+        auto ovl = new tsl::elm::ToggleListItem("Overlay sistem", GetKey("overlays", "0") == "1", "On", "Off");
+        ovl->setStateChangedListener([this](bool on) {
+            if (!SetKey("overlays", on ? "1" : "0")) { this->header->setText("Gagal menyimpan ke SD card"); }
+        });
+        list->addItem(ovl);
+
         list->addItem(new tsl::elm::CategoryHeader("Perubahan berlaku setelah restart"));
         auto restart = new tsl::elm::ListItem("Restart Switch");
         restart->setClickListener([](u64 keys) {
