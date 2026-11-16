@@ -45,7 +45,8 @@ Mirror the whole console, HOME menu included, to any browser or the Android app 
 > [!NOTE]
 > Tested on Nintendo Switch firmware **23.5.0** with **Atmosphère 1.12.2|E** (emuMMC). Other versions may work too; if you try one, an issue with the result is welcome.
 
-## Screenshots
+<a name="screenshots"></a>
+<img src="docs/headers/screenshots.svg" width="100%" alt="Screenshots">
 
 <table>
   <tr>
@@ -70,7 +71,8 @@ Mirror the whole console, HOME menu included, to any browser or the Android app 
   </tr>
 </table>
 
-## Download
+<a name="download"></a>
+<img src="docs/headers/download.svg" width="100%" alt="Download">
 
 Grab the files from **[Releases](https://github.com/harisratnopambudi/nxbeam/releases/latest)**:
 
@@ -87,7 +89,8 @@ On a Mac the first start may say the app is from an unidentified developer: righ
 
 Then open `http://localhost:8090`. NXBeam finds the Switch by itself. Other devices on the same Wi-Fi can watch too: open the PC's address shown in the NXBeam window, for example `http://192.168.1.10:8090`.
 
-## Features
+<a name="features"></a>
+<img src="docs/headers/features.svg" width="100%" alt="Features">
 
 | | |
 |---|---|
@@ -105,7 +108,8 @@ Then open `http://localhost:8090`. NXBeam finds the Switch by itself. Other devi
 | **Full mirroring** (beta) | Everything on the console streams: the HOME menu, system settings, the Album and every app, not only games. Turn on **HOME menu** (and **Overlay sistem** for the volume bar and menus) in the overlay. Tested on FW 23.5.0. |
 | **Switch screen off** | Turn the console's screen off while it streams (saves battery when you play on the PC), one toggle in the overlay. |
 
-## Android app (phones and TVs)
+<a name="android-app-phones-and-tvs"></a>
+<img src="docs/headers/android.svg" width="100%" alt="Android app">
 
 One APK for phones, tablets and Android TV / Google TV boxes. It talks to the Switch by itself, so no PC is needed.
 
@@ -135,7 +139,8 @@ One APK for phones, tablets and Android TV / Google TV boxes. It talks to the Sw
 - **On a TV**: everything works with the remote. Press OK to show the player controls.
 - **Installing**: on a phone, open the APK and allow installs from that app when asked. On Android TV, install it with a file manager or the Downloader app, or copy it over with a USB stick.
 
-## Setup
+<a name="setup"></a>
+<img src="docs/headers/setup.svg" width="100%" alt="Setup">
 
 **On the Switch** you need Atmosphère, plus Ultrahand Overlay (or Tesla Menu) for the NXBeam menu. The pack puts this on the SD card:
 
@@ -188,20 +193,23 @@ If NXBeam still does not see the Switch, use **Check USB devices** on its connec
 
 The full guide (USB, 1080p60, OBS, live streaming, smoothness tips) is in **[docs/PANDUAN.md](docs/PANDUAN.md)** (Indonesian).
 
-## Build
+<a name="build"></a>
+<img src="docs/headers/build.svg" width="100%" alt="Build">
 
 - Every push to `main` builds and publishes a release from the version in `package.json` (GitHub Actions: Windows portable build, the Switch overlay in `devkitpro/devkita64`, and the SD pack).
 - The Switch overlay lives in [`overlay/`](overlay).
 - From source: `npm install && npm start`. Without a console: `npm run simulate`. Tests: `npm test`.
 
-## License
+<a name="license"></a>
+<img src="docs/headers/license.svg" width="100%" alt="License">
 
 - **NXBeam PC app**: MIT, Haris DevLab.
 - **Streaming sysmodule** in `switch-pack/`: [Switch Frame Tap](https://github.com/TomasUribe/switch-frame-tap) by Tomas Uribe, **GPL-2.0**. The only changes are the folder names, the USB device name and the notice title inside the program (see `switch-pack/NXBeam/lisensi/PERUBAHAN.txt` and `tools/make-switch-pack.py`).
 - **Sound patches**: [dvr-patches](https://github.com/exelix11/dvr-patches) by exelix11, BSD-3-Clause.
 - **Switch overlay** (`overlay/`): GPL-2.0, built on libtesla by WerWolv.
 
-## Support
+<a name="support"></a>
+<img src="docs/headers/support.svg" width="100%" alt="Support">
 
 NXBeam is free. If it helps you, a tip keeps it going:
 

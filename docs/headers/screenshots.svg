@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="96" viewBox="0 0 1200 96" role="img" aria-label="Screenshots">
+  <rect x="3" y="7" width="1194" height="82" rx="18" fill="#121821" stroke="#2D3948" stroke-width="2"/>
+  <rect x="3" y="15" width="10" height="66" rx="3" fill="#2B7BFF"/>
+  <g transform="translate(40,24) scale(2)" fill="none" stroke="#C9D0DA" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9" r="1.6"/><path d="M3 18l5.5-5.5 4 4L16 13l5 5"/></g>
+  <rect x="112" y="27" width="2" height="42" rx="1" fill="#2D3948"/>
+  <text x="148" y="62" textLength="324" lengthAdjust="spacing" font-family="Montserrat,'Segoe UI',Inter,Helvetica,Arial,sans-serif" font-size="38" font-weight="800" fill="#F2F4F7">SCREENSHOTS</text>
+  <rect x="506" y="46" width="646" height="4" rx="2" fill="#2D3948"/>
+  <rect x="506" y="46" width="76" height="4" rx="2" fill="#2B7BFF"/>
+</svg>
