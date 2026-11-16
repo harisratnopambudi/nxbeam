@@ -5,7 +5,7 @@
 # NXBeam
 
 ### Stream your Nintendo Switch to any browser.
-Watch in any browser or in the Android app on phones and TVs, play from your PC or phone, record, save clips and go live.
+Mirror the whole console, HOME menu included, to any browser or the Android app on phones and TVs; play from your PC or phone, record, save clips and go live.
 
 <br>
 
@@ -60,6 +60,12 @@ Watch in any browser or in the Android app on phones and TVs, play from your PC 
   <tr>
     <td colspan="2" align="center"><sub>OBS Studio: <code>http://localhost:8090/overlay</code> as a Browser Source, the game's video and sound only</sub></td>
   </tr>
+  <tr>
+    <td colspan="2"><img src="docs/screenshot-home.jpg" alt="NXBeam mirroring the Switch HOME menu over USB at 1280x720 and 60 fps"></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><sub>Full mirroring (beta): the HOME menu and every app, not only games, over USB at 60 fps</sub></td>
+  </tr>
 </table>
 
 ## Download
@@ -94,7 +100,7 @@ Then open `http://localhost:8090`. NXBeam finds the Switch by itself. Other devi
 | **Diagnostics** | Tells you whether frames are lost on the console, on the network or on the PC. |
 | **Android app** | Phones and Android TV: straight to the Switch over Wi-Fi or USB OTG, no PC. Records MP4 and takes screenshots to the gallery. |
 | **Switch menu** | NXBeam overlay: USB / Network mode, restart. |
-| **Full mirroring** (beta) | Turn on **HOME menu** and **Overlay sistem** in the overlay and the stream shows everything on the console, not only the game. |
+| **Full mirroring** (beta) | Everything on the console streams: the HOME menu, system settings, the Album and every app, not only games. Turn on **HOME menu** (and **Overlay sistem** for the volume bar and menus) in the overlay. Tested on FW 23.5.0. |
 | **Switch screen off** | Turn the console's screen off while it streams (saves battery when you play on the PC), one toggle in the overlay. |
 
 ## Android app (phones and TVs)
