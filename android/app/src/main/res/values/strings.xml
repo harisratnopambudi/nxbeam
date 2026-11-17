@@ -45,7 +45,7 @@
     <string name="link_waiting">Connected. Waiting for the picture…</string>
     <string name="link_lost">Connection lost. Reconnecting…</string>
     <string name="fail_refused">The Switch refused the connection. Is it in Network mode, and has it finished starting up?</string>
-    <string name="fail_timeout">No answer. Check that the Switch and this device are on the same network.</string>
+    <string name="fail_timeout">The Switch does not answer. It serves one viewer at a time: if NXBeam on a PC or another phone is connected, close it, or watch through NXBeam on a PC. Also check the Switch is awake and the IP matches the NXBeam overlay.</string>
     <string name="fail_absent">No Switch on USB. Plug it in and set the NXBeam overlay to USB mode.</string>
     <string name="fail_permission">USB access is needed. Go back and tap Connect over USB.</string>
     <string name="fail_busy">Another app is using the USB connection.</string>

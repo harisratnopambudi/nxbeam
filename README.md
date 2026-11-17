@@ -128,7 +128,7 @@ One APK for phones, tablets and Android TV / Google TV boxes. It talks to the Sw
 |---|---|
 | **Wi-Fi** | Switch in **Network** mode, same Wi-Fi. The app finds it; tap it. Or type its IP. |
 | **USB OTG** | Switch in **USB** mode, handheld. Connect with an **OTG adapter (USB-C male to USB-A female) on the phone plus a USB-A to USB-C cable** to the Switch, the same cable you would use on a PC. Android asks to open NXBeam when the Switch is plugged in. |
-| **NXBeam on a PC** | Type the PC address shown in the NXBeam window, for example `192.168.1.10:8090`. Watches what the PC is showing. |
+| **NXBeam on a PC** | Type the PC address shown in the NXBeam window, for example `192.168.1.10:8090`. Watches what the PC is showing. Use this while the PC is connected: the Switch serves one viewer at a time. |
 
 > [!IMPORTANT]
 > **A USB-C to USB-C cable does not work.** The Switch keeps the host role (or just charges the phone), so the phone never sees it, and the "USB controlled by: This device" switch on Samsung and other phones fails because the Switch refuses the role swap. The USB-A end of an OTG adapter makes the phone the host from the start. **Check USB** in the app shows what the phone sees.

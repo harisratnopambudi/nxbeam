@@ -39,7 +39,7 @@
     <string name="link_waiting">Tersambung. Menunggu gambar…</string>
     <string name="link_lost">Sambungan terputus. Menyambung ulang…</string>
     <string name="fail_refused">Switch menolak sambungan. Apakah Switch dalam mode Jaringan dan sudah selesai menyala?</string>
-    <string name="fail_timeout">Tidak ada jawaban. Pastikan Switch dan perangkat ini ada di jaringan yang sama.</string>
+    <string name="fail_timeout">Switch tidak menjawab. Switch hanya melayani satu penonton: kalau NXBeam di PC atau HP lain sedang tersambung, tutup dulu, atau tonton lewat bagian NXBeam di PC. Pastikan juga Switch tidak tidur dan IP-nya sama dengan yang tertulis di overlay NXBeam.</string>
     <string name="fail_absent">Tidak ada Switch di USB. Colokkan kabelnya dan atur overlay NXBeam ke mode USB.</string>
     <string name="fail_permission">Butuh izin akses USB. Kembali lalu ketuk Sambung lewat USB.</string>
     <string name="fail_busy">Sambungan USB sedang dipakai aplikasi lain.</string>

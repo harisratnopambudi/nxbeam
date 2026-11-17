@@ -155,6 +155,7 @@ Selama keduanya tersambung ke **router yang sama**, NXBeam tetap bisa tersambung
 
 - NXBeam mencari Switch di jaringannya sendiri. Kalau tidak ketemu, pencarian diperluas ke subnet tetangga dan subnet rumahan yang umum, karena ada router yang memberi alamat berbeda untuk 2,4 GHz dan 5 GHz.
 - Kalau tetap tidak ketemu, buka overlay NXBeam di Switch, lihat **IP Switch**, lalu ketik IP itu di NXBeam (PC: kolom IP di layar sambungan; Android: kolom IP Switch).
+- **Switch hanya melayani satu penonton.** Kalau NXBeam di PC sedang tersambung, HP tidak bisa tersambung langsung ke Switch (muncul "tidak ada jawaban"). Tutup NXBeam di PC dulu, atau di aplikasi Android pakai bagian **NXBeam di PC** supaya HP menonton lewat PC.
 - Kalau dengan IP pun tidak tersambung, router memblokir perangkat Wi-Fi untuk saling terhubung. Matikan **AP Isolation / Client Isolation / Wireless Isolation** di pengaturan router, dan jangan pakai jaringan **Tamu (Guest)**. Atau sambungkan PC ke router dengan kabel LAN.
 
 ## Aplikasi Android (HP dan Android TV)

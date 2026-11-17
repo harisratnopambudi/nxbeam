@@ -79,9 +79,9 @@ const DICT = {
     noAudio: 'Gambar sudah masuk, tapi konsol tidak mengirim suara. Di aplikasi Switch Frame Tap, halaman Stream: nyalakan Game audio. Untuk game yang memblokir rekaman, nyalakan juga Sound in no-record games.',
     audioPlayback: 'Pemutaran suara', playing: 'berjalan', blocked: 'menunggu ketukan', off: 'mati', none: 'konsol tidak mengirim audio',
     errRefusedTitle: 'Konsol menolak koneksi ({0})',
-    errRefused: 'Alamat ini terjangkau, tapi port 9950 tertutup. Pastikan di aplikasi Switch Frame Tap Connection = Network, konsol sudah di-restart, tunggu sekitar 30 detik setelah menu HOME muncul, dan viewer bawaan sudah ditutup. Cek juga IP konsol di System Settings > Internet.',
+    errRefused: 'Alamat ini terjangkau, tapi port 9950 tertutup. Pastikan di overlay NXBeam modenya Jaringan, Switch sudah di-restart, dan tunggu sekitar 30 detik setelah HOME menu muncul. IP Switch tertulis di overlay NXBeam.',
     errTimeoutTitle: 'Konsol tidak menjawab ({0})',
-    errTimeout: 'Periksa apakah Switch dan komputer ini di WiFi yang sama, konsol tidak dalam mode tidur, dan IP-nya benar.',
+    errTimeout: 'Switch hanya melayani satu penonton: kalau NXBeam di HP atau PC lain sedang tersambung, tutup dulu. Selain itu, pastikan Switch tidak dalam mode tidur dan IP-nya benar (lihat overlay NXBeam). Beda frekuensi 2,4/5 GHz tidak masalah selama satu router.',
   },
   en: {
     stage: 'Screen', library: 'Library', stats: 'Stats', settings: 'Settings',
@@ -162,9 +162,9 @@ const DICT = {
     noAudio: 'The picture is in, but the console sends no sound. In the Switch Frame Tap app, Stream page: turn on Game audio. For games that block recording, also turn on Sound in no-record games.',
     audioPlayback: 'Sound playback', playing: 'playing', blocked: 'waiting for a tap', off: 'off', none: 'console sends no audio',
     errRefusedTitle: 'The console refused the connection ({0})',
-    errRefused: 'The address answers but port 9950 is closed. In the Switch Frame Tap app set Connection to Network, restart the console, wait about 30 seconds after the HOME menu appears, and close the original viewer. Check the console IP in System Settings > Internet.',
+    errRefused: 'The address answers but port 9950 is closed. Set the NXBeam overlay to Network mode, restart the Switch and wait about 30 seconds after the HOME menu appears. The overlay shows the Switch IP.',
     errTimeoutTitle: 'The console does not answer ({0})',
-    errTimeout: 'Check that the Switch and this computer are on the same Wi-Fi, the console is awake, and the IP is right.',
+    errTimeout: 'The Switch serves one viewer at a time: if NXBeam on a phone or another PC is connected, close it first. Otherwise check that the Switch is awake and the IP is right (see the NXBeam overlay). 2.4 and 5 GHz on one router is fine.',
   },
 };
 
