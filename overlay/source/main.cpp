@@ -2,6 +2,12 @@
  * NXBeam overlay: pick how the Switch connects to NXBeam (USB or network)
  * and restart. The streaming sysmodule reads the mode from
  * sdmc:/NXBeam/console-settings/config.ini at boot.
+ *
+ * It also talks to the sysmodule's "sftap" control service (the same calls
+ * as the Switch Frame Tap overlay, GPL-2.0): whether the running app is
+ * streamed. The sysmodule skips an app for good when it closes itself right
+ * after the stream attached (anti-debug protection, or a crash); without this
+ * switch such an app, often a homebrew forwarder, never streamed again.
  */
 #define TESLA_INIT_IMPL
 #include <tesla.hpp>
@@ -14,6 +20,69 @@
 namespace {
 
 constexpr const char *ConfigDir = "sdmc:/NXBeam/console-settings";
+constexpr const char *ExcludedPath = "sdmc:/NXBeam/console-settings/excluded.txt";
+
+/* ---- sftap: the streaming sysmodule's control service ------------------ */
+
+struct StreamStatus {
+    u32 version, state, enabled, width, height, fps_x10, game_fps_x10, sessions;
+    u32 shot_enabled, shots, shot_fails, reserved;
+    u64 app_tid; u32 app_excluded, reserved3;
+};
+static_assert(sizeof(StreamStatus) == 64);
+
+Service g_sftap;
+bool g_sftap_open = false;
+
+/* sm defers GetService for a name nobody registered, and the overlay would
+ * hang without the sysmodule: registering the name ourselves fails when it is
+ * already registered, which is the answer */
+bool IsServiceRunning(const char *name) {
+    Handle h;
+    const SmServiceName sn = smEncodeName(name);
+    if (R_FAILED(smRegisterService(&h, sn, false, 1))) { return true; }
+    svcCloseHandle(h);
+    smUnregisterService(sn);
+    return false;
+}
+
+bool SftapConnect() {
+    if (g_sftap_open) { return true; }
+    tsl::hlp::doWithSmSession([] {
+        if (IsServiceRunning("sftap")) {
+            g_sftap_open = R_SUCCEEDED(smGetService(&g_sftap, "sftap"));
+        }
+    });
+    return g_sftap_open;
+}
+
+bool SftapStatus(StreamStatus *st) {
+    if (!SftapConnect()) { return false; }
+    if (R_FAILED(serviceDispatchOut(&g_sftap, 0, *st))) {
+        serviceClose(&g_sftap);
+        g_sftap_open = false;
+        return false;
+    }
+    return true;
+}
+
+void SftapSetAppExcluded(u64 tid, bool excluded) {
+    if (!SftapConnect()) { return; }
+    const struct { u64 tid; u8 excluded; u8 pad[7]; } in = { tid, static_cast<u8>(excluded ? 1 : 0), {} };
+    serviceDispatchIn(&g_sftap, 3, in);
+}
+
+/* re-reads config.ini and excluded.txt */
+void SftapReload() {
+    if (!SftapConnect()) { return; }
+    serviceDispatch(&g_sftap, 2);
+}
+
+void SftapSetScreenOff(bool on) {
+    if (!SftapConnect()) { return; }
+    const u8 v = on ? 1 : 0;
+    serviceDispatchIn(&g_sftap, 4, v);
+}
 constexpr const char *ConfigPath = "sdmc:/NXBeam/console-settings/config.ini";
 
 /* what the pack ships, for a card that has no config.ini yet */
@@ -127,10 +196,33 @@ public:
         list->addItem(usb);
         list->addItem(net);
 
+        /* apps the sysmodule skipped (they closed right after the stream attached) */
+        list->addItem(new tsl::elm::CategoryHeader("Aplikasi yang sedang jalan"));
+        this->appItem = new tsl::elm::ListItem("Stream aplikasi ini");
+        this->appItem->setClickListener([this](u64 keys) {
+            if (!(keys & HidNpadButton_A)) { return false; }
+            if (this->have && this->st.version >= 3 && this->st.app_tid != 0) {
+                SftapSetAppExcluded(this->st.app_tid, this->st.app_excluded == 0);
+                this->tick = 0;
+            }
+            return true;
+        });
+        list->addItem(this->appItem);
+        auto reset = new tsl::elm::ListItem("Stream lagi semua app");
+        reset->setClickListener([reset](u64 keys) {
+            if (!(keys & HidNpadButton_A)) { return false; }
+            std::remove(ExcludedPath);
+            SftapReload();
+            reset->setValue("Selesai");
+            return true;
+        });
+        list->addItem(reset);
+
         list->addItem(new tsl::elm::CategoryHeader("Layar"));
         auto screen = new tsl::elm::ToggleListItem("Layar mati saat streaming", GetKey("screen_off", "0") == "1", "On", "Off");
         screen->setStateChangedListener([this](bool on) {
             if (!SetKey("screen_off", on ? "1" : "0")) { this->header->setText("Gagal menyimpan ke SD card"); }
+            SftapSetScreenOff(on);
         });
         list->addItem(screen);
 
@@ -160,8 +252,22 @@ public:
         return frame;
     }
 
+    void update() override {
+        if (this->tick-- > 0) { return; }
+        this->tick = 30;
+        this->have = SftapStatus(&this->st);
+        if (this->appItem == nullptr) { return; }
+        if (!this->have) { this->appItem->setValue("Sysmodule mati", true); }
+        else if (this->st.version < 3 || this->st.app_tid == 0) { this->appItem->setValue("Tidak ada app", true); }
+        else { this->appItem->setValue(this->st.app_excluded ? "Off" : "On", this->st.app_excluded != 0); }
+    }
+
 private:
     std::string saved;
+    StreamStatus st = {};
+    bool have = false;
+    int tick = 0;
+    tsl::elm::ListItem *appItem = nullptr;
     tsl::elm::CategoryHeader *header = nullptr;
     tsl::elm::ListItem *usbItem = nullptr;
     tsl::elm::ListItem *netItem = nullptr;
@@ -191,6 +297,7 @@ public:
         tsl::hlp::doWithSmSession([] { spsmInitialize(); });
     }
     void exitServices() override {
+        if (g_sftap_open) { serviceClose(&g_sftap); g_sftap_open = false; }
         spsmExit();
         fsdevUnmountDevice("sdmc");
     }
