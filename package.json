@@ -1,6 +1,6 @@
 {
   "name": "nxbeam",
-  "version": "1.19.1",
+  "version": "1.19.2",
   "description": "NXBeam - stream hub for Nintendo Switch Atmosphere streaming sysmodules: browser viewer, multi-viewer, controller from any device, replay clips, recording and restreaming",
   "main": "src/index.js",
   "scripts": {
