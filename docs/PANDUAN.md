@@ -142,14 +142,12 @@ Bawaannya hanya game yang tampil. Supaya semua yang ada di layar Switch ikut tam
 
 Catatan: manual game, eShop, dan applet lain tetap menghentikan stream sementara. Fitur ini masih beta dari sysmodule-nya.
 
-### Homebrew, emulator, atau game port tidak tampil
+### Homebrew, emulator, atau game port
 
-Sysmodule otomatis **melewati** aplikasi yang menutup sendiri sesaat setelah stream terpasang (crash atau proteksi anti-debug), dan aplikasi itu tidak di-stream lagi sampai dikembalikan. Ini bisa terjadi pada homebrew seperti GreenX atau game port.
+Mulai v1.18 semua aplikasi ikut tampil, termasuk homebrew (GreenX, emulator, game port) dan homebrew yang dibuka dari Album. HOME menu dan overlay sistem sudah menyala secara bawaan, dan sysmodule NXBeam tidak pernah lagi melewati aplikasi secara otomatis.
 
-- Buka aplikasinya, buka overlay NXBeam, lalu di **Aplikasi yang sedang jalan** pastikan **Stream aplikasi ini** bernilai **On**. Kalau **Off**, tekan A.
-- Atau pilih **Stream lagi semua app** untuk mengosongkan seluruh daftar.
-- Homebrew yang dibuka dari **Album** hanya tampil kalau **HOME menu** (beta) dinyalakan. Cara lain: buka lewat forwarder di HOME menu, atau tahan R saat membuka game (title override).
-- Aplikasi dengan proteksi anti-debug memang tidak bisa di-stream.
+- Kalau sebuah aplikasi tetap tidak tampil, buka overlay NXBeam dan pastikan **Stream aplikasi ini** bernilai **On**.
+- Aplikasi dengan proteksi anti-debug (misalnya TiCo) akan menutup sendiri saat di-stream. Untuk aplikasi seperti itu, set **Stream aplikasi ini** ke **Off**.
 
 ## Aplikasi Android (HP dan Android TV)
 

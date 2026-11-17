@@ -11,9 +11,9 @@ whose folders are named for NXBeam:
   NXBeam/console-settings/config.ini      settings (was config/switch-frame-tap)
   NXBeam/console-captures/                screenshots (was switch/switch-frame-tap)
 
-The only change to the programs: the folder names, the USB device name and
-the notice title inside their read-only data, replaced by bytes of exactly the
-same length, so no code or data moves. The segment's SHA-256 in the NSO header is recomputed.
+The changes to the programs: the folder names, the USB device name and the
+notice title inside their read-only data, replaced by bytes of exactly the
+same length, and one jump in the code (CODE_PATCHES, below); nothing moves. The segment's SHA-256 in the NSO header is recomputed.
 
   python3 make-switch-pack.py C20/exefs.nsp C21/exefs.nsp OUTDIR [--dvr DIR]
 Needs: pip install lz4
@@ -57,6 +57,20 @@ def nso_segments(nso):
         out.append(lz4.block.decompress(raw, uncompressed_size=dsz) if flags & (1 << k) else raw)
     return out
 
+# One code change, in the streaming sysmodule (C20): never put an app on the
+# "never stream" list. Upstream skips an app for good when it closes within
+# 6 s of the stream attaching (meant for anti-debug apps such as TiCo's), and
+# homebrew such as emulators and ports, which may quit or crash at start, then
+# stayed off the stream. The conditional jump that skips SetExcluded() becomes
+# an unconditional one; nothing else in the code moves. Apps can still be left
+# out by hand with "Stream aplikasi ini" in the NXBeam overlay.
+#   cmp x0, x1 / b.hi +0x34 / ldr x23, [sp, #0xa0] / mov w1, #1
+#   -> the same, with b +0x34
+CODE_PATCHES = [
+    (bytes.fromhex('1f0001eb') + bytes.fromhex('a8010054') + bytes.fromhex('f75340f9') + bytes.fromhex('21008052'),
+     bytes.fromhex('1f0001eb') + bytes.fromhex('0d000014') + bytes.fromhex('f75340f9') + bytes.fromhex('21008052')),
+]
+
 def patch_nso(nso):
     import lz4.block
     flags = struct.unpack_from('<I', nso, 0xC)[0]
@@ -64,18 +78,25 @@ def patch_nso(nso):
     new = ro
     for a, b in RULES:
         assert len(a) == len(b); new = new.replace(a, b)
+    code = text
+    for a, b in CODE_PATCHES:
+        assert len(a) == len(b)
+        if code.count(a) == 1: code = code.replace(a, b)
     raws = []
     for h, c, _ in SEG:
         foff = struct.unpack_from('<I', nso, h)[0]; csz = struct.unpack_from('<I', nso, c)[0]
         raws.append(nso[foff:foff + csz])
+    if code != text: raws[0] = lz4.block.compress(code, store_size=False) if flags & 1 else code
     raws[1] = lz4.block.compress(new, store_size=False) if flags & 2 else new
     first = min(struct.unpack_from('<I', nso, h)[0] for h, _, _ in SEG)
     out = bytearray(nso[:first])
     for k, (h, c, _) in enumerate(SEG):
         struct.pack_into('<I', out, h, len(out)); struct.pack_into('<I', out, c, len(raws[k])); out += raws[k]
+    struct.pack_into('32s', out, 0xA0, hashlib.sha256(code).digest())
     struct.pack_into('32s', out, 0xC0, hashlib.sha256(new).digest())
     t2, r2, d2 = nso_segments(bytes(out))
-    assert t2 == text and d2 == data and r2 == new and b'switch-frame-tap' not in r2
+    assert t2 == code and d2 == data and r2 == new and b'switch-frame-tap' not in r2
+    assert len(code) == len(text) and sum(x != y for x, y in zip(code, text)) <= 4 * len(CODE_PATCHES)
     return bytes(out)
 
 def patch_nsp(path):

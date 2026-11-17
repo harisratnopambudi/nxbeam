@@ -168,9 +168,9 @@ Open the overlay with your overlay combo and pick **NXBeam**. The combo depends 
 |---|---|
 | **Mode USB** / **Mode Jaringan** | How the Switch connects to NXBeam: USB cable or network. |
 | **Layar mati saat streaming** | **On**: the Switch screen goes dark while a stream runs (saves battery; play on the PC). **Off**: the screen stays on. |
-| **HOME menu** (beta) | **On**: the HOME menu, the Album and system screens stream too, not only games, so the viewer mirrors the whole console. |
-| **Overlay sistem** (beta) | **On**: the volume bar, quick settings, power menu and Tesla / Ultrahand menus appear in the stream on top of the game. |
-| **Stream aplikasi ini** | The app running now: **On** streams it, **Off** skips it. The console skips an app by itself when it closes right after the stream starts (a crash or an anti-debug check); turn it back **On** here. |
+| **HOME menu** (beta, on by default) | **On**: the HOME menu, the Album and system screens stream too, not only games, so the viewer mirrors the whole console. |
+| **Overlay sistem** (beta, on by default) | **On**: the volume bar, quick settings, power menu and Tesla / Ultrahand menus appear in the stream on top of the game. |
+| **Stream aplikasi ini** | The app running now: **On** streams it, **Off** leaves it out. Every app streams by default, homebrew, emulators and ports included; NXBeam's console module never skips one by itself. |
 | **Stream lagi semua app** | Clears the list of skipped apps. |
 | **Restart Switch** | Applies the changes. |
 

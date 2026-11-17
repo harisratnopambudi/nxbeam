@@ -14,4 +14,10 @@ Nama perangkat USB dan judul notifikasi:
   Switch Frame Tap (nama USB)      -> NXBeam
   Switch Frame Tap Camera          -> NXBeam Camera
   {"title":"Switch Frame Tap",     -> {"title":"NXBeam",   (sisa diisi spasi)
+Satu perubahan kode (C20), satu instruksi, tidak ada yang bergeser:
+  Sysmodule asli memasukkan aplikasi ke daftar "jangan di-stream" bila
+  aplikasi itu menutup dalam 6 detik setelah stream terpasang. Lompatan
+  bersyarat (b.hi) sebelum SetExcluded() diganti lompatan tetap (b), jadi
+  tidak ada aplikasi yang dilewati otomatis. Aplikasi tetap bisa dilewati
+  manual lewat "Stream aplikasi ini" di overlay NXBeam.
 Skrip yang melakukan perubahan ini: make-switch-pack.py (folder ini).
