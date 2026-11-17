@@ -62,22 +62,41 @@ class Discovery(context: Context, private val onFound: (host: String, port: Int)
     }
 
     private fun scan() {
-        val hosts = ArrayList<String>()
-        for (self in localAddresses()) {
-            val base = self.substringBeforeLast('.') + "."
-            for (i in 1..254) { val h = base + i; if (h != self) hosts.add(h) }
+        val selves = localAddresses().toSet()
+        val near = selves.map { it.substringBeforeLast('.') + "." }.toSet()
+        probe(hostsOf(near, selves), 700)
+        if (synchronized(seen) { seen.isNotEmpty() } || !running.get()) return
+        // 2.4 GHz and 5 GHz may sit on their own subnets: the neighbours and the usual home ones
+        val wide = LinkedHashSet<String>()
+        for (base in near) {
+            val p = base.trimEnd('.').split('.').map { it.toInt() }
+            val private = p[0] == 10 || (p[0] == 192 && p[1] == 168) || (p[0] == 172 && p[1] in 16..31)
+            if (!private) continue
+            for (d in listOf(-2, -1, 1, 2)) if (p[2] + d in 0..255) wide.add("${p[0]}.${p[1]}.${p[2] + d}.")
+            if (p[0] == 192 && p[1] == 168) for (c in listOf(0, 1, 2, 3, 8, 10, 11, 18, 31, 43, 88, 100, 254)) wide.add("192.168.$c.")
         }
+        wide.removeAll(near)
+        probe(hostsOf(wide, selves), 400)
+    }
+
+    private fun hostsOf(bases: Set<String>, selves: Set<String>): List<String> {
+        val out = ArrayList<String>()
+        for (base in bases) for (i in 1..254) { val h = base + i; if (h !in selves) out.add(h) }
+        return out
+    }
+
+    private fun probe(hosts: List<String>, timeoutMs: Int) {
         if (hosts.isEmpty()) return
-        val pool = Executors.newFixedThreadPool(48)
+        val pool = Executors.newFixedThreadPool(64)
         for (h in hosts) pool.execute {
-            if (!running.get()) return@execute
+            if (!running.get() || synchronized(seen) { seen.isNotEmpty() }) return@execute
             try {
-                Socket().use { it.connect(InetSocketAddress(h, Proto.NET_PORT), 700) }
+                Socket().use { it.connect(InetSocketAddress(h, Proto.NET_PORT), timeoutMs) }
                 found(h, Proto.NET_PORT)
             } catch (_: Exception) { }
         }
         pool.shutdown()
-        pool.awaitTermination(30, TimeUnit.SECONDS)
+        pool.awaitTermination(90, TimeUnit.SECONDS)
     }
 
     companion object {

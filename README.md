@@ -172,6 +172,7 @@ Open the overlay with your overlay combo and pick **NXBeam**. The combo depends 
 | **Overlay sistem** (beta, on by default) | **On**: the volume bar, quick settings, power menu and Tesla / Ultrahand menus appear in the stream on top of the game. |
 | **Stream aplikasi ini** | The app running now: **On** streams it, **Off** leaves it out. Every app streams by default, homebrew, emulators and ports included; NXBeam's console module never skips one by itself. |
 | **Stream lagi semua app** | Clears the list of skipped apps. |
+| **IP Switch** | The console's address on the network. Type it in NXBeam if it does not find the Switch by itself. |
 | **Restart Switch** | Applies the changes. |
 
 - **Network**: works docked or handheld; NXBeam finds the console on its own.

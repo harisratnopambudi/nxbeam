@@ -172,6 +172,15 @@ bool SetKey(const char *key, const std::string &value) {
 
 bool SetMode(const char *mode) { return SetKey("connection", mode); }
 
+/* the console's address on the network, or a note when it has none */
+std::string SwitchIp() {
+    u32 ip = 0;
+    if (R_FAILED(nifmGetCurrentIpAddress(&ip)) || ip == 0) { return "Belum tersambung"; }
+    char b[24];
+    std::snprintf(b, sizeof(b), "%u.%u.%u.%u", ip & 0xff, (ip >> 8) & 0xff, (ip >> 16) & 0xff, (ip >> 24) & 0xff);
+    return b;
+}
+
 const char *Label(const std::string &mode) {
     return mode == "network" ? "Jaringan" : mode == "usb" ? "USB" : "Lainnya";
 }
@@ -195,6 +204,13 @@ public:
         net->setClickListener([this](u64 keys) { return this->Pick(keys, "network"); });
         list->addItem(usb);
         list->addItem(net);
+
+        /* for Network mode: the address to type in NXBeam when it does not find
+         * the Switch by itself (2.4 GHz and 5 GHz on one router, broadcasts
+         * dropped between them) */
+        auto ipItem = new tsl::elm::ListItem("IP Switch");
+        ipItem->setValue(SwitchIp(), true);
+        list->addItem(ipItem);
 
         /* apps the sysmodule skipped (they closed right after the stream attached) */
         list->addItem(new tsl::elm::CategoryHeader("Aplikasi yang sedang jalan"));
@@ -294,10 +310,11 @@ class NXBeamOverlay : public tsl::Overlay {
 public:
     void initServices() override {
         fsdevMountSdmc();
-        tsl::hlp::doWithSmSession([] { spsmInitialize(); });
+        tsl::hlp::doWithSmSession([] { spsmInitialize(); nifmInitialize(NifmServiceType_User); });
     }
     void exitServices() override {
         if (g_sftap_open) { serviceClose(&g_sftap); g_sftap_open = false; }
+        nifmExit();
         spsmExit();
         fsdevUnmountDevice("sdmc");
     }

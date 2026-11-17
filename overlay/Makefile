@@ -38,7 +38,7 @@ include $(DEVKITPRO)/libnx/switch_rules
 #   NACP building is skipped as well.
 #---------------------------------------------------------------------------------
 APP_TITLE	:=	NXBeam
-APP_VERSION :=	1.3.0
+APP_VERSION :=	1.4.0
 APP_AUTHOR	:=	Haris DevLab
 
 TARGET		:=	nxbeam

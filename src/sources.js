@@ -246,33 +246,63 @@ function localSubnets() {
 }
 
 /*
- * Access points often drop broadcasts between wireless clients, so the beacon
- * may never arrive: probe every host of the local /24s on TCP 9950.
+ * Access points often drop broadcasts between wireless clients (and between
+ * the 2.4 GHz and 5 GHz bands), so the beacon may never arrive: probe every
+ * host of the local /24s on TCP 9950. Routers that give each band its own
+ * subnet (192.168.1.x on one, 192.168.2.x on the other) are covered by a
+ * second, wider pass over the neighbouring and the usual home subnets.
  * Resolves with the first host that accepts, or null.
  */
-function scanSubnets(port = NET_PORT, timeoutMs = 600) {
-  const hosts = [];
-  for (const s of localSubnets()) {
-    for (let i = 1; i < 255; i++) { const h = s.base + i; if (h !== s.self) hosts.push(h); }
-  }
+function hostsOf(bases, selves) {
+  const out = [];
+  for (const base of bases) for (let i = 1; i < 255; i++) { const h = base + i; if (!selves.has(h)) out.push(h); }
+  return out;
+}
+
+function probe(hosts, port, timeoutMs, parallel = 256) {
   if (!hosts.length) return Promise.resolve(null);
   return new Promise((resolve) => {
-    let pending = hosts.length, done = false;
-    const sockets = [];
-    for (const h of hosts) {
-      const s = net.createConnection({ host: h, port });
-      sockets.push(s);
-      s.setTimeout(timeoutMs);
-      const fin = (ok) => {
-        s.destroy();
-        if (ok && !done) { done = true; sockets.forEach((x) => x.destroy()); resolve(h); }
-        if (--pending === 0 && !done) resolve(null);
-      };
-      s.once('connect', () => fin(true));
-      s.once('timeout', () => fin(false));
-      s.once('error', () => fin(false));
-    }
+    let next = 0, running = 0, done = false;
+    const live = new Set();
+    const pump = () => {
+      if (done) return;
+      if (next >= hosts.length && running === 0) { done = true; resolve(null); return; }
+      while (running < parallel && next < hosts.length) {
+        const h = hosts[next++];
+        running++;
+        const s = net.createConnection({ host: h, port });
+        live.add(s);
+        s.setTimeout(timeoutMs);
+        const fin = (ok) => {
+          s.destroy(); live.delete(s); running--;
+          if (ok && !done) { done = true; live.forEach((x) => x.destroy()); resolve(h); return; }
+          pump();
+        };
+        s.once('connect', () => fin(true));
+        s.once('timeout', () => fin(false));
+        s.once('error', () => fin(false));
+      }
+    };
+    pump();
   });
+}
+
+async function scanSubnets(port = NET_PORT, timeoutMs = 600) {
+  const subnets = localSubnets();
+  const selves = new Set(subnets.map((s) => s.self));
+  const near = [...new Set(subnets.map((s) => s.base))];
+  const found = await probe(hostsOf(near, selves), port, timeoutMs);
+  if (found) return found;
+  // the other band may sit on a neighbouring or a usual home subnet
+  const wide = new Set();
+  for (const s of subnets) {
+    const [a, b, c] = s.base.split('.').map(Number);
+    if (!(a === 192 && b === 168) && a !== 10 && !(a === 172 && b >= 16 && b <= 31)) continue;
+    for (const d of [-2, -1, 1, 2]) if (c + d >= 0 && c + d <= 255) wide.add(`${a}.${b}.${c + d}.`);
+    if (a === 192 && b === 168) for (const c2 of [0, 1, 2, 3, 8, 10, 11, 18, 31, 43, 88, 100, 254]) wide.add(`192.168.${c2}.`);
+  }
+  near.forEach((x) => wide.delete(x));
+  return probe(hostsOf([...wide], selves), port, 400);
 }
 
 module.exports = { usbDiagnostics, NetworkSource, UsbSource, BeaconListener, scanSubnets, localSubnets, NET_PORT, BEACON_PORT };

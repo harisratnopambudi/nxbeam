@@ -149,6 +149,14 @@ Mulai v1.18 semua aplikasi ikut tampil, termasuk homebrew (GreenX, emulator, gam
 - Kalau sebuah aplikasi tetap tidak tampil, buka overlay NXBeam dan pastikan **Stream aplikasi ini** bernilai **On**.
 - Aplikasi dengan proteksi anti-debug (misalnya TiCo) akan menutup sendiri saat di-stream. Untuk aplikasi seperti itu, set **Stream aplikasi ini** ke **Off**.
 
+### Mode Jaringan: Switch di 5 GHz, PC/HP di 2,4 GHz (atau sebaliknya)
+
+Selama keduanya tersambung ke **router yang sama**, NXBeam tetap bisa tersambung walaupun frekuensinya berbeda.
+
+- NXBeam mencari Switch di jaringannya sendiri. Kalau tidak ketemu, pencarian diperluas ke subnet tetangga dan subnet rumahan yang umum, karena ada router yang memberi alamat berbeda untuk 2,4 GHz dan 5 GHz.
+- Kalau tetap tidak ketemu, buka overlay NXBeam di Switch, lihat **IP Switch**, lalu ketik IP itu di NXBeam (PC: kolom IP di layar sambungan; Android: kolom IP Switch).
+- Kalau dengan IP pun tidak tersambung, router memblokir perangkat Wi-Fi untuk saling terhubung. Matikan **AP Isolation / Client Isolation / Wireless Isolation** di pengaturan router, dan jangan pakai jaringan **Tamu (Guest)**. Atau sambungkan PC ke router dengan kabel LAN.
+
 ## Aplikasi Android (HP dan Android TV)
 
 `NXBeam-Android.apk` di halaman Releases bisa dipasang di HP, tablet, dan Android TV / Google TV (Android 8 ke atas). Aplikasi ini tersambung langsung ke Switch, jadi tidak perlu PC.
