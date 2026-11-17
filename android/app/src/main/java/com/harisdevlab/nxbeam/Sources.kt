@@ -87,8 +87,9 @@ class TcpSource(private val host: String, private val port: Int, l: SourceListen
         try {
             s.connect(InetSocketAddress(host, port), 3000)
         } catch (e: IOException) {
-            val refused = (e.message ?: "").contains("ECONNREFUSED", true) || e is java.net.ConnectException
-            finish(e.message ?: "connect failed", if (refused) "refused" else "timeout")
+            val msg = e.message ?: e.javaClass.simpleName
+            val refused = msg.contains("ECONNREFUSED", true) || (e is java.net.ConnectException && !msg.contains("timed out", true))
+            finish("$host: $msg", if (refused) "refused" else "timeout")
             return
         }
         s.tcpNoDelay = true

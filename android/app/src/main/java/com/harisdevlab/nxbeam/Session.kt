@@ -133,7 +133,7 @@ class Session(private val context: Context, val target: Target, private val ui: 
         if (!running) return
         val wasPlaying = gotVideo
         main.post {
-            ui.onLink(if (problem != null) Link.FAILED else Link.LOST, problem ?: reason)
+            ui.onLink(if (problem != null) Link.FAILED else Link.LOST, if (problem != null) "$problem\n$reason" else reason)
         }
         // try again: quickly after a drop, slower when the console was not there at all
         main.postDelayed({ if (running) connect() }, if (wasPlaying) 800L else 2500L)

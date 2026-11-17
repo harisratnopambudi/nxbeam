@@ -42,6 +42,7 @@ class MainActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         prefs = Prefs(this)
+        LocalNet.start(this)
         usb = getSystemService(Context.USB_SERVICE) as UsbManager
 
         // on wide screens (TV, tablets) keep the column readable

@@ -53,6 +53,7 @@ class PlayerActivity : Activity(), SessionUi {
         setContentView(R.layout.activity_player)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         prefs = Prefs(this)
+        LocalNet.start(this)
         target = Target(
             intent.getStringExtra("kind") ?: Target.WIFI,
             intent.getStringExtra("host") ?: "",
@@ -151,8 +152,9 @@ class PlayerActivity : Activity(), SessionUi {
             Session.Link.LOST -> { playing = false; showMessage(getString(R.string.link_lost), "", true) }
             Session.Link.FAILED -> {
                 playing = false
-                if (detail == "pin") { setResult(RESULT_PIN); finish(); return }
-                val text = when (detail) {
+                val kind = detail.substringBefore('\n')
+                if (kind == "pin") { setResult(RESULT_PIN); finish(); return }
+                val text = when (kind) {
                     "refused" -> R.string.fail_refused
                     "timeout" -> R.string.fail_timeout
                     "absent" -> R.string.fail_absent
@@ -160,7 +162,8 @@ class PlayerActivity : Activity(), SessionUi {
                     "busy" -> R.string.fail_busy
                     else -> R.string.link_lost
                 }
-                showMessage(getString(text), getString(R.string.retrying), false)
+                val why = detail.substringAfter('\n', "")
+                showMessage(getString(text), getString(R.string.retrying) + if (why.isNotEmpty()) "\n($why)" else "", false)
             }
         }
     }
