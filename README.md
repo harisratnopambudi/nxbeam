@@ -112,6 +112,10 @@ Start NXBeam with its launcher (`Start NXBeam.bat`, `Start NXBeam.command` or `s
 | **Android** | A card on the home screen. **Update** downloads the APK; Android asks you to install it. |
 | **Switch** | Open **NXBeam Update** from the homebrew menu. It shows the installed and the latest version and updates the SD card files, keeping your settings, then restarts the Switch. |
 
+**Switch.** NXBeam Update downloads the release, checks its checksum, replaces the NXBeam files on the SD card (your `config.ini` stays) and offers to restart.
+
+<img src="docs/switch-updater.png" alt="NXBeam Update on the Switch: installed 1.18.0, latest 1.18.1, downloaded, checksum OK, 55 files updated, settings kept, press A to restart">
+
 <a name="features"></a>
 <img src="docs/headers/features.svg" width="100%" alt="Features">
 
