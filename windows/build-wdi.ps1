@@ -21,7 +21,7 @@ try {
   $c = $c -replace '(?m)^#define OPT_ARM\s*$', '// no ARM'
   Set-Content $cfg $c
   $msbuild = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe | Select-Object -First 1
-  & $msbuild libwdi\libwdi.sln /m /v:minimal /p:Configuration=Release /p:Platform=Win32 /t:wdi-simple
+  & $msbuild libwdi\libwdi.sln /m /v:minimal /p:Configuration=Release /p:Platform=Win32
   if ($LASTEXITCODE -ne 0) { throw "libwdi build failed" }
   $exe = Get-ChildItem -Recurse -Filter wdi-simple.exe | Where-Object { $_.FullName -match 'Release' } | Select-Object -First 1
   if (-not $exe) { throw "wdi-simple.exe not found" }
