@@ -55,6 +55,7 @@ jobs:
 
   pc-macos:
     name: PC viewer (macOS, portable)
+    timeout-minutes: 12
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -119,7 +120,12 @@ jobs:
       - name: Build NXBeam-Update.nro
         working-directory: switch-updater
         run: |
-          dkp-pacman -Sy --noconfirm --needed switch-curl switch-zlib switch-mbedtls
+          # pkg.devkitpro.org sometimes answers 403 for a while: try again
+          for i in 1 2 3 4 5 6; do
+            dkp-pacman -Sy --noconfirm --needed switch-curl switch-zlib switch-mbedtls && break
+            [ "$i" = 6 ] && exit 1
+            echo "devkitPro packages not reachable, again in $((i * 20)) s"; sleep $((i * 20))
+          done
           # the CA list mbedTLS checks GitHub's certificates against
           (curl -fsSL https://curl.se/ca/cacert.pem -o romfs/cacert.pem || wget -qO romfs/cacert.pem https://curl.se/ca/cacert.pem)
           test -s romfs/cacert.pem
