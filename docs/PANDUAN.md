@@ -88,6 +88,18 @@ Sejak v1.4, video di-decode dan digambar di **thread terpisah** (Web Worker + Of
 
 Tips jaringan: pakai WiFi 5 GHz, letakkan Switch dekat router, atau sambungkan dock dengan kabel LAN. Bila memungkinkan, sambungkan juga PC hub ke router dengan kabel.
 
+## Mode docked/handheld dan resolusi game (ReverseNX-RT)
+
+Overlay NXBeam punya bagian **Game display (ReverseNX-RT)**. Fungsinya sama dengan ReverseNX-RT, jadi tidak perlu membuka overlay ReverseNX-RT lagi. Bagian ini butuh **SaltyNX** terpasang di Switch.
+
+- **Mode**: pilih **Auto** (ikut sistem), **Docked**, atau **Handheld** untuk game yang sedang jalan. Perubahannya langsung berlaku.
+  - Contoh: Switch dipegang (handheld) tapi Mode diset **Docked**, maka game berjalan seperti di dock, di resolusi docked-nya (biasanya 1080p), dan resolusi itu yang dikirim ke NXBeam.
+  - Mode docked lebih berat, jadi baterai lebih cepat habis.
+- **Docked resolution** / **Handheld resolution**: resolusi tampilan yang dipakai game, dari 480p sampai 1080p. Pilihan ini hanya muncul untuk game yang menanyakannya, dan baru bisa diatur setelah Mode bukan Auto.
+- Pilihan disimpan per game, di file yang sama dengan ReverseNX-RT (`/SaltySD/plugins/ReverseNX-RT/`). Pengaturan lama dari ReverseNX-RT tetap terpakai.
+- Status **Needs SaltyNX**: SaltyNX belum terpasang. **Not available in this game**: game 32-bit atau game yang dikecualikan SaltyNX.
+- Stream NXBeam hanya 1080p kalau game menggambar tepat 1920x1080 dan **Resolution** di overlay diset 1080p.
+
 ## Upscaling FSR dan frame generation
 
 Pengaturannya ada di **Settings > Picture**, berlaku untuk perangkat yang sedang dipakai menonton.
