@@ -22,6 +22,26 @@ function same(a, b) {
   } catch { return false; }
 }
 
+/*
+ * Windows: a file in use (NXBeam.exe and its WebView2 libraries while the
+ * NXBeam window is open) cannot be overwritten, but it can be renamed: the
+ * old one becomes <name>.old (NXBeam.exe deletes those at its next start, and
+ * seeing NXBeam.exe.old, starts the new copy of itself).
+ */
+function put(src, dst) {
+  if (same(src, dst)) return false;
+  try {
+    fs.copyFileSync(src, dst);
+  } catch (e) {
+    if (process.platform !== 'win32' || !['EBUSY', 'EPERM', 'EACCES'].includes(e.code)) throw e;
+    const old = `${dst}.old`;
+    try { fs.rmSync(old, { force: true }); } catch { /* an older .old still in use: keep going */ }
+    fs.renameSync(dst, fs.existsSync(old) ? `${dst}.${Date.now()}.old` : old);
+    fs.copyFileSync(src, dst);
+  }
+  return true;
+}
+
 function copyTree(from, to, rel = '') {
   let n = 0;
   for (const e of fs.readdirSync(path.join(from, rel), { withFileTypes: true })) {
@@ -39,7 +59,7 @@ function copyTree(from, to, rel = '') {
       continue;
     }
     fs.mkdirSync(path.dirname(dst), { recursive: true });
-    fs.copyFileSync(src, dst);
+    if (!put(src, dst)) continue;
     if (process.platform !== 'win32') fs.chmodSync(dst, fs.statSync(src).mode);
     n++;
   }
