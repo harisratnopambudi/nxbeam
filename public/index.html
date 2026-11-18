@@ -58,7 +58,7 @@
     <button class="rail-btn active" data-page="stage" data-i18n-title="stage"><svg><use href="#i-screen"/></svg><span data-i18n="stage"></span></button>
     <button class="rail-btn" data-page="library" data-i18n-title="library"><svg><use href="#i-library"/></svg><span data-i18n="library"></span></button>
     <button class="rail-btn" data-page="stats" data-i18n-title="stats"><svg><use href="#i-stats"/></svg><span data-i18n="stats"></span></button>
-    <button class="rail-btn" data-page="settings" data-i18n-title="settings"><svg><use href="#i-settings"/></svg><span data-i18n="settings"></span></button>
+    <button class="rail-btn" data-page="settings" data-i18n-title="settings"><svg><use href="#i-settings"/></svg><span data-i18n="settings"></span><i class="rail-badge" id="updBadge" hidden></i></button>
     <div class="rail-foot" id="railConn" title="">
       <span class="dot" id="connDot"></span>
       <svg id="connIcon"><use href="#i-wifi"/></svg>
@@ -214,6 +214,20 @@
     </section>
 
     <section class="page settings" data-page="settings" hidden>
+      <fieldset class="upd-panel">
+        <legend data-i18n="updTitle"></legend>
+        <dl class="kv upd-kv">
+          <dt data-i18n="updInstalled"></dt><dd id="updCur">-</dd>
+          <dt data-i18n="updLatest"></dt><dd id="updNew">-</dd>
+        </dl>
+        <p class="note" id="updStatus"></p>
+        <div class="update-progress wide" id="updProgress2" hidden><i id="updFill2"></i></div>
+        <div class="row">
+          <button class="btn primary" id="updApply2" type="button" hidden><svg><use href="#i-download"/></svg><span data-i18n="updApply"></span></button>
+          <button class="btn" id="updCheck" type="button"><svg><use href="#i-refresh"/></svg><span data-i18n="updCheck"></span></button>
+        </div>
+      </fieldset>
+
       <fieldset>
         <legend data-i18n="res1080Title"></legend>
         <p class="note" data-i18n="res1080Help"></p>

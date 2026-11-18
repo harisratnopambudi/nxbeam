@@ -50,8 +50,35 @@ async function loadUpdate() {
     renderUpdate(u);
   } catch { /* offline */ }
 }
+function renderUpdatePanel(u) {
+  const v = (x) => x ? `${x.version}${x.build ? ` (build ${x.build})` : ''}` : '-';
+  $('#updCur').textContent = v(u && u.current);
+  $('#updNew').textContent = v(u && u.latest);
+  const avail = !!(u && u.available);
+  const busy = u && (u.state === 'downloading' || u.state === 'ready');
+  $('#updBadge').hidden = !avail;
+  document.querySelector('.upd-panel').classList.toggle('has-update', avail);
+  $('#updApply2').hidden = !avail || busy || !(u && u.canApply);
+  $('#updProgress2').hidden = !(u && u.state === 'downloading');
+  $('#updFill2').style.width = `${(u && u.progress) || 0}%`;
+  $('#updStatus').textContent =
+    !u || !u.enabled ? t('updSource')
+    : u.state === 'checking' ? t('updChecking')
+    : u.state === 'downloading' ? t('updDownloading', u.progress || 0)
+    : u.state === 'ready' ? t('updRestarting')
+    : u.state === 'error' ? (u.latest ? t('updError', u.error) : t('updOffline'))
+    : avail ? (u.canApply ? t('updReady', u.latest.version) : t('updManual'))
+    : u.latest ? t('updNone') : '';
+  $('#updCheck').disabled = !u || !u.enabled || busy || u.state === 'checking';
+}
+$('#updCheck').onclick = async () => {
+  try { renderUpdate(await (await fetch('/api/update/check', { method: 'POST' })).json()); } catch (e) { toast(e.message, 'error'); }
+};
+$('#updApply2').onclick = () => $('#updApply').onclick();
+
 function renderUpdate(u) {
   S.update = u;
+  renderUpdatePanel(u);
   const bar = $('#updateBar');
   if (!u || !u.enabled || !u.latest) { bar.hidden = true; return; }
   const busy = u.state === 'downloading' || u.state === 'ready';

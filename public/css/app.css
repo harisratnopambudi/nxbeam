@@ -314,3 +314,10 @@ body.fs.idle { cursor: none; }
 .update-progress i { display: block; height: 100%; width: 0; background: var(--beam); transition: width 0.2s; }
 .update-bar .btn { height: 34px; flex: none; }
 @media (max-width: 640px) { .update-bar { flex-wrap: wrap; } .update-progress { width: 100%; order: 5; } }
+
+.rail-btn { position: relative; }
+.rail-badge { position: absolute; top: 6px; right: 12px; width: 9px; height: 9px; border-radius: 50%; background: var(--beam); box-shadow: 0 0 0 2px var(--panel); }
+.update-progress.wide { width: 100%; }
+.upd-panel { box-shadow: none; }
+.upd-panel.has-update { background: var(--raise); border-radius: var(--r-md); padding: 14px 14px 16px; border-top: 0; box-shadow: inset 3px 0 0 var(--beam); }
+.upd-kv { margin: 0; }
