@@ -8,6 +8,7 @@ const { spawn } = require('child_process');
 const { Hub } = require('./hub');
 const { createServer } = require('./server');
 const { localSubnets } = require('./sources');
+const { Updater, EXIT_UPDATE } = require('./update');
 const pkg = require('../package.json');
 
 const args = process.argv.slice(2);
@@ -21,7 +22,8 @@ if (flag('help') || flag('h')) {
   --mode M          auto | network | usb
   --config FILE     config file (default ./nxbeam.config.json)
   --media DIR       where recordings, clips and screenshots go
-  --no-open         do not open the browser`);
+  --no-open         do not open the browser
+  --no-update-check do not look for a new version online`);
   process.exit(0);
 }
 
@@ -58,6 +60,15 @@ if (!config.ffmpegPath) require('./ffmpeg').ensureFfmpegStatic();
 try { os.setPriority(0, os.constants.priority.PRIORITY_HIGH); } catch { /* needs rights on Linux/macOS */ }
 const hub = new Hub(config, saveConfig);
 hub.on('log', (m) => console.log(`[hub] ${m}`));
+// online updates: the web app shows a notice; nothing changes until Update is clicked
+hub.updater = new Updater({ enabled: !flag('no-update-check') && !process.env.NXBEAM_NO_UPDATE });
+hub.updater.restart = async () => {
+  console.log('\n  Update downloaded - restarting NXBeam...');
+  await hub.stopRecording().catch(() => {});
+  for (const id of [...hub.restreams.keys()]) await hub.stopRestream(id).catch(() => {});
+  hub.stop();
+  setTimeout(() => process.exit(EXIT_UPDATE), 300);
+};
 const server = createServer(hub, config, saveConfig);
 
 /*
@@ -96,8 +107,11 @@ server.on('listening', () => {
   for (const u of urls) console.log(`  ${u}`);
   console.log(`  OBS overlay: http://localhost:${config.port}/overlay`);
   console.log(`  ffmpeg: ${hub.ffmpeg || 'not found (recordings saved as .mkv, no restream)'}`);
-  console.log(`  media:  ${hub.mediaDir}\n`);
+  console.log(`  media:  ${hub.mediaDir}`);
+  const b = hub.updater.current;
+  console.log(`  build:  ${b.build || 'source (no online updates)'}\n`);
   hub.start();
+  hub.updater.start();
   openBrowser(urls[0]);
 });
 

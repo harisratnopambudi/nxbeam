@@ -6,6 +6,8 @@ on:
   push:
     branches: [main]
     tags: ['v*']
+    # a README or guide edit is not a new version (online updates follow every release)
+    paths-ignore: ['**.md', 'docs/**']
   workflow_dispatch:
 
 permissions:
@@ -32,6 +34,7 @@ jobs:
           Copy-Item -Recurse src, public, tools, node_modules, package.json, LICENSE, "Start NXBeam.bat" $dst
           Copy-Item (Get-Command node).Source "$dst/runtime/node.exe"
           Copy-Item package.json "$dst/node_modules/.nxbeam-package.json"
+          node -e "require('fs').writeFileSync(process.argv[1], JSON.stringify({version: require('./package.json').version, build: Number(process.env.GITHUB_RUN_NUMBER)}))" "$dst/build.json"
           if (-not (Test-Path "$dst/node_modules/ffmpeg-static/ffmpeg.exe")) { throw "ffmpeg.exe missing" }
           Compress-Archive -Path $dst -DestinationPath dist/NXBeam-PC-Windows.zip
       - uses: actions/upload-artifact@v4
@@ -61,6 +64,7 @@ jobs:
             mkdir -p "$dst/runtime"
             cp -R src public tools node_modules package.json LICENSE "Start NXBeam.command" "$dst/"
             cp package.json "$dst/node_modules/.nxbeam-package.json"
+            node -e "require('fs').writeFileSync(process.argv[1], JSON.stringify({version: require('./package.json').version, build: Number(process.env.GITHUB_RUN_NUMBER)}))" "$dst/build.json"
             # ffmpeg for this CPU
             rm -f "$dst/node_modules/ffmpeg-static/ffmpeg"
             (cd "$dst/node_modules/ffmpeg-static" && npm_config_arch=$arch npm_config_platform=darwin node install.js)
@@ -94,9 +98,28 @@ jobs:
           name: overlay
           path: overlay/nxbeam.ovl
 
+  switch-updater:
+    name: Switch updater (NXBeam Update)
+    runs-on: ubuntu-latest
+    container: devkitpro/devkita64:latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build NXBeam-Update.nro
+        working-directory: switch-updater
+        run: |
+          dkp-pacman -Sy --noconfirm --needed switch-curl switch-zlib switch-mbedtls
+          # the CA list mbedTLS checks GitHub's certificates against
+          (curl -fsSL https://curl.se/ca/cacert.pem -o romfs/cacert.pem || wget -qO romfs/cacert.pem https://curl.se/ca/cacert.pem)
+          test -s romfs/cacert.pem
+          make -j"$(nproc)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: switch-updater
+          path: switch-updater/NXBeam-Update.nro
+
   switch-pack:
     name: Switch SD pack
-    needs: overlay
+    needs: [overlay, switch-updater]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -104,9 +127,15 @@ jobs:
         with:
           name: overlay
           path: switch-pack/switch/.overlays
+      - uses: actions/download-artifact@v4
+        with:
+          name: switch-updater
+          path: switch-pack/switch/NXBeam-Update
       - name: Zip for the SD card
         run: |
           find switch-pack -name .keep -delete
+          # version and build of this pack: NXBeam Update and the overlay read it
+          printf '%s\n%s\n' "$(node -p "require('./package.json').version")" "$GITHUB_RUN_NUMBER" > switch-pack/NXBeam/versi.txt
           cd switch-pack && zip -r ../NXBeam-Switch.zip atmosphere NXBeam switch
       - uses: actions/upload-artifact@v4
         with:
@@ -162,7 +191,22 @@ jobs:
       - name: Keep only the release zips
         run: find assets -type f ! -name '*.zip' ! -name '*.apk' -delete
       - name: Source for Linux / macOS
-        run: zip -r assets/NXBeam-PC-source.zip src public tools package.json package-lock.json LICENSE start.sh "Start NXBeam.bat" "Start NXBeam.command" README.md
+        run: |
+          node -e "require('fs').writeFileSync(process.argv[1], JSON.stringify({version: require('./package.json').version, build: Number(process.env.GITHUB_RUN_NUMBER)}))" build.json
+          zip -r assets/NXBeam-PC-source.zip src public tools package.json package-lock.json LICENSE start.sh "Start NXBeam.bat" "Start NXBeam.command" README.md build.json
+      - name: latest.json (what online updates check)
+        run: |
+          node -e '
+            const fs = require("fs"), crypto = require("crypto");
+            const files = {};
+            for (const f of fs.readdirSync("assets")) {
+              const b = fs.readFileSync("assets/" + f);
+              files[f] = { sha256: crypto.createHash("sha256").update(b).digest("hex"), size: b.length };
+            }
+            const out = { version: require("./package.json").version, build: Number(process.env.GITHUB_RUN_NUMBER), files };
+            fs.writeFileSync("assets/latest.json", JSON.stringify(out, null, 1));
+            console.log(JSON.stringify(out, null, 1));
+          '
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_type == 'tag' && github.ref_name || steps.ver.outputs.tag }}
@@ -173,6 +217,7 @@ jobs:
           files: |
             assets/*.zip
             assets/*.apk
+            assets/latest.json
           body: |
             ## Unduhan
             | File | Untuk |

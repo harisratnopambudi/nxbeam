@@ -12,8 +12,8 @@ val appVersion = pkg["version"] as String
 val parts = appVersion.split(".").map { it.toInt() }
 // Android only installs a higher versionCode over an older one: on CI it follows
 // the run number (always rising), above every code the version number gave
-val appCode = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull()?.let { 20000 + it }
-    ?: (parts[0] * 10000 + parts[1] * 100 + parts[2])
+val runNumber = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 0
+val appCode = if (runNumber > 0) 20000 + runNumber else (parts[0] * 10000 + parts[1] * 100 + parts[2])
 
 android {
     namespace = "com.harisdevlab.nxbeam"
@@ -25,6 +25,8 @@ android {
         targetSdk = 35
         versionCode = appCode
         versionName = appVersion
+        // the release's build number: online updates compare it with latest.json (0: never update)
+        buildConfigField("int", "BUILD_NUMBER", "$runNumber")
     }
 
     signingConfigs {

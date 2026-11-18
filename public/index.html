@@ -66,6 +66,16 @@
   </nav>
 
   <main class="stage" id="stage">
+    <div class="update-bar" id="updateBar" role="status" hidden>
+      <svg aria-hidden="true"><use href="#i-download"/></svg>
+      <div class="update-text">
+        <strong id="updTitle"></strong>
+        <span id="updDetail"></span>
+      </div>
+      <div class="update-progress" id="updProgress" hidden><i id="updFill"></i></div>
+      <button class="btn primary" id="updApply" type="button"></button>
+      <button class="icon-btn" id="updLater" type="button" data-i18n-title="updLater" aria-label="Later"><svg><use href="#i-close"/></svg></button>
+    </div>
     <header class="signal" id="signal">
       <div class="signal-text menu-wrap">
         <button class="conn-btn" id="connBtn" aria-haspopup="true">

@@ -49,6 +49,58 @@
             </LinearLayout>
         </LinearLayout>
 
+        <!-- online update (shown when a newer release exists) -->
+        <LinearLayout
+            android:id="@+id/updateCard"
+            style="@style/Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_card_update"
+            android:visibility="gone">
+            <TextView
+                android:id="@+id/updateTitle"
+                style="@style/SectionTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_download"
+                android:drawableTint="@color/beam" />
+            <TextView
+                android:id="@+id/updateDetail"
+                style="@style/Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" />
+            <ProgressBar
+                android:id="@+id/updateProgress"
+                style="@android:style/Widget.Material.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:max="100"
+                android:progressTint="@color/beam"
+                android:visibility="gone" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/updateApply"
+                    style="@style/Btn.Primary"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="@string/upd_apply" />
+                <Button
+                    android:id="@+id/updateLater"
+                    style="@style/Btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="@string/upd_later" />
+            </LinearLayout>
+        </LinearLayout>
+
         <!-- Wi-Fi -->
         <LinearLayout style="@style/Card" android:layout_width="match_parent" android:layout_height="wrap_content">
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">

@@ -172,6 +172,19 @@ bool SetKey(const char *key, const std::string &value) {
 
 bool SetMode(const char *mode) { return SetKey("connection", mode); }
 
+/* "1.17.0 (build 48)" from sdmc:/NXBeam/versi.txt, written into every Switch pack */
+std::string InstalledVersion() {
+    FILE *f = std::fopen("sdmc:/NXBeam/versi.txt", "r");
+    if (f == nullptr) { return "-"; }
+    char v[32] = {}, b[16] = {};
+    if (std::fgets(v, sizeof(v), f) != nullptr) { v[std::strcspn(v, "\r\n")] = 0; }
+    if (std::fgets(b, sizeof(b), f) != nullptr) { b[std::strcspn(b, "\r\n")] = 0; }
+    std::fclose(f);
+    std::string out = v;
+    if (b[0] != 0) { out += std::string(" (build ") + b + ")"; }
+    return out;
+}
+
 /* the console's address on the network, or a note when it has none */
 std::string SwitchIp() {
     u32 ip = 0;
@@ -254,6 +267,11 @@ public:
             if (!SetKey("overlays", on ? "1" : "0")) { this->header->setText("Gagal menyimpan ke SD card"); }
         });
         list->addItem(ovl);
+
+        list->addItem(new tsl::elm::CategoryHeader("Versi (update: buka NXBeam Update di homebrew)"));
+        auto ver = new tsl::elm::ListItem("NXBeam");
+        ver->setValue(InstalledVersion(), true);
+        list->addItem(ver);
 
         list->addItem(new tsl::elm::CategoryHeader("Perubahan berlaku setelah restart"));
         auto restart = new tsl::elm::ListItem("Restart Switch");

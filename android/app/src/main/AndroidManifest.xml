@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />
+    <!-- online updates: the installer still asks the user before it installs -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <!-- one APK for phones, tablets and Android TV / Google TV -->
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
@@ -56,5 +58,8 @@
             android:resizeableActivity="true"
             android:screenOrientation="sensorLandscape"
             android:theme="@style/Theme.NXBeam.Player" />
+        <receiver
+            android:name=".Updater$InstallResult"
+            android:exported="false" />
     </application>
 </manifest>

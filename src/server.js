@@ -109,6 +109,17 @@ function createServer(hub, config, saveConfig) {
     if (p === '/api/session') return json(res, 200, { authed: authed(req), pinSet: !!config.pin });
     if (!authed(req)) return json(res, 401, { error: 'login required' });
 
+    if (p === '/api/update' && req.method === 'GET') return json(res, 200, hub.updater ? hub.updater.info() : { enabled: false });
+    if (p === '/api/update/check' && req.method === 'POST') {
+      if (!hub.updater) return json(res, 400, { error: 'updates are off' });
+      return json(res, 200, await hub.updater.check());
+    }
+    if (p === '/api/update/apply' && req.method === 'POST') {
+      if (!hub.updater) return json(res, 400, { error: 'updates are off' });
+      // answer at once; progress and the restart arrive over the WebSocket
+      hub.updater.apply().then(() => hub.updater.restart()).catch(() => {});
+      return json(res, 200, hub.updater.info());
+    }
     if (p === '/api/state') return json(res, 200, { state: hub.publicState(), stats: hub.statsSnapshot(), history: hub.stats.history });
     if (p === '/api/config' && req.method === 'GET') return json(res, 200, publicConfig());
     if (p === '/api/config' && req.method === 'POST') {
@@ -208,6 +219,8 @@ function createServer(hub, config, saveConfig) {
   });
 
   const clientList = () => [...clients.values()].map((c) => ({ id: c.id, name: c.name, role: c.role, addr: c.addr }));
+
+  if (hub.updater) hub.updater.on('change', (info) => broadcastJson({ type: 'update', update: info }));
 
   function broadcastJson(obj, filter) {
     const s = JSON.stringify(obj);

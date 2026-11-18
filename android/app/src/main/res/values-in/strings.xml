@@ -64,4 +64,12 @@
     <string name="usb_check_ok">Switch dengan NXBeam terdeteksi. Ketuk Sambung lewat USB.</string>
     <string name="usb_check_none">Perangkat ini tidak melihat apa pun di USB, artinya perangkat ini tidak sedang menjadi host. Dengan kabel USB-C ke USB-C, Switch bisa mengambil peran host atau hanya mengisi daya. Pakai adaptor OTG (USB-C ke USB-A) dengan kabel USB-A ke USB-C.</string>
     <string name="usb_check_other">Switch tidak ada di daftar ini. Cek kabelnya dan pastikan Switch dalam mode handheld dengan NXBeam di mode USB.</string>
+    <string name="upd_title">NXBeam %1$s tersedia</string>
+    <string name="upd_detail">Versi sekarang %1$s. Update mengunduh versi baru, lalu Android meminta konfirmasi pemasangan.</string>
+    <string name="upd_apply">Update</string>
+    <string name="upd_later">Nanti</string>
+    <string name="upd_downloading">Mengunduh update… %1$d%%</string>
+    <string name="upd_installing">Membuka pemasang…</string>
+    <string name="upd_allow">Izinkan NXBeam memasang update, lalu ketuk Update lagi.</string>
+    <string name="upd_failed">Update gagal: %1$s</string>
 </resources>

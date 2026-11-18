@@ -158,6 +158,16 @@ Selama keduanya tersambung ke **router yang sama**, NXBeam tetap bisa tersambung
 - **Switch hanya melayani satu penonton.** Kalau NXBeam di PC sedang tersambung, HP tidak bisa tersambung langsung ke Switch (muncul "tidak ada jawaban"). Tutup NXBeam di PC dulu, atau di aplikasi Android pakai bagian **NXBeam di PC** supaya HP menonton lewat PC.
 - Kalau dengan IP pun tidak tersambung, router memblokir perangkat Wi-Fi untuk saling terhubung. Matikan **AP Isolation / Client Isolation / Wireless Isolation** di pengaturan router, dan jangan pakai jaringan **Tamu (Guest)**. Atau sambungkan PC ke router dengan kabel LAN.
 
+## Update online
+
+Mulai versi 1.18.0 semua bagian NXBeam bisa diperbarui langsung dari internet. Tidak ada yang berubah sebelum Anda menekan Update.
+
+- **PC:** kalau ada versi baru, muncul bar di bagian atas NXBeam. Klik **Update**: NXBeam mengunduh versi baru, mencocokkan checksum, memasangnya, lalu menyala ulang sendiri. Jalankan NXBeam lewat `Start NXBeam.bat` (Windows), `Start NXBeam.command` (Mac), atau `start.sh` (Linux), karena launcher itulah yang memasang update. **Nanti** menyembunyikan pemberitahuan sampai ada versi yang lebih baru lagi.
+- **Android:** muncul kartu "NXBeam X tersedia" di layar utama aplikasi. Ketuk **Update**, APK diunduh, lalu Android menampilkan dialog pemasangan. Pertama kali, Android meminta izin "Instal aplikasi yang tidak dikenal" untuk NXBeam.
+- **Switch:** buka **NXBeam Update** dari menu homebrew (Album, atau tahan R saat membuka game). Aplikasi menampilkan versi terpasang dan versi terbaru. Tekan A untuk update: paket Switch diunduh, dicocokkan checksum-nya, dipasang ke SD card **tanpa menimpa pengaturan Anda** (`config.ini`), lalu tekan A lagi untuk restart. Versi terpasang juga tampil di overlay NXBeam.
+
+Versi 1.17.0 ke bawah belum punya fitur ini, jadi update ke 1.18.0 harus dilakukan manual sekali. Setelah itu, update berikutnya bisa langsung dari aplikasi.
+
 ## Aplikasi Android (HP dan Android TV)
 
 `NXBeam-Android.apk` di halaman Releases bisa dipasang di HP, tablet, dan Android TV / Google TV (Android 8 ke atas). Aplikasi ini tersambung langsung ke Switch, jadi tidak perlu PC.

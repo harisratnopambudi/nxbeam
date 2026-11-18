@@ -303,3 +303,14 @@ body.fs.idle { cursor: none; }
 .play-hud b { color: var(--text); }
 .play-hud.low b { color: var(--rec); }
 
+
+/* online update notice */
+.update-bar { display: flex; align-items: center; gap: 14px; padding: 10px 18px; background: var(--raise); border-bottom: 1px solid var(--line); box-shadow: inset 3px 0 0 var(--beam); }
+.update-bar > svg { width: 20px; height: 20px; flex: none; color: var(--beam); }
+.update-text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.update-text strong { font-size: 14px; }
+.update-text span { color: var(--muted); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.update-progress { width: 160px; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; flex: none; }
+.update-progress i { display: block; height: 100%; width: 0; background: var(--beam); transition: width 0.2s; }
+.update-bar .btn { height: 34px; flex: none; }
+@media (max-width: 640px) { .update-bar { flex-wrap: wrap; } .update-progress { width: 100%; order: 5; } }

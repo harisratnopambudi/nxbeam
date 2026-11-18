@@ -70,4 +70,12 @@
     <string name="usb_check_ok">The NXBeam Switch is here. Tap Connect over USB.</string>
     <string name="usb_check_none">This device sees nothing on USB, so it is not acting as the host. With a USB-C to USB-C cable the Switch may take that role or only charge. Use an OTG adapter (USB-C to USB-A) with a USB-A to USB-C cable.</string>
     <string name="usb_check_other">The Switch is not among these devices. Check the cable and that the Switch is in handheld mode, with NXBeam in USB mode.</string>
+    <string name="upd_title">NXBeam %1$s is available</string>
+    <string name="upd_detail">You have %1$s. Update downloads the new version; Android then asks you to install it.</string>
+    <string name="upd_apply">Update</string>
+    <string name="upd_later">Later</string>
+    <string name="upd_downloading">Downloading the update… %1$d%%</string>
+    <string name="upd_installing">Opening the installer…</string>
+    <string name="upd_allow">Allow NXBeam to install updates, then tap Update again.</string>
+    <string name="upd_failed">Update failed: %1$s</string>
 </resources>

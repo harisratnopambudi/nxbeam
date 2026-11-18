@@ -39,6 +39,48 @@ function toast(text, level = 'info', ms = 3800) {
   setTimeout(() => el.remove(), ms);
 }
 
+/* ------------------------------------------------------------ online update */
+const updSkip = () => Number(store.get('updSkip', 0)) || 0;
+async function loadUpdate() {
+  try {
+    const u = await (await fetch('/api/update')).json();
+    // NXBeam restarted on a new build: load the new page too
+    if (S.build && u.current && u.current.build && u.current.build !== S.build) { location.reload(); return; }
+    if (u.current) S.build = u.current.build;
+    renderUpdate(u);
+  } catch { /* offline */ }
+}
+function renderUpdate(u) {
+  S.update = u;
+  const bar = $('#updateBar');
+  if (!u || !u.enabled || !u.latest) { bar.hidden = true; return; }
+  const busy = u.state === 'downloading' || u.state === 'ready';
+  const show = busy || u.state === 'error' && S.updClicked || (u.available && u.latest.build > updSkip());
+  bar.hidden = !show;
+  if (!show) return;
+  $('#updTitle').textContent = t('updAvailable', u.latest.version);
+  $('#updProgress').hidden = u.state !== 'downloading';
+  $('#updFill').style.width = `${u.progress || 0}%`;
+  $('#updApply').hidden = busy;
+  $('#updLater').hidden = busy;
+  $('#updApply').textContent = u.state === 'error' ? t('updRetry') : t('updApply');
+  $('#updDetail').textContent =
+    u.state === 'downloading' ? t('updDownloading', u.progress || 0)
+    : u.state === 'ready' ? t('updRestarting')
+    : u.state === 'error' ? t('updError', u.error)
+    : !u.canApply ? t('updManual')
+    : t('updDetail', u.current.version);
+  if (!u.canApply && !busy) $('#updApply').hidden = true;
+}
+$('#updApply').onclick = async () => {
+  S.updClicked = true;
+  try { renderUpdate(await (await fetch('/api/update/apply', { method: 'POST' })).json()); } catch (e) { toast(e.message, 'error'); }
+};
+$('#updLater').onclick = () => {
+  if (S.update && S.update.latest) store.set('updSkip', S.update.latest.build);
+  $('#updateBar').hidden = true;
+};
+
 /* ------------------------------------------------------------ media */
 const screen = $('#screen');
 const audio = new AudioPlayer();
@@ -46,6 +88,7 @@ const audio = new AudioPlayer();
 function onJson(m) {
   switch (m.type) {
     case 'welcome':
+      loadUpdate();
       S.myId = m.id; S.history = m.history || []; S.stats = m.stats;
       setState(m.state, m.clients);
       break;
@@ -62,6 +105,7 @@ function onJson(m) {
       fpsGuard();
       break;
     case 'media': if (S.page === 'library') loadMedia(); break;
+    case 'update': renderUpdate(m.update); break;
     case 'toast': toast(t(m.key, m.arg), m.level); if (m.key === 'controlTaken') setControlling(false); break;
     default: break;
   }

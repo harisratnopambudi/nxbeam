@@ -89,6 +89,16 @@ On a Mac the first start may say the app is from an unidentified developer: righ
 
 Then open `http://localhost:8090`. NXBeam finds the Switch by itself. Other devices on the same Wi-Fi can watch too: open the PC's address shown in the NXBeam window, for example `http://192.168.1.10:8090`.
 
+### Online updates
+
+From 1.18.0 every part updates itself from the latest release. Nothing changes until you confirm.
+
+| Where | How |
+|---|---|
+| **PC** (Windows, Mac, Linux) | A bar at the top of NXBeam says a new version is out. **Update** downloads it, checks it and restarts NXBeam. Start NXBeam with its launcher (`Start NXBeam.bat`, `.command` or `start.sh`). |
+| **Android** | A card on the home screen. **Update** downloads the APK; Android asks you to install it. |
+| **Switch** | Open **NXBeam Update** from the homebrew menu. It shows the installed and the latest version and updates the SD card files, keeping your settings, then restarts the Switch. |
+
 <a name="features"></a>
 <img src="docs/headers/features.svg" width="100%" alt="Features">
 
@@ -106,6 +116,7 @@ Then open `http://localhost:8090`. NXBeam finds the Switch by itself. Other devi
 | **Android app** | Phones and Android TV: straight to the Switch over Wi-Fi or USB OTG, no PC. Records MP4 and takes screenshots to the gallery. |
 | **Switch menu** | NXBeam overlay: USB / Network mode, restart. |
 | **Full mirroring** (beta) | Everything on the console streams: the HOME menu, system settings, the Album and every app, not only games. Turn on **HOME menu** (and **Overlay sistem** for the volume bar and menus) in the overlay. Tested on FW 23.5.0. |
+| **Online updates** | PC, Android and Switch check the latest release and update with one confirmation. |
 | **Switch screen off** | Turn the console's screen off while it streams (saves battery when you play on the PC), one toggle in the overlay. |
 
 <a name="android-app-phones-and-tvs"></a>

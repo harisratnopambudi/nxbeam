@@ -89,6 +89,61 @@ class MainActivity : Activity() {
             usbConnect.isEnabled = false
         }
         handleIntent(intent)
+        checkUpdate()
+    }
+
+    /* ------------------------------------------------------------ online update */
+    private var latest: Updater.Latest? = null
+    private var updating = false
+
+    private fun checkUpdate() {
+        if (!Updater.enabled) return
+        Thread {
+            val l = Updater.check(this) ?: return@Thread
+            runOnUiThread { if (l.build > prefs.updateSkip) showUpdate(l) }
+        }.start()
+    }
+
+    private fun showUpdate(l: Updater.Latest) {
+        latest = l
+        val card = findViewById<View>(R.id.updateCard)
+        card.visibility = View.VISIBLE
+        findViewById<TextView>(R.id.updateTitle).text = getString(R.string.upd_title, l.version)
+        val version = try { packageManager.getPackageInfo(packageName, 0).versionName } catch (_: Exception) { "" }
+        findViewById<TextView>(R.id.updateDetail).text = getString(R.string.upd_detail, version)
+        findViewById<Button>(R.id.updateApply).setOnClickListener { applyUpdate() }
+        findViewById<Button>(R.id.updateLater).setOnClickListener {
+            prefs.updateSkip = l.build
+            card.visibility = View.GONE
+        }
+    }
+
+    private fun applyUpdate() {
+        val l = latest ?: return
+        if (updating) return
+        if (!packageManager.canRequestPackageInstalls()) {
+            findViewById<TextView>(R.id.updateDetail).setText(R.string.upd_allow)
+            startActivity(Intent(android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                android.net.Uri.parse("package:$packageName")))
+            return
+        }
+        updating = true
+        val detail = findViewById<TextView>(R.id.updateDetail)
+        val bar = findViewById<android.widget.ProgressBar>(R.id.updateProgress)
+        val apply = findViewById<Button>(R.id.updateApply)
+        apply.isEnabled = false
+        bar.visibility = View.VISIBLE
+        Thread {
+            try {
+                val apk = Updater.download(this, l) { p -> runOnUiThread { bar.progress = p; detail.text = getString(R.string.upd_downloading, p) } }
+                runOnUiThread { detail.setText(R.string.upd_installing) }
+                Updater.install(this, apk)
+            } catch (e: Exception) {
+                runOnUiThread { detail.text = getString(R.string.upd_failed, e.message ?: e.javaClass.simpleName) }
+            } finally {
+                runOnUiThread { updating = false; apply.isEnabled = true; bar.visibility = View.GONE }
+            }
+        }.start()
     }
 
     override fun onNewIntent(intent: Intent) {

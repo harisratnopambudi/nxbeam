@@ -25,6 +25,10 @@ class Prefs(context: Context) {
     var gamepad: Boolean
         get() = sp.getBoolean("gamepad", false)
         set(v) = sp.edit().putBoolean("gamepad", v).apply()
+    /** the update build the user put off with Later */
+    var updateSkip: Int
+        get() = sp.getInt("updSkip", 0)
+        set(v) = sp.edit().putInt("updSkip", v).apply()
     var showStats: Boolean
         get() = sp.getBoolean("stats", false)
         set(v) = sp.edit().putBoolean("stats", v).apply()

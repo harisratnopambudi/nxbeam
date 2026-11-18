@@ -2,6 +2,9 @@
 const DICT = {
   id: {
     stage: 'Layar', library: 'Galeri', stats: 'Statistik', settings: 'Pengaturan',
+    updAvailable: (v) => `NXBeam ${v} tersedia`, updDetail: (cur) => `Versi sekarang ${cur}. Update mengunduh versi baru lalu menyalakan ulang NXBeam.`,
+    updApply: 'Update', updLater: 'Nanti', updDownloading: (p) => `Mengunduh update... ${p}%`, updRestarting: 'Memasang update dan menyalakan ulang NXBeam...',
+    updError: (e) => `Update gagal: ${e}`, updManual: 'Tutup NXBeam lalu buka lagi lewat Start NXBeam untuk bisa update dari sini.', updRetry: 'Coba lagi',
     searching: 'Mencari konsol', scanning: 'Memindai jaringan', connecting: 'Menyambung', connected: 'Tersambung',
     waitingPicture: 'Tersambung. Menunggu gambar dari game.',
     noConsole: 'Belum ada konsol',
@@ -85,6 +88,9 @@ const DICT = {
   },
   en: {
     stage: 'Screen', library: 'Library', stats: 'Stats', settings: 'Settings',
+    updAvailable: (v) => `NXBeam ${v} is available`, updDetail: (cur) => `You have ${cur}. Update downloads the new version and restarts NXBeam.`,
+    updApply: 'Update', updLater: 'Later', updDownloading: (p) => `Downloading the update... ${p}%`, updRestarting: 'Installing the update and restarting NXBeam...',
+    updError: (e) => `Update failed: ${e}`, updManual: 'Close NXBeam and start it again with Start NXBeam to update from here.', updRetry: 'Try again',
     searching: 'Looking for the console', scanning: 'Scanning the network', connecting: 'Connecting', connected: 'Connected',
     waitingPicture: 'Connected. Waiting for a picture from the game.',
     noConsole: 'No console yet',
