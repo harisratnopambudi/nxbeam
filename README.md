@@ -126,6 +126,8 @@ Start NXBeam with its launcher (`Start NXBeam.bat`, `Start NXBeam.command` or `s
 | **Play mode** | One click: sound on, controller taken, fullscreen, a small fps counter. |
 | **Frame rate that follows the game** | 60 fps when the game holds it; an even, locked 30 fps when it does not. |
 | **Smooth on Wi-Fi** | Adaptive frame pacing and an audio buffer that absorbs bursts and clock drift. |
+| **AMD FSR 1.0 upscaling** | The picture is upscaled to your screen with FSR 1 (EASU + RCAS), so 720p looks sharp on a 1440p or 4K monitor. Also Sharpen (CAS), Pixel (for pixel-art games) or Off, in **Settings > Picture > Upscaling**. Runs on the GPU in the browser. |
+| **Frame generation** (beta) | Inserts a generated frame between every two real ones, so a 30 fps game shows at 60 on a 60 Hz screen (or 60 at 120 on a high-refresh screen). Motion is estimated on the GPU; adds about half a frame of delay. Off by default: **Settings > Picture**. |
 | **Instant replay** | Save the last 30 seconds as MP4 with one click (or `C`). |
 | **Record & go live** | MP4 and RTMP (YouTube, Twitch), as sent by the console or scaled to 1080p60. |
 | **OBS** | `http://localhost:8090/overlay`: the game's video and sound only, ready for a Browser Source. |

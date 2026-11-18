@@ -88,6 +88,16 @@ Sejak v1.4, video di-decode dan digambar di **thread terpisah** (Web Worker + Of
 
 Tips jaringan: pakai WiFi 5 GHz, letakkan Switch dekat router, atau sambungkan dock dengan kabel LAN. Bila memungkinkan, sambungkan juga PC hub ke router dengan kabel.
 
+## Upscaling FSR dan frame generation
+
+Pengaturannya ada di **Settings > Picture**, berlaku untuk perangkat yang sedang dipakai menonton.
+
+- **Upscaling: AMD FSR 1.0** (bawaan). Gambar dari Switch diperbesar ke ukuran layar dengan FSR 1 (EASU + RCAS), maksimal 2x: 720p menjadi 1440p, 1080p menjadi 4K. Hasilnya lebih tajam daripada diperbesar biasa. Slider **Ketajaman** mengatur kekuatan RCAS. Pilihan lain: **Penajaman (CAS)**, **Piksel** (nearest, cocok untuk game pixel art), atau **Mati**.
+- **Frame generation (beta)**, bawaan mati. Di antara dua frame asli disisipkan satu frame buatan. Gerakannya dihitung di GPU, jadi game 30 fps tampil 60 di monitor 60 Hz, dan game 60 fps tampil sekitar 120 di monitor 120/144 Hz. Fitur ini hanya aktif kalau game berjalan di bawah refresh layar. Jedanya bertambah sekitar setengah frame (17 ms di 30 fps), dan di gerakan yang sangat cepat atau objek yang tiba-tiba muncul bisa terlihat sedikit artefak.
+- FSR tidak menaikkan fps game; fps tetap ditentukan konsol. Triknya: kalau game tersendat di 1080p, set **Maximum resolution** di aplikasi Switch Frame Tap ke **720p** agar konsol stabil 60 fps, lalu biarkan FSR menaikkan resolusinya di PC.
+- DLSS, FSR 2/3, dan XeSS tidak bisa dipakai. Ketiganya butuh data gerak dari engine game, sedangkan NXBeam hanya menerima video jadi.
+- Keduanya butuh akselerasi GPU di browser. Kalau browser berjalan tanpa GPU, atau perangkat tidak kuat (mode ringan aktif), keduanya mati sendiri. Statusnya bisa dilihat di halaman **Stats**.
+
 ## 1080p 60fps
 
 - **Gambar asli 1080p dari konsol:** resolusi ditentukan oleh konsol, bukan oleh NXBeam. Pasang Switch di dock, lalu di aplikasi Switch Frame Tap halaman **Picture** set resolusi maksimum ke 1080p dan aktifkan scaling ke 1080p. Untuk 60 fps penuh, naikkan CPU ke 1785 MHz dengan sys-clk. Mode genggam tetap 720p, kecuali memakai ReverseNX-RT lewat USB.

@@ -155,7 +155,7 @@ const player = new StreamView($('#video'), {
     setTimeout(connectWs, 1500);
   },
 }, { allowWorker: store.get('worker', true) });
-const adjDefaults = { bright: 0, contrast: 1, sat: 1, sharp: 0.35, audioMs: 80, smooth: 'balanced', fpsCap: 'auto' };
+const adjDefaults = { bright: 0, contrast: 1, sat: 1, sharp: 0.35, audioMs: 80, smooth: 'balanced', fpsCap: 'auto', upscale: 'fsr', framegen: false };
 let adj = { ...adjDefaults, ...store.get('adjust', {}) };
 player.setAdjust(adj);
 audio.targetMs = adj.audioMs;
@@ -521,7 +521,8 @@ function fpsGuard() {
   const hud = $('#playHud');
   const shown = S.local && S.local.fps;
   const capped = S.local && S.local.cap === 30;
-  $('#hudFps').textContent = capped ? `30 (${t('capLocked')})` : shown && shown < fps - 3 ? `${fps} (${t('hudShown')} ${shown})` : String(fps);
+  const gen = S.local && S.local.fg && S.local.gen;
+  $('#hudFps').textContent = gen ? `${fps} → ${(shown || 0) + gen} FG` : capped ? `30 (${t('capLocked')})` : shown && shown < fps - 3 ? `${fps} (${t('hudShown')} ${shown})` : String(fps);
   hud.classList.toggle('low', fps > 0 && fps < 29);
   if (S.fgRun >= 6 && $('#fpsGuard').hidden) {
     $('#fgTitle').textContent = t('fgTitle', fps, `${st.video.width}\u00d7${st.video.height}`);
@@ -630,6 +631,8 @@ function renderStatsPage() {
     [t('dropped'), String((l.dropped || 0) + (l.skipped || 0))],
     [t('srcHitches'), s.srcMaxGap ? `${s.srcHitchTotal || 0}\u00d7  (${t('maxGap')} ${s.srcMaxGap} ms)` : '-'],
     [t('lateHere'), `${l.late || 0}/s`],
+    [t('upscaleLabel'), l.softGl ? t('upSoft') : l.up ? `${t({ fsr: 'upFsrShort', cas: 'upCasShort', pixel: 'upPixelShort', off: 'upOffShort' }[l.up])}  ${l.w || 0}×${l.h || 0} → ${l.outW}×${l.outH}` : '-'],
+    [t('frameGenRow'), !adj.framegen ? t('off') : l.fgAvail === false ? t('frameGenNoGpu') : l.fg ? t('frameGenOn', l.fps || 0, (l.fps || 0) + (l.gen || 0)) : t('frameGenIdle')],
     [t('decoderLabel'), `${l.hw === 'gpu' ? t('decGpu') : l.hw ? t('decAuto') : '-'}${l.light ? ` (${t('lightOn')})` : ''}`],
     [t('renderPath'), player.mode === 'worker' ? 'Worker + OffscreenCanvas' : t('mainThread')],
     [t('keyframes'), String(s.keys || 0)],
@@ -708,6 +711,8 @@ async function loadSettings() {
   $('#setRecPreset').value = cfg.recordPreset; $('#setLivePreset').value = cfg.livePreset;
   $('#setSmooth').value = adj.smooth;
   $('#setFpsCap').value = adj.fpsCap || 'auto';
+  $('#setUpscale').value = adj.upscale || 'fsr';
+  $('#setFrameGen').checked = !!adj.framegen;
   $('#setWorker').checked = store.get('worker', true);
   $('#setLight').checked = !!adj.light;
   $('#setPin').value = '';
@@ -776,11 +781,11 @@ $('#btnReconnect').onclick = async () => {
 $('#setLang').onchange = (e) => { setLang(e.target.value); openPage(S.page); renderAll(); };
 
 const onAdj = () => {
-  adj = { bright: +$('#adjBright').value, contrast: +$('#adjContrast').value, sat: +$('#adjSat').value, sharp: +$('#adjSharp').value, audioMs: +$('#adjAudio').value, smooth: $('#setSmooth').value, light: $('#setLight').checked, fpsCap: $('#setFpsCap').value };
+  adj = { bright: +$('#adjBright').value, contrast: +$('#adjContrast').value, sat: +$('#adjSat').value, sharp: +$('#adjSharp').value, audioMs: +$('#adjAudio').value, smooth: $('#setSmooth').value, light: $('#setLight').checked, fpsCap: $('#setFpsCap').value, upscale: $('#setUpscale').value, framegen: $('#setFrameGen').checked };
   $('#adjAudioOut').textContent = `${adj.audioMs} ms`;
   player.setAdjust(adj); player.setMode(adj.smooth); audio.targetMs = adj.audioMs; store.set('adjust', adj);
 };
-['#adjBright', '#adjContrast', '#adjSat', '#adjSharp', '#adjAudio', '#setSmooth', '#setFpsCap'].forEach((s) => { $(s).oninput = onAdj; $(s).onchange = onAdj; });
+['#adjBright', '#adjContrast', '#adjSat', '#adjSharp', '#adjAudio', '#setSmooth', '#setFpsCap', '#setUpscale', '#setFrameGen'].forEach((s) => { $(s).oninput = onAdj; $(s).onchange = onAdj; });
 $('#setLight').onchange = (e) => { adj.light = e.target.checked; store.set('adjust', adj); player.setAdjust({ light: adj.light }); };
 $('#setWorker').onchange = (e) => { store.set('worker', e.target.checked); location.reload(); };
 $('#btnResetPic').onclick = () => {
