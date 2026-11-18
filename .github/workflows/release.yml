@@ -92,7 +92,8 @@ jobs:
         working-directory: overlay
         run: |
           git clone --depth 1 https://github.com/WerWolv/libtesla libs/libtesla
-          make -j"$(nproc)"
+          # the overlay shows the NXBeam version, not a number of its own
+          make -j"$(nproc)" APP_VERSION="$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' ../package.json | head -1)"
       - uses: actions/upload-artifact@v4
         with:
           name: overlay
@@ -111,7 +112,7 @@ jobs:
           # the CA list mbedTLS checks GitHub's certificates against
           (curl -fsSL https://curl.se/ca/cacert.pem -o romfs/cacert.pem || wget -qO romfs/cacert.pem https://curl.se/ca/cacert.pem)
           test -s romfs/cacert.pem
-          make -j"$(nproc)"
+          make -j"$(nproc)" APP_VERSION="$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' ../package.json | head -1)"
       - uses: actions/upload-artifact@v4
         with:
           name: switch-updater

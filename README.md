@@ -115,7 +115,7 @@ From 1.18.0 every part updates itself from the latest release. Nothing changes u
 | **Diagnostics** | Tells you whether frames are lost on the console, on the network or on the PC. |
 | **Android app** | Phones and Android TV: straight to the Switch over Wi-Fi or USB OTG, no PC. Records MP4 and takes screenshots to the gallery. |
 | **Switch menu** | NXBeam overlay: USB / Network mode, restart. |
-| **Full mirroring** (beta) | Everything on the console streams: the HOME menu, system settings, the Album and every app, not only games. Turn on **HOME menu** (and **Overlay sistem** for the volume bar and menus) in the overlay. Tested on FW 23.5.0. |
+| **Full mirroring** (beta) | Everything on the console streams: the HOME menu, system settings, the Album and every app, not only games. Turn on **HOME menu** (and **System overlays** for the volume bar and menus) in the overlay; both are off by default because they can slow the HOME button in some games. Tested on FW 23.5.0. |
 | **Online updates** | PC, Android and Switch check the latest release and update with one confirmation. |
 | **Switch screen off** | Turn the console's screen off while it streams (saves battery when you play on the PC), one toggle in the overlay. |
 
@@ -167,7 +167,7 @@ Open the overlay with your overlay combo and pick **NXBeam**. The combo depends 
 <table>
   <tr>
     <td width="50%"><img src="docs/switch-ultrahand.jpg" alt="Ultrahand overlay list with NXBeam 1.1.0"></td>
-    <td width="50%"><img src="docs/switch-overlay.jpg" alt="NXBeam overlay menu: Mode USB (active), Mode Jaringan, screen off while streaming, Restart Switch"></td>
+    <td width="50%"><img src="docs/switch-overlay.jpg" alt="NXBeam overlay menu: USB mode (active), Network mode, screen off while streaming, Restart Switch"></td>
   </tr>
   <tr>
     <td align="center"><sub>NXBeam in the Ultrahand overlay list</sub></td>
@@ -177,14 +177,13 @@ Open the overlay with your overlay combo and pick **NXBeam**. The combo depends 
 
 | Menu item | What it does |
 |---|---|
-| **Mode USB** / **Mode Jaringan** | How the Switch connects to NXBeam: USB cable or network. |
-| **Layar mati saat streaming** | **On**: the Switch screen goes dark while a stream runs (saves battery; play on the PC). **Off**: the screen stays on. |
-| **HOME menu** (beta, on by default) | **On**: the HOME menu, the Album and system screens stream too, not only games, so the viewer mirrors the whole console. |
-| **Overlay sistem** (beta, on by default) | **On**: the volume bar, quick settings, power menu and Tesla / Ultrahand menus appear in the stream on top of the game. |
-| **Stream aplikasi ini** | The app running now: **On** streams it, **Off** leaves it out. Every app streams by default, homebrew, emulators and ports included; NXBeam's console module never skips one by itself. |
-| **Stream lagi semua app** | Clears the list of skipped apps. |
-| **IP Switch** | The console's address on the network. Type it in NXBeam if it does not find the Switch by itself. |
+| **USB mode** / **Network mode** | How the Switch connects to NXBeam: USB cable or network. |
+| **Switch IP** | The console's address on the network. Type it in NXBeam if it does not find the Switch by itself. |
+| **Screen off while streaming** | **On**: the Switch screen goes dark while a stream runs (saves battery; play on the PC). Applies at once. |
+| **HOME menu** (beta, off by default) | **On**: the HOME menu, the Album and system screens stream too, not only games. In some games it makes the HOME button slow to respond, so it is off unless you turn it on. |
+| **System overlays** (beta, off by default) | **On**: the volume bar, quick settings, power menu and Tesla / Ultrahand menus appear in the stream. |
 | **Restart Switch** | Applies the changes. |
+| **About** | The installed NXBeam version and how to update (the NXBeam Update app). Made by Haris DevLab. |
 
 - **Network**: works docked or handheld; NXBeam finds the console on its own.
 - **USB**: handheld only (the dock uses the port). On Windows it needs the WinUSB driver once, see below.

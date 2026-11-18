@@ -135,26 +135,27 @@ Gamepad memakai posisi tombol, bukan labelnya: tombol bawah selalu menjadi B Swi
 
 ### Tampilkan HOME menu dan overlay (beta)
 
-Bawaannya hanya game yang tampil. Supaya semua yang ada di layar Switch ikut tampil (mirroring penuh), buka overlay NXBeam lalu nyalakan di bagian **Tampilkan juga (beta)**, kemudian **Restart Switch**:
+Bawaannya hanya game yang tampil. Supaya semua yang ada di layar Switch ikut tampil (mirroring penuh), buka overlay NXBeam lalu nyalakan di bagian **Full mirroring (beta)**, kemudian **Restart Switch**:
 
 - **HOME menu**: HOME menu, Album, dan layar sistem ikut tampil.
-- **Overlay sistem**: bar volume, quick settings, menu power, dan menu Tesla/Ultrahand ikut tampil di atas game. Overlay disalin 10-20 kali per detik, jadi gerakannya sedikit kurang halus dibanding game.
+- **System overlays**: bar volume, quick settings, menu power, dan menu Tesla/Ultrahand ikut tampil di atas game. Overlay disalin 10-20 kali per detik, jadi gerakannya sedikit kurang halus dibanding game.
 
 Catatan: manual game, eShop, dan applet lain tetap menghentikan stream sementara. Fitur ini masih beta dari sysmodule-nya.
 
 ### Homebrew, emulator, atau game port
 
-Mulai v1.18 semua aplikasi ikut tampil, termasuk homebrew (GreenX, emulator, game port) dan homebrew yang dibuka dari Album. HOME menu dan overlay sistem sudah menyala secara bawaan, dan sysmodule NXBeam tidak pernah lagi melewati aplikasi secara otomatis.
+Semua aplikasi ikut tampil, termasuk homebrew (GreenX, emulator, game port): sysmodule NXBeam tidak pernah melewati aplikasi secara otomatis. Homebrew yang dibuka dari **Album** hanya tampil kalau **HOME menu** (Full mirroring) dinyalakan. Aplikasi dengan proteksi anti-debug (misalnya TiCo) bisa menutup sendiri saat di-stream.
 
-- Kalau sebuah aplikasi tetap tidak tampil, buka overlay NXBeam dan pastikan **Stream aplikasi ini** bernilai **On**.
-- Aplikasi dengan proteksi anti-debug (misalnya TiCo) akan menutup sendiri saat di-stream. Untuk aplikasi seperti itu, set **Stream aplikasi ini** ke **Off**.
+### Tombol HOME lambat atau tidak merespons di dalam game
+
+Penyebabnya fitur beta **HOME menu** / **System overlays**. Mulai 1.18.1 keduanya mati secara bawaan (overlay NXBeam dan NXBeam Update mematikannya sekali secara otomatis). Kalau Anda menyalakannya lagi dan tombol HOME jadi lambat di game tertentu (misalnya EA FC), matikan kembali lalu restart.
 
 ### Mode Jaringan: Switch di 5 GHz, PC/HP di 2,4 GHz (atau sebaliknya)
 
 Selama keduanya tersambung ke **router yang sama**, NXBeam tetap bisa tersambung walaupun frekuensinya berbeda.
 
 - NXBeam mencari Switch di jaringannya sendiri. Kalau tidak ketemu, pencarian diperluas ke subnet tetangga dan subnet rumahan yang umum, karena ada router yang memberi alamat berbeda untuk 2,4 GHz dan 5 GHz.
-- Kalau tetap tidak ketemu, buka overlay NXBeam di Switch, lihat **IP Switch**, lalu ketik IP itu di NXBeam (PC: kolom IP di layar sambungan; Android: kolom IP Switch).
+- Kalau tetap tidak ketemu, buka overlay NXBeam di Switch, lihat **Switch IP**, lalu ketik IP itu di NXBeam (PC: kolom IP di layar sambungan; Android: kolom IP Switch).
 - **Switch hanya melayani satu penonton.** Kalau NXBeam di PC sedang tersambung, HP tidak bisa tersambung langsung ke Switch (muncul "tidak ada jawaban"). Tutup NXBeam di PC dulu, atau di aplikasi Android pakai bagian **NXBeam di PC** supaya HP menonton lewat PC.
 - Kalau dengan IP pun tidak tersambung, router memblokir perangkat Wi-Fi untuk saling terhubung. Matikan **AP Isolation / Client Isolation / Wireless Isolation** di pengaturan router, dan jangan pakai jaringan **Tamu (Guest)**. Atau sambungkan PC ke router dengan kabel LAN.
 

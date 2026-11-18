@@ -198,6 +198,41 @@ static int unpack(const u8 *z, size_t len, int *kept) {
     return written;
 }
 
+/*
+ * Settings version 2 (1.18.1): the beta HOME-menu and overlay streaming go back
+ * to off once (they slowed the HOME button in some games). The user's
+ * config.ini is kept by the update, so it is changed here, line by line.
+ */
+static void migrate_config(void) {
+    const char *path = "sdmc:/" KEEP_IF_PRESENT;
+    FILE *f = fopen(path, "rb");
+    if (!f) return;
+    fseek(f, 0, SEEK_END); long n = ftell(f); fseek(f, 0, SEEK_SET);
+    if (n <= 0 || n > 65536) { fclose(f); return; }
+    char *in = malloc(n + 1);
+    if (!in) { fclose(f); return; }
+    fread(in, 1, n, f); in[n] = 0; fclose(f);
+    if (strstr(in, "config_version")) { free(in); return; }
+    const int crlf = strstr(in, "\r\n") != NULL;
+    char *out = malloc(n + 256);
+    if (!out) { free(in); return; }
+    size_t o = 0;
+    for (char *line = in; *line; ) {
+        char *end = strchr(line, '\n');
+        size_t len = end ? (size_t)(end - line + 1) : strlen(line);
+        const char *k = line; while (*k == ' ' || *k == '\t') k++;
+        if (strncmp(k, "home_menu", 9) == 0 && strchr(k, '=')) o += sprintf(out + o, "home_menu = 0%s", crlf ? "\r\n" : "\n");
+        else if (strncmp(k, "overlays", 8) == 0 && strchr(k, '=')) o += sprintf(out + o, "overlays = 0%s", crlf ? "\r\n" : "\n");
+        else { memcpy(out + o, line, len); o += len; }
+        line += len;
+    }
+    if (o && out[o - 1] != '\n') o += sprintf(out + o, crlf ? "\r\n" : "\n");
+    o += sprintf(out + o, "config_version = 2%s", crlf ? "\r\n" : "\n");
+    f = fopen(path, "wb");
+    if (f) { fwrite(out, 1, o, f); fclose(f); }
+    free(in); free(out);
+}
+
 /* ------------------------------------------------------------ main */
 static int run(void) {
     Ver cur = read_installed();
@@ -271,6 +306,7 @@ static int run(void) {
         wait_for(HidNpadButton_Plus);
         return 0;
     }
+    migrate_config();
     printf("\n\x1b[1;32mSelesai.\x1b[0m %d file diperbarui", n);
     if (kept) printf(", pengaturan Anda (config.ini) tetap");
     printf(".\n\nSwitch perlu di-restart agar versi baru aktif.\nTekan A untuk restart sekarang, + untuk keluar.\n");
