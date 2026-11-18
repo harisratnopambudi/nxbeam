@@ -6,6 +6,12 @@
  * "Screen off while streaming" and the resolution apply at once through the
  * sysmodule's "sftap" control service (the calls the Switch Frame Tap overlay
  * makes, GPL-2.0): screen off directly, the resolution by a config reload.
+ *
+ * "Game display" is ReverseNX-RT (masagrator, MIT): with SaltyNX installed, the
+ * running game is told it is docked or handheld, at the resolution picked here,
+ * through the shared memory SaltyNX gives its plugin. The choice is saved per
+ * game in sdmc:/SaltySD/plugins/ReverseNX-RT/<title id>.dat, the file
+ * ReverseNX-RT itself reads, so both overlays agree.
  */
 #define TESLA_INIT_IMPL
 #include <tesla.hpp>
@@ -14,6 +20,9 @@
 #include <cstring>
 #include <string>
 #include <sys/stat.h>
+
+/* SaltyNX's IPC, from ReverseNX-RT by masagrator (MIT, include/ReverseNX-RT-LICENSE.txt) */
+#include "SaltyNX.h"
 
 namespace {
 
@@ -186,6 +195,111 @@ const char *Label(const std::string &mode) {
     return mode == "network" ? "Network" : mode == "usb" ? "USB" : "Other";
 }
 
+/* ---- ReverseNX-RT: docked / handheld and the game's display resolution ---- */
+namespace rnx {
+
+enum ResMode : u8 { ResDefault = 0, Res480, Res540, Res630, Res720, Res810, Res900, Res1080, ResCount };
+constexpr const char *ResName[] = { "Game default", "854x480", "960x540", "1120x630", "1280x720", "1440x810", "1600x900", "1920x1080" };
+
+/* the plugin's block in SaltyNX's shared memory, "NXRT" */
+struct Shared {
+    uint32_t MAGIC;
+    bool isDocked;
+    bool def;              /* true: the system decides (no change) */
+    bool pluginActive;     /* the game asked for the mode at least once */
+    struct {
+        u8 handheld_res: 4;
+        u8 docked_res: 4;
+    } NX_PACKED res;
+    bool wasDDRused;       /* the game asks for the default display resolution */
+} NX_PACKED;
+static_assert(sizeof(Shared) == 9);
+
+enum class State { NoSaltyNX, NoGame, NotRunning, Waiting, Ready };
+
+bool g_salty = false;
+bool g_mapped = false;
+SharedMemory g_shm = {};
+Shared *g_rt = nullptr;
+
+bool PortUp() {
+    Handle h;
+    for (int i = 0; i < 67; i++) {
+        if (R_SUCCEEDED(svcConnectToNamedPort(&h, "InjectServ"))) { svcCloseHandle(h); return true; }
+        svcSleepThread(1'000'000);
+    }
+    return false;
+}
+
+/* with an sm session: is SaltyNX there, is a game running, is the plugin in it */
+void Init() {
+    g_salty = PortUp();
+    if (!g_salty) { return; }
+    u64 pid = 0;
+    if (R_FAILED(pmdmntGetApplicationProcessId(&pid))) { return; }
+    if (SaltySD_Connect()) { return; }
+    Handle shm = INVALID_HANDLE;
+    SaltySD_GetSharedMemoryHandle(&shm);
+    SaltySD_Term();
+    shmemLoadRemote(&g_shm, shm, 0x1000, Perm_Rw);
+    if (R_FAILED(shmemMap(&g_shm))) { return; }
+    g_mapped = true;
+    const uintptr_t base = reinterpret_cast<uintptr_t>(shmemGetAddr(&g_shm));
+    for (ptrdiff_t off = 0; off < 0x1000 - static_cast<ptrdiff_t>(sizeof(Shared)); off += 4) {
+        if (*reinterpret_cast<uint32_t *>(base + off) == 0x5452584E) { g_rt = reinterpret_cast<Shared *>(base + off); break; }
+    }
+}
+
+void Exit() {
+    if (g_mapped) { shmemClose(&g_shm); g_mapped = false; }
+    g_rt = nullptr;
+}
+
+State Get() {
+    if (!g_salty) { return State::NoSaltyNX; }
+    u64 pid = 0;
+    if (R_FAILED(pmdmntGetApplicationProcessId(&pid))) { return State::NoGame; }
+    if (g_rt == nullptr) { return State::NotRunning; }
+    if (!g_rt->pluginActive) { return State::Waiting; }
+    return State::Ready;
+}
+
+const char *StateText(State st) {
+    switch (st) {
+        case State::NoSaltyNX: return "Needs SaltyNX";
+        case State::NoGame: return "Start a game first";
+        case State::NotRunning: return "Not available in this game";
+        case State::Waiting: return "The game has not asked yet";
+        default: return "";
+    }
+}
+
+/* the per-game file ReverseNX-RT reads at the game's start (format 2) */
+bool Save() {
+    u64 pid = 0, tid = 0;
+    if (g_rt == nullptr || R_FAILED(pmdmntGetApplicationProcessId(&pid)) || R_FAILED(pmdmntGetProgramId(&tid, pid))) { return false; }
+    mkdir("sdmc:/SaltySD", 0777);
+    mkdir("sdmc:/SaltySD/plugins", 0777);
+    mkdir("sdmc:/SaltySD/plugins/ReverseNX-RT", 0777);
+    char path[96];
+    std::snprintf(path, sizeof(path), "sdmc:/SaltySD/plugins/ReverseNX-RT/%016lX.dat", tid);
+    if (g_rt->def) { remove(path); return true; }
+    FILE *f = std::fopen(path, "wb");
+    if (f == nullptr) { return false; }
+    const u8 data[] = { 'N', 'X', 'R', 'T', 2, static_cast<u8>(g_rt->isDocked ? 1 : 0),
+                        static_cast<u8>(g_rt->res.handheld_res), static_cast<u8>(g_rt->res.docked_res) };
+    const bool ok = std::fwrite(data, 1, sizeof(data), f) == sizeof(data);
+    std::fclose(f);
+    return ok;
+}
+
+const char *ModeText() {
+    if (g_rt == nullptr || g_rt->def) { return "Auto (system)"; }
+    return g_rt->isDocked ? "Docked" : "Handheld";
+}
+
+}  // namespace rnx
+
 class GuiMain : public tsl::Gui {
 public:
     tsl::elm::Element *createUI() override {
@@ -232,6 +346,57 @@ public:
             SftapSetScreenOff(on);
         });
         list->addItem(screen);
+
+        /* ReverseNX-RT: the running game as if docked or handheld, at a chosen resolution */
+        list->addItem(new tsl::elm::CategoryHeader("Game display (ReverseNX-RT)"));
+        const rnx::State st = rnx::Get();
+        if (st != rnx::State::Ready) {
+            auto info = new tsl::elm::ListItem("Status");
+            info->setValue(rnx::StateText(st), true);
+            list->addItem(info);
+        } else {
+            auto mode = new tsl::elm::ListItem("Mode");
+            mode->setValue(rnx::ModeText());
+            list->addItem(mode);
+            tsl::elm::ListItem *dres = nullptr, *hres = nullptr;
+            if (rnx::g_rt->wasDDRused) {
+                dres = new tsl::elm::ListItem("Docked resolution");
+                hres = new tsl::elm::ListItem("Handheld resolution");
+                list->addItem(dres);
+                list->addItem(hres);
+            }
+            /* the resolutions count only when NXBeam, not the system, sets the mode */
+            auto show = [dres, hres] {
+                if (dres == nullptr) { return; }
+                const bool on = !rnx::g_rt->def;
+                dres->setValue(on ? rnx::ResName[rnx::g_rt->res.docked_res] : "Pick a mode first", !on);
+                hres->setValue(on ? rnx::ResName[rnx::g_rt->res.handheld_res] : "Pick a mode first", !on);
+            };
+            show();
+            auto saved = [this] { if (!rnx::Save()) { this->header->setText("Could not save the game setting"); } };
+            mode->setClickListener([mode, show, saved](u64 keys) {
+                if ((keys & HidNpadButton_A) == 0 || rnx::g_rt == nullptr) { return false; }
+                /* Auto -> Docked -> Handheld -> Auto */
+                if (rnx::g_rt->def) { rnx::g_rt->def = false; rnx::g_rt->isDocked = true; }
+                else if (rnx::g_rt->isDocked) { rnx::g_rt->isDocked = false; }
+                else { rnx::g_rt->def = true; }
+                mode->setValue(rnx::ModeText());
+                show();
+                saved();
+                return true;
+            });
+            if (dres != nullptr) {
+                auto cycle = [show, saved](bool docked) {
+                    if (rnx::g_rt == nullptr || rnx::g_rt->def) { return; }
+                    if (docked) { rnx::g_rt->res.docked_res = (rnx::g_rt->res.docked_res + 1) % rnx::ResCount; }
+                    else { rnx::g_rt->res.handheld_res = (rnx::g_rt->res.handheld_res + 1) % rnx::ResCount; }
+                    show();
+                    saved();
+                };
+                dres->setClickListener([cycle](u64 keys) { if ((keys & HidNpadButton_A) == 0) { return false; } cycle(true); return true; });
+                hres->setClickListener([cycle](u64 keys) { if ((keys & HidNpadButton_A) == 0) { return false; } cycle(false); return true; });
+            }
+        }
 
         /* the sysmodule's beta switches: everything on the console, not only the game */
         list->addItem(new tsl::elm::CategoryHeader("Full mirroring (beta, may slow HOME)"));
@@ -298,9 +463,16 @@ class NXBeamOverlay : public tsl::Overlay {
 public:
     void initServices() override {
         fsdevMountSdmc();
-        tsl::hlp::doWithSmSession([] { spsmInitialize(); nifmInitialize(NifmServiceType_User); });
+        tsl::hlp::doWithSmSession([] {
+            spsmInitialize();
+            nifmInitialize(NifmServiceType_User);
+            pmdmntInitialize();
+            rnx::Init();
+        });
     }
     void exitServices() override {
+        rnx::Exit();
+        pmdmntExit();
         if (g_sftap_open) { serviceClose(&g_sftap); g_sftap_open = false; }
         nifmExit();
         spsmExit();
