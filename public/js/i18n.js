@@ -194,6 +194,7 @@ export function setLang(l) {
 }
 export function t(key, ...a) {
   let s = (DICT[lang] && DICT[lang][key]) || DICT.en[key] || key;
+  if (typeof s === 'function') return s(...a);
   a.forEach((v, i) => { s = s.replace(`{${i}}`, v); });
   return s;
 }

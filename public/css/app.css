@@ -319,5 +319,5 @@ body.fs.idle { cursor: none; }
 .rail-badge { position: absolute; top: 6px; right: 12px; width: 9px; height: 9px; border-radius: 50%; background: var(--beam); box-shadow: 0 0 0 2px var(--panel); }
 .update-progress.wide { width: 100%; }
 .upd-panel { box-shadow: none; }
-.upd-panel.has-update { background: var(--raise); border-radius: var(--r-md); padding: 14px 14px 16px; border-top: 0; box-shadow: inset 3px 0 0 var(--beam); }
+.upd-panel.has-update .upd-kv, .upd-panel.has-update #updStatus { padding-left: 12px; border-left: 3px solid var(--beam); }
 .upd-kv { margin: 0; }

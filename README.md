@@ -91,11 +91,24 @@ Then open `http://localhost:8090`. NXBeam finds the Switch by itself. Other devi
 
 ### Online updates
 
-From 1.18.0 every part updates itself from the latest release. Nothing changes until you confirm.
+> [!TIP]
+> **Use 1.18.2 or newer.** It updates itself: when a new release is out, NXBeam tells you and installs it with one click. Older versions have to be replaced by hand once. Download the latest files above, then you never have to do it again.
+
+Nothing changes until you confirm.
+
+**PC.** A bar appears at the top of NXBeam when a new version is out. **Update** downloads it, checks its checksum and restarts NXBeam. The **x** hides the bar until the next version.
+
+<img src="docs/update-bar.png" alt="NXBeam update bar: NXBeam 1.18.2 is available, with an Update button">
+
+The bar is easy to miss while you play, so **Settings** also gets a dot, and **Settings > Version & updates** always shows the installed and the latest version, with **Update** and **Check for updates**.
+
+<img src="docs/update-settings.png" width="420" alt="Settings, Version and updates: installed 1.18.1, latest 1.18.2, Update and Check for updates buttons">
+
+Start NXBeam with its launcher (`Start NXBeam.bat`, `Start NXBeam.command` or `start.sh`): the launcher is what installs the update. Your settings, recordings and screenshots are kept.
 
 | Where | How |
 |---|---|
-| **PC** (Windows, Mac, Linux) | A bar at the top of NXBeam says a new version is out. **Update** downloads it, checks it and restarts NXBeam. Start NXBeam with its launcher (`Start NXBeam.bat`, `.command` or `start.sh`). |
+| **PC** (Windows, Mac, Linux) | The bar above, or **Settings > Version & updates**. |
 | **Android** | A card on the home screen. **Update** downloads the APK; Android asks you to install it. |
 | **Switch** | Open **NXBeam Update** from the homebrew menu. It shows the installed and the latest version and updates the SD card files, keeping your settings, then restarts the Switch. |
 
@@ -116,7 +129,7 @@ From 1.18.0 every part updates itself from the latest release. Nothing changes u
 | **Android app** | Phones and Android TV: straight to the Switch over Wi-Fi or USB OTG, no PC. Records MP4 and takes screenshots to the gallery. |
 | **Switch menu** | NXBeam overlay: USB / Network mode, restart. |
 | **Full mirroring** (beta) | Everything on the console streams: the HOME menu, system settings, the Album and every app, not only games. Turn on **HOME menu** (and **System overlays** for the volume bar and menus) in the overlay; both are off by default because they can slow the HOME button in some games. Tested on FW 23.5.0. |
-| **Online updates** | PC, Android and Switch check the latest release and update with one confirmation. |
+| **Online updates** | PC, Android and Switch check the latest release and update with one confirmation. On the PC: a bar at the top and **Settings > Version & updates**. |
 | **Switch screen off** | Turn the console's screen off while it streams (saves battery when you play on the PC), one toggle in the overlay. |
 
 <a name="android-app-phones-and-tvs"></a>

@@ -163,7 +163,9 @@ Selama keduanya tersambung ke **router yang sama**, NXBeam tetap bisa tersambung
 
 Mulai versi 1.18.0 semua bagian NXBeam bisa diperbarui langsung dari internet. Tidak ada yang berubah sebelum Anda menekan Update.
 
-- **PC:** kalau ada versi baru, muncul bar di bagian atas NXBeam. Klik **Update**: NXBeam mengunduh versi baru, mencocokkan checksum, memasangnya, lalu menyala ulang sendiri. Jalankan NXBeam lewat `Start NXBeam.bat` (Windows), `Start NXBeam.command` (Mac), atau `start.sh` (Linux), karena launcher itulah yang memasang update. **Nanti** menyembunyikan pemberitahuan sampai ada versi yang lebih baru lagi.
+**Disarankan memakai versi 1.18.2 ke atas.** Di PC, notifikasi update baru tampil dengan benar mulai versi ini. Kalau masih memakai versi lama, unduh manual sekali dari halaman Releases. Setelah itu update berikutnya tinggal klik.
+
+- **PC:** kalau ada versi baru, muncul bar di bagian atas NXBeam. Klik **Update**: NXBeam mengunduh versi baru, mencocokkan checksum, memasangnya, lalu menyala ulang sendiri. Jalankan NXBeam lewat `Start NXBeam.bat` (Windows), `Start NXBeam.command` (Mac), atau `start.sh` (Linux), karena launcher itulah yang memasang update. Tombol **x** menyembunyikan bar sampai ada versi yang lebih baru lagi. Selain bar, tombol **Settings** di menu samping diberi titik, dan **Settings > Versi & update** selalu menampilkan versi terpasang, versi terbaru, tombol **Update**, dan **Cek update**.
 - **Android:** muncul kartu "NXBeam X tersedia" di layar utama aplikasi. Ketuk **Update**, APK diunduh, lalu Android menampilkan dialog pemasangan. Pertama kali, Android meminta izin "Instal aplikasi yang tidak dikenal" untuk NXBeam.
 - **Switch:** buka **NXBeam Update** dari menu homebrew (Album, atau tahan R saat membuka game). Aplikasi menampilkan versi terpasang dan versi terbaru. Tekan A untuk update: paket Switch diunduh, dicocokkan checksum-nya, dipasang ke SD card **tanpa menimpa pengaturan Anda** (`config.ini`), lalu tekan A lagi untuk restart. Versi terpasang juga tampil di overlay NXBeam.
 
