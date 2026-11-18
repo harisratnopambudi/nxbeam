@@ -19,6 +19,24 @@ NXBeam bekerja dengan sysmodule **[Switch Frame Tap](https://github.com/TomasUri
 | Proteksi akses | - | PIN opsional |
 | Simulator konsol untuk uji/demo | - | Ya |
 
+## Aplikasi Windows (NXBeam-Setup.exe)
+
+Cara termudah di Windows 10/11 adalah memakai **NXBeam-Setup.exe** dari halaman Releases.
+
+- Jalankan installer-nya. NXBeam terpasang untuk pengguna Windows yang sedang dipakai, jadi tidak butuh admin.
+- **Driver USB untuk Switch ikut terpasang otomatis.** Tidak perlu Zadig, dan Switch tidak perlu dicolok dulu. Windows hanya meminta izin sekali. Driver disimpan di Windows dan langsung dipakai saat Switch pertama kali dicolok dalam mode USB.
+  - Kalau perlu memasang ulang: Start menu > **NXBeam - Install USB driver**, atau lewat ikon NXBeam di tray.
+- NXBeam terbuka di **jendelanya sendiri**, tidak di tab browser. Mesinnya Edge (WebView2) yang sudah diatur untuk streaming:
+  - GPU selalu dipakai, dan di laptop dengan dua GPU yang dipakai GPU yang kencang, jadi FSR dan frame generation tetap tersedia;
+  - gambar tetap lancar walau jendelanya di belakang jendela lain (enak untuk OBS);
+  - suara langsung keluar tanpa perlu klik dulu.
+- **F11** untuk layar penuh.
+- Menutup jendela tidak menghentikan NXBeam: ia tetap berjalan di **tray** (dekat jam) supaya HP, TV, dan OBS tetap bisa menonton. Untuk benar-benar menutup: klik kanan ikon NXBeam > **Exit**. Di menu yang sama ada pilihan **Start with Windows**.
+- Update online tetap jalan seperti biasa. Aplikasinya memperbarui dirinya sendiri lalu terbuka lagi.
+- Kalau muncul **"Windows protected your PC"**, klik **More info > Run anyway**. Peringatan ini muncul karena installer belum ditandatangani (code signing berbayar).
+
+Versi portable (**NXBeam-PC-Windows.zip**) tetap tersedia. Ekstrak, lalu jalankan `NXBeam.exe`. Di versi portable, driver USB dipasang lewat menu tray **Install USB driver** atau dengan Zadig.
+
 ## Kebutuhan
 
 - **Komputer hub** (Windows, Linux, atau macOS) dengan [Node.js 18+](https://nodejs.org).

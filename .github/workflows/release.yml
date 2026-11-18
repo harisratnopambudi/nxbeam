@@ -15,32 +15,43 @@ permissions:
 
 jobs:
   pc-windows:
-    name: PC viewer (Windows, portable)
-    runs-on: windows-latest
+    name: PC (Windows app, installer and portable)
+    # libwdi (the USB driver tool) builds with the Visual Studio 2022 toolset
+    runs-on: windows-2022
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - uses: actions/cache@v4
+        with:
+          path: windows/wdi/wdi-simple.exe
+          key: wdi-simple-${{ hashFiles('windows/build-wdi.ps1') }}
+      - name: Build the USB driver tool (libwdi)
+        shell: pwsh
+        run: |
+          if (-not (Test-Path windows/wdi/wdi-simple.exe)) { ./windows/build-wdi.ps1 }
+          if (-not (Test-Path windows/wdi/libwdi)) { git clone -q --depth 1 --branch v1.5.1 https://github.com/pbatard/libwdi windows/wdi/libwdi }
       - name: Install dependencies (ffmpeg and USB included)
         run: npm ci --omit=dev --no-fund --no-audit
       - name: Self-test
         run: node tools/selftest.js
-      - name: Assemble the portable folder
+      - name: Build NXBeam.exe, the portable zip and the installer
+        shell: pwsh
+        run: ./windows/build.ps1 -Build $env:GITHUB_RUN_NUMBER
+      - name: The window starts, loads the viewer and closes cleanly
         shell: pwsh
         run: |
-          $dst = "dist/NXBeam"
-          New-Item -ItemType Directory -Force -Path "$dst/runtime" | Out-Null
-          Copy-Item -Recurse src, public, tools, node_modules, package.json, LICENSE, "Start NXBeam.bat" $dst
-          Copy-Item (Get-Command node).Source "$dst/runtime/node.exe"
-          Copy-Item package.json "$dst/node_modules/.nxbeam-package.json"
-          node -e "require('fs').writeFileSync(process.argv[1], JSON.stringify({version: require('./package.json').version, build: Number(process.env.GITHUB_RUN_NUMBER)}))" "$dst/build.json"
-          if (-not (Test-Path "$dst/node_modules/ffmpeg-static/ffmpeg.exe")) { throw "ffmpeg.exe missing" }
-          Compress-Archive -Path $dst -DestinationPath dist/NXBeam-PC-Windows.zip
+          $p = Start-Process dist/NXBeam/NXBeam.exe -ArgumentList "--selftest `"$PWD\selftest`"" -PassThru
+          if (-not $p.WaitForExit(150000)) { $p.Kill(); throw "NXBeam.exe self-test timed out" }
+          Get-Content selftest/result.txt | Select-Object -First 3
+          if ($p.ExitCode -ne 0) { throw "NXBeam.exe self-test failed" }
       - uses: actions/upload-artifact@v4
         with:
           name: pc-windows
-          path: dist/NXBeam-PC-Windows.zip
+          path: |
+            dist/NXBeam-PC-Windows.zip
+            dist/NXBeam-Setup.exe
 
   pc-macos:
     name: PC viewer (macOS, portable)
@@ -190,7 +201,7 @@ jobs:
           path: assets
           merge-multiple: true
       - name: Keep only the release zips
-        run: find assets -type f ! -name '*.zip' ! -name '*.apk' -delete
+        run: find assets -type f ! -name '*.zip' ! -name '*.apk' ! -name 'NXBeam-Setup.exe' -delete
       - name: Source for Linux / macOS
         run: |
           node -e "require('fs').writeFileSync(process.argv[1], JSON.stringify({version: require('./package.json').version, build: Number(process.env.GITHUB_RUN_NUMBER)}))" build.json
@@ -218,12 +229,14 @@ jobs:
           files: |
             assets/*.zip
             assets/*.apk
+            assets/NXBeam-Setup.exe
             assets/latest.json
           body: |
             ## Unduhan
             | File | Untuk |
             |---|---|
-            | **NXBeam-PC-Windows.zip** | Viewer di PC Windows. Portable: ekstrak, lalu klik `Start NXBeam.bat`. Tidak perlu memasang Node.js. |
+            | **NXBeam-Setup.exe** | **PC Windows 10/11 (disarankan).** Installer: aplikasi NXBeam dengan jendela sendiri, ikon di tray, update otomatis, dan driver USB untuk Switch langsung terpasang (tanpa Zadig, Switch tidak perlu dicolok dulu). |
+            | NXBeam-PC-Windows.zip | Versi portable Windows: ekstrak, lalu klik `NXBeam.exe` (atau `Start NXBeam.bat`). |
             | **NXBeam-PC-macOS-AppleSilicon.zip** | Mac M1/M2/M3/M4. Portable: ekstrak, lalu klik kanan `Start NXBeam.command` > Open. |
             | **NXBeam-PC-macOS-Intel.zip** | Mac Intel. Sama seperti di atas. |
             | **NXBeam-Android.apk** | HP, tablet, dan Android TV / Google TV (Android 8 ke atas). Tersambung langsung ke Switch lewat Wi-Fi atau USB OTG tanpa PC, atau menonton NXBeam yang jalan di PC. |
