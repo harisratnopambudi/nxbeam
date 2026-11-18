@@ -198,6 +198,7 @@ Open the overlay with your overlay combo and pick **NXBeam**. The combo depends 
 |---|---|
 | **USB mode** / **Network mode** | How the Switch connects to NXBeam: USB cable or network. |
 | **Switch IP** | The console's address on the network. Type it in NXBeam if it does not find the Switch by itself. |
+| **Resolution** | **1080p** or **720p (smoothest)**, the most the console sends. Applies at once, no restart: the stream pauses for a moment and comes back at the new size. 720p keeps a steady 60 fps; NXBeam upscales it with FSR. |
 | **Screen off while streaming** | **On**: the Switch screen goes dark while a stream runs (saves battery; play on the PC). Applies at once. |
 | **HOME menu** (beta, off by default) | **On**: the HOME menu, the Album and system screens stream too, not only games. In some games it makes the HOME button slow to respond, so it is off unless you turn it on. |
 | **System overlays** (beta, off by default) | **On**: the volume bar, quick settings, power menu and Tesla / Ultrahand menus appear in the stream. |

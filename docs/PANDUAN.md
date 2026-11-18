@@ -94,7 +94,7 @@ Pengaturannya ada di **Settings > Picture**, berlaku untuk perangkat yang sedang
 
 - **Upscaling: AMD FSR 1.0** (bawaan). Gambar dari Switch diperbesar ke ukuran layar dengan FSR 1 (EASU + RCAS), maksimal 2x: 720p menjadi 1440p, 1080p menjadi 4K. Hasilnya lebih tajam daripada diperbesar biasa. Slider **Ketajaman** mengatur kekuatan RCAS. Pilihan lain: **Penajaman (CAS)**, **Piksel** (nearest, cocok untuk game pixel art), atau **Mati**.
 - **Frame generation (beta)**, bawaan mati. Di antara dua frame asli disisipkan satu frame buatan. Gerakannya dihitung di GPU, jadi game 30 fps tampil 60 di monitor 60 Hz, dan game 60 fps tampil sekitar 120 di monitor 120/144 Hz. Fitur ini hanya aktif kalau game berjalan di bawah refresh layar. Jedanya bertambah sekitar setengah frame (17 ms di 30 fps), dan di gerakan yang sangat cepat atau objek yang tiba-tiba muncul bisa terlihat sedikit artefak.
-- FSR tidak menaikkan fps game; fps tetap ditentukan konsol. Triknya: kalau game tersendat di 1080p, set **Maximum resolution** di aplikasi Switch Frame Tap ke **720p** agar konsol stabil 60 fps, lalu biarkan FSR menaikkan resolusinya di PC.
+- FSR tidak menaikkan fps game; fps tetap ditentukan konsol. Triknya: kalau game tersendat di 1080p, set **Resolution** di overlay NXBeam ke **720p** (langsung berlaku, tanpa restart) agar konsol stabil 60 fps, lalu biarkan FSR menaikkan resolusinya di PC.
 - DLSS, FSR 2/3, dan XeSS tidak bisa dipakai. Ketiganya butuh data gerak dari engine game, sedangkan NXBeam hanya menerima video jadi.
 - Keduanya butuh akselerasi GPU di browser. Kalau browser berjalan tanpa GPU, atau perangkat tidak kuat (mode ringan aktif), keduanya mati sendiri. Statusnya bisa dilihat di halaman **Stats**.
 
@@ -121,7 +121,7 @@ NXBeam tidak bisa menambah frame yang tidak dikirim konsol, dan protokolnya tida
 
 | Tujuan | Setting |
 |---|---|
-| Selalu lancar (60 fps), paling pasti | Picture > Maximum resolution: **720p**. NXBeam memperbesar dan menajamkannya ke layar. |
+| Selalu lancar (60 fps), paling pasti | Overlay NXBeam > **Resolution: 720p** (langsung berlaku, tanpa restart). NXBeam memperbesar dan menajamkannya ke layar. |
 | 1080p, tetap di atas 30 fps | Picture > **Faster memory while streaming: On**, CPU **1785 MHz** dengan sys-clk, matikan cheat untuk game itu, dan kabel LAN ke dock |
 
 ## Pintasan keyboard

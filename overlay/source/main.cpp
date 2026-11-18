@@ -3,8 +3,9 @@
  * and restart. The streaming sysmodule reads the mode from
  * sdmc:/NXBeam/console-settings/config.ini at boot.
  *
- * "Screen off while streaming" also applies at once through the sysmodule's
- * "sftap" control service (the call the Switch Frame Tap overlay makes, GPL-2.0).
+ * "Screen off while streaming" and the resolution apply at once through the
+ * sysmodule's "sftap" control service (the calls the Switch Frame Tap overlay
+ * makes, GPL-2.0): screen off directly, the resolution by a config reload.
  */
 #define TESLA_INIT_IMPL
 #include <tesla.hpp>
@@ -43,6 +44,12 @@ bool SftapConnect() {
         }
     });
     return g_sftap_open;
+}
+
+/* the sysmodule reads config.ini again; a running stream restarts with it (sftap 2) */
+void SftapReload() {
+    if (!SftapConnect()) { return; }
+    serviceDispatch(&g_sftap, 2);
 }
 
 void SftapSetScreenOff(bool on) {
@@ -139,6 +146,8 @@ bool SetKey(const char *key, const std::string &value) {
 
 bool SetMode(const char *mode) { return SetKey("connection", mode); }
 
+std::string ResLabel(const std::string &v) { return v == "720" ? "720p (smoothest)" : "1080p"; }
+
 /*
  * Settings version 2 (NXBeam 1.18.1): streaming the HOME menu and the system
  * overlays is beta and slowed the HOME button in some games (EA FC): both go
@@ -203,7 +212,20 @@ public:
         ipItem->setValue(SwitchIp(), true);
         list->addItem(ipItem);
 
-        list->addItem(new tsl::elm::CategoryHeader("Screen"));
+        list->addItem(new tsl::elm::CategoryHeader("Picture (applies right away)"));
+        /* max_resolution: 720 keeps the copy light, steadier 60 fps; NXBeam upscales it */
+        auto res = new tsl::elm::ListItem("Resolution");
+        res->setValue(ResLabel(GetKey("max_resolution", "1080")));
+        res->setClickListener([this, res](u64 keys) {
+            if ((keys & HidNpadButton_A) == 0) { return false; }
+            const std::string next = GetKey("max_resolution", "1080") == "720" ? "1080" : "720";
+            if (!SetKey("max_resolution", next)) { this->header->setText("Could not save to the SD card"); return true; }
+            SftapReload();
+            res->setValue(ResLabel(next));
+            return true;
+        });
+        list->addItem(res);
+
         auto screen = new tsl::elm::ToggleListItem("Screen off while streaming", GetKey("screen_off", "0") == "1", "On", "Off");
         screen->setStateChangedListener([this](bool on) {
             if (!SetKey("screen_off", on ? "1" : "0")) { this->header->setText("Could not save to the SD card"); }
