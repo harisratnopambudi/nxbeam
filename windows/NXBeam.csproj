@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    NXBeam for Windows: a native window (WebView2) around the NXBeam server,
+    with a tray icon and the USB driver installer. .NET Framework 4.8 is part
+    of Windows 10 (1903+) and 11, so nothing extra is installed for it.
+  -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <PlatformTarget>x64</PlatformTarget>
+    <AssemblyName>NXBeam</AssemblyName>
+    <RootNamespace>NXBeam</RootNamespace>
+    <ApplicationIcon>nxbeam.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Company>Haris DevLab</Company>
+    <Product>NXBeam</Product>
+    <Copyright>Haris DevLab</Copyright>
+    <Version>$(NXBeamVersion)</Version>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(NXBeamVersion)' == ''">
+    <NXBeamVersion>0.0.0</NXBeamVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.*" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="nxbeam.ico" LogicalName="nxbeam.ico" />
+  </ItemGroup>
+</Project>

@@ -146,3 +146,11 @@ const shutdown = async () => {
 };
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
+
+/* the Windows app (NXBeam.exe) runs this server without a console: it asks it
+ * to stop through stdin, so a recording in progress is finished properly */
+if (process.env.NXBEAM_APP) {
+  process.stdin.setEncoding('utf8');
+  process.stdin.on('data', (d) => { if (/quit/.test(d)) shutdown(); });
+  process.stdin.on('error', () => {});
+}

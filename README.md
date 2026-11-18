@@ -24,7 +24,7 @@ Mirror the whole console, HOME menu included, to any browser or the Android app 
 [![Downloads](https://img.shields.io/github/downloads/harisratnopambudi/nxbeam/total?color=58c68e)](https://github.com/harisratnopambudi/nxbeam/releases)
 [![License](https://img.shields.io/badge/license-MIT%20%2B%20GPL--2.0-blue)](#license)
 
-![Windows](https://img.shields.io/badge/Windows-portable-0078d4?logo=windows&logoColor=white)
+![Windows](https://img.shields.io/badge/Windows-installer%20%2B%20portable-0078d4?logo=windows&logoColor=white)
 ![Linux](https://img.shields.io/badge/Linux-Node.js-fcc624?logo=linux&logoColor=black)
 ![macOS](https://img.shields.io/badge/macOS-portable-000000?logo=apple&logoColor=white)
 ![Android](https://img.shields.io/badge/Android-phone%20%2B%20TV-3ddc84?logo=android&logoColor=white)
@@ -79,7 +79,8 @@ Grab the files from **[Releases](https://github.com/harisratnopambudi/nxbeam/rel
 | File | For | How |
 |---|---|---|
 | **`NXBeam-Switch.zip`** | The Switch SD card | Extract to the **root of the SD card** (`atmosphere`, `NXBeam`, `switch`) and power on. |
-| **`NXBeam-PC-Windows.zip`** | The viewer on a Windows PC | Extract and run **`Start NXBeam.bat`**. Portable: Node.js, ffmpeg and USB support are included. |
+| **`NXBeam-Setup.exe`** | **Windows 10 / 11 (recommended)** | Run it. NXBeam installs for your user (no administrator), with its own window, a tray icon, online updates, and the **USB driver for the Switch, installed right away: no Zadig, no need to plug the Switch in first**. See [Windows app](#windows-app). |
+| `NXBeam-PC-Windows.zip` | Windows, portable | Extract and run **`NXBeam.exe`** (or `Start NXBeam.bat` for the browser). Node.js, ffmpeg and USB support are included. |
 | **`NXBeam-PC-macOS-AppleSilicon.zip`** | Mac with M1 / M2 / M3 / M4 | Extract, then **right-click `Start NXBeam.command` > Open** (only the first time; after that a double-click is enough). Portable like the Windows build. |
 | **`NXBeam-PC-macOS-Intel.zip`** | Mac with an Intel CPU | Same as above. |
 | **`NXBeam-Android.apk`** | Android phones, tablets and Android TV / Google TV (Android 8+) | Install the APK. Connects to the Switch on its own, no PC needed. See [Android app](#android-app-phones-and-tvs). |
@@ -87,7 +88,23 @@ Grab the files from **[Releases](https://github.com/harisratnopambudi/nxbeam/rel
 
 On a Mac the first start may say the app is from an unidentified developer: right-click > **Open**, or allow it in **System Settings > Privacy & Security > Open Anyway**. USB needs no driver on macOS.
 
-Then open `http://localhost:8090`. NXBeam finds the Switch by itself. Other devices on the same Wi-Fi can watch too: open the PC's address shown in the NXBeam window, for example `http://192.168.1.10:8090`.
+<a name="windows-app"></a>
+### Windows app
+
+`NXBeam-Setup.exe` installs NXBeam as a Windows app:
+
+- **Its own window**, not a browser tab. It runs on WebView2, the Edge engine in Windows, set up for streaming:
+  - the GPU is used even where a browser would refuse it, and the fast GPU on laptops with two, so FSR and frame generation stay available;
+  - drawing does not slow down when the window is in the background or covered (for OBS window capture);
+  - sound plays at once, with no click first.
+- **F11**: full screen.
+- **Tray icon**: closing the window keeps NXBeam running for phones, TVs and OBS. Right-click the icon for Open, Open in browser, Install USB driver, Start with Windows, and Exit.
+- **USB driver**: the installer installs WinUSB for the Switch (USB ID `1209` `5F1E`, named **NXBeam**). Windows asks for permission once. The Switch does not need to be plugged in: the driver waits in Windows' driver store and is used the first time the Switch connects in USB mode. It is the same engine as Zadig (libwdi).
+  - To install it again later: Start menu > **NXBeam - Install USB driver**, or the tray icon.
+- **Online updates** work as in the portable build. The app replaces itself and restarts.
+- Windows may show **"Windows protected your PC"** for the installer, because it is not code-signed. Click **More info > Run anyway**.
+
+Then open `http://localhost:8090` (the Windows app opens it in its own window). NXBeam finds the Switch by itself. Other devices on the same Wi-Fi can watch too: open the PC's address shown in the NXBeam window, for example `http://192.168.1.10:8090`.
 
 ### Online updates
 
@@ -211,6 +228,8 @@ Open the overlay with your overlay combo and pick **NXBeam**. The combo depends 
 
 ### USB driver on Windows (once)
 
+**With the installer (`NXBeam-Setup.exe`) this is already done.** The steps below are for the portable zip, or if the automatic install did not work.
+
 1. Put the Switch in **USB mode** from the NXBeam overlay and restart it, then plug the USB-C cable in (handheld).
 2. Download and open **[Zadig](https://zadig.akeo.ie/)**.
 3. Click **Options**, then **List All Devices**, so the Switch shows up in the list.
@@ -230,7 +249,7 @@ The full guide (USB, 1080p60, OBS, live streaming, smoothness tips) is in **[doc
 <a name="build"></a>
 <img src="docs/headers/build.svg" width="100%" alt="Build">
 
-- Every push to `main` builds and publishes a release from the version in `package.json` (GitHub Actions: Windows portable build, the Switch overlay in `devkitpro/devkita64`, and the SD pack).
+- Every push to `main` builds and publishes a release from the version in `package.json` (GitHub Actions: the Windows app, installer and portable build, the Switch overlay in `devkitpro/devkita64`, and the SD pack).
 - The Switch overlay lives in [`overlay/`](overlay).
 - From source: `npm install && npm start`. Without a console: `npm run simulate`. Tests: `npm test`.
 

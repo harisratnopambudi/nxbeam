@@ -12,3 +12,9 @@ android/local.properties
 # online update staging
 .update/
 build.json
+
+windows/out/
+windows/obj/
+windows/bin/
+windows/wdi/
+windows/MicrosoftEdgeWebview2Setup.exe

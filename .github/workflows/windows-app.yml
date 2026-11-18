@@ -1,0 +1,85 @@
+name: Windows app (test)
+
+# Builds NXBeam for Windows (window, installer, driver tool) on a branch and
+# checks it on a real Windows machine; the results go to the ci-e2e branch.
+on:
+  push:
+    branches-ignore: [main, ci-e2e]
+    paths: ['windows/**', 'src/**', 'public/**', 'tools/apply-update.js', '.github/workflows/windows-app.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/cache@v4
+        with:
+          path: windows/wdi/wdi-simple.exe
+          key: wdi-simple-${{ hashFiles('windows/build-wdi.ps1') }}
+      - name: Build the USB driver tool (libwdi)
+        shell: pwsh
+        run: |
+          if (-not (Test-Path windows/wdi/wdi-simple.exe)) { ./windows/build-wdi.ps1 }
+          if (-not (Test-Path windows/wdi/libwdi)) { git clone -q --depth 1 --branch v1.5.1 https://github.com/pbatard/libwdi windows/wdi/libwdi }
+      - run: npm ci --omit=dev --no-fund --no-audit
+      - name: Build NXBeam for Windows
+        shell: pwsh
+        run: ./windows/build.ps1 -Build $env:GITHUB_RUN_NUMBER
+      - name: Test
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Continue"
+          $out = "e2e"; New-Item -ItemType Directory -Force $out | Out-Null
+          "installer: $((Get-Item dist/NXBeam-Setup.exe).Length) bytes" | Out-File "$out/sizes.txt"
+          "zip: $((Get-Item dist/NXBeam-PC-Windows.zip).Length) bytes" | Out-File -Append "$out/sizes.txt"
+
+          # 1. the installer, silent, for this user
+          Start-Process dist/NXBeam-Setup.exe -Wait -ArgumentList '/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /TASKS="desktopicon" /LOG=e2e\setup.log'
+          $app = "$env:LOCALAPPDATA\Programs\NXBeam"
+          Get-ChildItem $app | Select-Object Name, Length | Out-File "$out/installed.txt"
+
+          # 2. the window: starts the server, loads the viewer, reports what the page has
+          $p = Start-Process "$app\NXBeam.exe" -ArgumentList "--selftest `"$PWD\$out\window`"" -PassThru
+          if (-not $p.WaitForExit(150000)) { $p.Kill(); "selftest: timeout" | Out-File "$out/window-timeout.txt" }
+          "exit=$($p.ExitCode)" | Out-File "$out/window-exit.txt"
+          Copy-Item "$env:LOCALAPPDATA\NXBeam\nxbeam.log" "$out/nxbeam.log" -ErrorAction SilentlyContinue
+          Get-Process node, NXBeam -ErrorAction SilentlyContinue | Out-File "$out/left-running.txt"
+
+          # 3. the USB driver with no Switch plugged in: staged in the driver store
+          $drv = Start-Process "$app\driver\wdi-simple.exe" -Wait -PassThru -NoNewWindow -RedirectStandardOutput "$out/driver.txt" -RedirectStandardError "$out/driver-err.txt" `
+            -ArgumentList ('--vid 0x1209 --pid 0x5F1E --type 0 --name "NXBeam" --manufacturer "Haris DevLab" --inf "nxbeam.inf" --dest "' + "$env:TEMP\NXBeam-driver" + '" --timeout 120000 --log 1')
+          "driver exit=$($drv.ExitCode)" | Out-File -Append "$out/driver.txt"
+          pnputil /enum-drivers | Out-File "$out/pnputil.txt"
+          Get-Content "$env:TEMP\NXBeam-driver\nxbeam.inf" -ErrorAction SilentlyContinue | Out-File "$out/nxbeam.inf.txt"
+
+          # 4. an online update while NXBeam.exe runs: the files in use are renamed, not lost
+          $u = "$env:TEMP\upd"; New-Item -ItemType Directory -Force "$u\tools", "$u\.update\staged" | Out-Null
+          Copy-Item tools/apply-update.js "$u\tools\"
+          Copy-Item "$app\runtime\node.exe" "$u\busy.exe"
+          Copy-Item "$app\NXBeam.exe" "$u\.update\staged\busy.exe"
+          "new" | Set-Content "$u\.update\staged\other.txt"
+          '{"from":{"version":"1"},"to":{"version":"2","build":2}}' | Set-Content "$u\.update\ready.json"
+          $busy = Start-Process "$u\busy.exe" -ArgumentList '-e "setTimeout(()=>{},20000)"' -PassThru -WindowStyle Hidden
+          Start-Sleep 1
+          & "$app\runtime\node.exe" "$u\tools\apply-update.js" *> "$out/update.txt"
+          Get-ChildItem $u | Select-Object Name, Length | Out-File -Append "$out/update.txt"
+          $busy.Kill()
+          exit 0
+      - name: Publish the results to the ci-e2e branch
+        if: always()
+        shell: bash
+        run: |
+          cd e2e
+          git init -q -b ci-e2e
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A
+          git commit -q -m "windows results for ${GITHUB_SHA}"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" ci-e2e
