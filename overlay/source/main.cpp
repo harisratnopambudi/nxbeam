@@ -547,7 +547,7 @@ public:
         list->addItem(ipItem);
 
         list->addItem(new tsl::elm::CategoryHeader("Picture (applies right away)"));
-        /* max_resolution: 720 keeps the copy light, steadier 60 fps; NXBeam upscales it */
+        /* max_resolution: 720 keeps the copy light, steadier 60 fps */
         auto res = new tsl::elm::ListItem("Resolution");
         res->setValue(ResLabel(GetKey("max_resolution", "1080")));
         res->setClickListener([this, res](u64 keys) {

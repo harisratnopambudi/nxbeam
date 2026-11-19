@@ -94,7 +94,7 @@ On a Mac the first start may say the app is from an unidentified developer: righ
 `NXBeam-Setup.exe` installs NXBeam as a Windows app:
 
 - **Its own window**, not a browser tab. It runs on WebView2, the Edge engine in Windows, set up for streaming:
-  - the GPU is used even where a browser would refuse it, and the fast GPU on laptops with two, so FSR and frame generation stay available;
+  - the GPU is used even where a browser would refuse it, and the fast GPU on laptops with two, so frame generation stays available;
   - drawing does not slow down when the window is in the background or covered (for OBS window capture);
   - sound plays at once, with no click first.
 - **F11**: full screen.
@@ -143,7 +143,6 @@ Start NXBeam with its launcher (`Start NXBeam.bat`, `Start NXBeam.command` or `s
 | **Play mode** | One click: sound on, controller taken, fullscreen, a small fps counter. |
 | **Frame rate that follows the game** | 60 fps when the game holds it; an even, locked 30 fps when it does not. |
 | **Smooth on Wi-Fi** | Adaptive frame pacing and an audio buffer that absorbs bursts and clock drift. |
-| **AMD FSR 1.0 upscaling** | The picture is upscaled to your screen with FSR 1 (EASU + RCAS), so 720p looks sharp on a 1440p or 4K monitor. Also Sharpen (CAS), Pixel (for pixel-art games) or Off, in **Settings > Picture > Upscaling**. Runs on the GPU in the browser. |
 | **Frame generation** (beta) | Inserts a generated frame between every two real ones, so a 30 fps game shows at 60 on a 60 Hz screen (or 60 at 120 on a high-refresh screen). Motion is estimated on the GPU; adds about half a frame of delay. Off by default: **Settings > Picture**. |
 | **Instant replay** | Save the last 30 seconds as MP4 with one click (or `C`). |
 | **Record & go live** | MP4 and RTMP (YouTube, Twitch), as sent by the console or scaled to 1080p60. |
@@ -215,7 +214,7 @@ Open the overlay with your overlay combo and pick **NXBeam**. The combo depends 
 |---|---|
 | **USB mode** / **Network mode** | How the Switch connects to NXBeam: USB cable or network. |
 | **Switch IP** | The console's address on the network. Type it in NXBeam if it does not find the Switch by itself. |
-| **Resolution** | **1080p** or **720p (smoothest)**, the most the console sends. Applies at once, no restart: the stream pauses for a moment and comes back at the new size. 720p keeps a steady 60 fps; NXBeam upscales it with FSR. |
+| **Resolution** | **1080p** or **720p (smoothest)**, the most the console sends. Applies at once, no restart: the stream pauses for a moment and comes back at the new size. 720p keeps a steadier 60 fps. |
 | **Game display** (ReverseNX-RT) | Needs [SaltyNX](https://github.com/masagrator/SaltyNX). **Mode**: Auto, **Docked** or **Handheld** for the running game, live: a handheld Switch can run the game as docked, at its docked (1080p) resolution, which NXBeam then streams. **Docked / Handheld resolution**: the game's default display resolution (480p to 1080p), for games that ask for it. Saved per game, in the same file ReverseNX-RT uses. Built in from [ReverseNX-RT](https://github.com/masagrator/ReverseNX-RT) by masagrator (MIT). |
 | **Screen off while streaming** | **On**: the Switch screen goes dark while a stream runs (saves battery; play on the PC). Applies at once. |
 | **HOME menu** (beta, off by default) | **On**: the HOME menu, the Album and system screens stream too, not only games. In some games it makes the HOME button slow to respond, so it is off unless you turn it on. |

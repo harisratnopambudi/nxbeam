@@ -1,7 +1,7 @@
 /*
  * NXBeam player: H.264 Annex-B access units -> WebCodecs VideoDecoder ->
- * WebGL: FSR 1 upscaling (EASU + RCAS) or CAS sharpening, colour adjustments and
- * optional frame generation (WebGL2), or a 2D canvas fallback.
+ * WebGL (colour + contrast-adaptive sharpening, optional frame generation on
+ * WebGL2) or 2D canvas fallback.
  * Audio: 16-bit PCM chunks scheduled on a Web Audio clock with a small jitter buffer.
  */
 
@@ -23,7 +23,7 @@ function codecFromAnnexB(u8) {
 const VERT = `attribute vec2 p; varying vec2 uv; uniform float flip;
 void main(){ uv = vec2((p.x+1.0)*0.5, flip > 0.5 ? 1.0-(p.y+1.0)*0.5 : (p.y+1.0)*0.5); gl_Position = vec4(p,0.0,1.0); }`;
 
-// last pass: sharpening (none / CAS / FSR RCAS) and the picture adjustments
+// last pass: contrast-adaptive sharpening and the picture adjustments
 const FRAG = `precision highp float;
 varying vec2 uv; uniform sampler2D tex; uniform vec2 texel;
 uniform float bright, contrast, sat, sharp, algo;
@@ -33,93 +33,16 @@ void main(){
   if (algo > 0.5 && sharp > 0.001) {
     vec3 n = px(vec2(0.0,-1.0)), s = px(vec2(0.0,1.0)), e = px(vec2(1.0,0.0)), w = px(vec2(-1.0,0.0));
     vec3 mn = min(min(n,s), min(e,w)), mx = max(max(n,s), max(e,w));
-    if (algo < 1.5) {
-      // contrast-adaptive sharpening (AMD CAS style, single pass)
-      vec3 mn5 = min(c, mn), mx5 = max(c, mx);
-      vec3 amp = sqrt(clamp(min(mn5, 1.0-mx5) / max(mx5, 1e-4), 0.0, 1.0));
-      vec3 wgt = -amp / mix(8.0, 5.0, sharp);
-      c = clamp((c + (n+s+e+w)*wgt) / (1.0 + 4.0*wgt), 0.0, 1.0);
-    } else {
-      // AMD FidelityFX FSR 1 RCAS (robust contrast-adaptive sharpening)
-      vec3 hitMin = min(mn, c) / (4.0*mx + 1e-5);
-      vec3 hitMax = (1.0 - max(mx, c)) / (4.0*mn - 4.0 - 1e-5);
-      vec3 l3 = max(-hitMin, hitMax);
-      float lobe = max(-0.1875, min(max(l3.r, max(l3.g, l3.b)), 0.0)) * sharp;
-      c = clamp((lobe*(n+s+e+w) + c) / (4.0*lobe + 1.0), 0.0, 1.0);
-    }
+    // contrast-adaptive sharpening (AMD CAS style, single pass)
+    vec3 mn5 = min(c, mn), mx5 = max(c, mx);
+    vec3 amp = sqrt(clamp(min(mn5, 1.0-mx5) / max(mx5, 1e-4), 0.0, 1.0));
+    vec3 wgt = -amp / mix(8.0, 5.0, sharp);
+    c = clamp((c + (n+s+e+w)*wgt) / (1.0 + 4.0*wgt), 0.0, 1.0);
   }
   c = (c - 0.5) * contrast + 0.5 + bright;
   float l = dot(c, vec3(0.2126, 0.7152, 0.0722));
   c = mix(vec3(l), c, sat);
   gl_FragColor = vec4(clamp(c, 0.0, 1.0), 1.0);
-}`;
-
-// AMD FidelityFX FSR 1 EASU (edge-adaptive spatial upsampling), 12 taps
-const EASU = `precision highp float;
-varying vec2 uv; uniform sampler2D tex; uniform vec2 inSize;
-vec3 T(vec2 p){ return texture2D(tex, (p + 0.5) / inSize).rgb; }
-float Lu(vec3 c){ return c.g + 0.5*(c.r + c.b); }
-void setF(inout vec2 dir, inout float len, float w, float lA, float lB, float lC, float lD, float lE){
-  float lenX = max(abs(lD - lC), abs(lC - lB));
-  float dirX = lD - lB;
-  dir.x += dirX * w;
-  lenX = clamp(abs(dirX) / max(lenX, 1e-5), 0.0, 1.0); lenX *= lenX;
-  len += lenX * w;
-  float lenY = max(abs(lE - lC), abs(lC - lA));
-  float dirY = lE - lA;
-  dir.y += dirY * w;
-  lenY = clamp(abs(dirY) / max(lenY, 1e-5), 0.0, 1.0); lenY *= lenY;
-  len += lenY * w;
-}
-void tapF(inout vec3 aC, inout float aW, vec2 off, vec2 dir, vec2 len2, float lob, float clp, vec3 c){
-  vec2 v = vec2(off.x*dir.x + off.y*dir.y, -off.x*dir.y + off.y*dir.x) * len2;
-  float d2 = min(dot(v, v), clp);
-  float wB = 0.4*d2 - 1.0, wA = lob*d2 - 1.0;
-  wB *= wB; wA *= wA;
-  wB = 1.5625*wB - 0.5625;
-  float w = wB * wA;
-  aC += c*w; aW += w;
-}
-void main(){
-  vec2 pp = uv * inSize - 0.5;
-  vec2 fp = floor(pp); pp -= fp;
-  vec3 b = T(fp + vec2(0.0,-1.0)), c = T(fp + vec2(1.0,-1.0));
-  vec3 e = T(fp + vec2(-1.0,0.0)), f = T(fp), g = T(fp + vec2(1.0,0.0)), h = T(fp + vec2(2.0,0.0));
-  vec3 i = T(fp + vec2(-1.0,1.0)), j = T(fp + vec2(0.0,1.0)), k = T(fp + vec2(1.0,1.0)), l = T(fp + vec2(2.0,1.0));
-  vec3 n = T(fp + vec2(0.0,2.0)), o = T(fp + vec2(1.0,2.0));
-  float bL = Lu(b), cL = Lu(c), eL = Lu(e), fL = Lu(f), gL = Lu(g), hL = Lu(h);
-  float iL = Lu(i), jL = Lu(j), kL = Lu(k), lL = Lu(l), nL = Lu(n), oL = Lu(o);
-  vec2 dir = vec2(0.0); float len = 0.0;
-  setF(dir, len, (1.0-pp.x)*(1.0-pp.y), bL, eL, fL, gL, jL);
-  setF(dir, len, pp.x*(1.0-pp.y), cL, fL, gL, hL, kL);
-  setF(dir, len, (1.0-pp.x)*pp.y, fL, iL, jL, kL, nL);
-  setF(dir, len, pp.x*pp.y, gL, jL, kL, lL, oL);
-  float dirR = dot(dir, dir);
-  bool zro = dirR < 1.0/32768.0;
-  dirR = zro ? 1.0 : inversesqrt(dirR);
-  dir.x = zro ? 1.0 : dir.x;
-  dir *= dirR;
-  len = len * 0.5; len *= len;
-  float stretch = dot(dir, dir) / max(abs(dir.x), abs(dir.y));
-  vec2 len2 = vec2(1.0 + (stretch - 1.0)*len, 1.0 - 0.5*len);
-  float lob = 0.5 + ((1.0/4.0 - 0.04) - 0.5)*len;
-  float clp = 1.0 / lob;
-  vec3 aC = vec3(0.0); float aW = 0.0;
-  tapF(aC, aW, vec2(0.0,-1.0)-pp, dir, len2, lob, clp, b);
-  tapF(aC, aW, vec2(1.0,-1.0)-pp, dir, len2, lob, clp, c);
-  tapF(aC, aW, vec2(-1.0,1.0)-pp, dir, len2, lob, clp, i);
-  tapF(aC, aW, vec2(0.0,1.0)-pp, dir, len2, lob, clp, j);
-  tapF(aC, aW, vec2(0.0,0.0)-pp, dir, len2, lob, clp, f);
-  tapF(aC, aW, vec2(-1.0,0.0)-pp, dir, len2, lob, clp, e);
-  tapF(aC, aW, vec2(1.0,1.0)-pp, dir, len2, lob, clp, k);
-  tapF(aC, aW, vec2(2.0,1.0)-pp, dir, len2, lob, clp, l);
-  tapF(aC, aW, vec2(2.0,0.0)-pp, dir, len2, lob, clp, h);
-  tapF(aC, aW, vec2(1.0,0.0)-pp, dir, len2, lob, clp, g);
-  tapF(aC, aW, vec2(1.0,2.0)-pp, dir, len2, lob, clp, o);
-  tapF(aC, aW, vec2(0.0,2.0)-pp, dir, len2, lob, clp, n);
-  // no ringing: stay inside the 2x2 neighbourhood
-  vec3 mn = min(min(f, g), min(j, k)), mx = max(max(f, g), max(j, k));
-  gl_FragColor = vec4(min(mx, max(mn, aC / aW)), 1.0);
 }`;
 
 /*
@@ -272,8 +195,8 @@ export class VideoPlayer {
     this.queue = [];         // decoded frames waiting for their turn
     this.mode = 'balanced';
     this.dirty = false;
-    this.adjust = { bright: 0, contrast: 1, sat: 1, sharp: 0.35, upscale: 'fsr', framegen: false };
-    this.stat = { decoded: 0, shown: 0, dropped: 0, skipped: 0, lat: 0, w: 0, h: 0, depth: 0, target: 0, jitter: 0, fps: 0, late: 0, hw: '', light: false, fpsIn: 0, cap: 0, capped: 0, gen: 0, fg: false, up: '', outW: 0, outH: 0 };
+    this.adjust = { bright: 0, contrast: 1, sat: 1, sharp: 0.35, framegen: false };
+    this.stat = { decoded: 0, shown: 0, dropped: 0, skipped: 0, lat: 0, w: 0, h: 0, depth: 0, target: 0, jitter: 0, fps: 0, late: 0, hw: '', light: false, fpsIn: 0, cap: 0, capped: 0, gen: 0, fg: false };
     this.capMode = 'auto';
     this.cap = 0;
     this._skipMark = 0;
@@ -339,7 +262,6 @@ export class VideoPlayer {
     };
     this.pFinal = mk(VERT, FRAG, ['flip', 'tex', 'texel', 'bright', 'contrast', 'sat', 'sharp', 'algo']);
     if (!this.pFinal) { this.ctx2d = null; return; }
-    this.pEasu = mk(VERT, EASU, ['flip', 'tex', 'inSize']);
     if (this.gl2) {
       this.pLum4 = mk(VERT3, LUM4, ['A', 'B', 'srcSize']);
       this.pLum8 = mk(VERT3, LUM8, ['L4', 'size4']);
@@ -687,19 +609,17 @@ export class VideoPlayer {
     let w = this.box.w, h = this.box.w / ar;
     if (h > this.box.h) { h = this.box.h; w = h * ar; }
     /*
-     * Backing store. FSR draws the picture at the screen's size (up to 2x, so
-     * 720p to 1440p, 1080p to 4K) with EASU, then sharpens it with RCAS.
-     * Sharpen (CAS) upscales pictures under 1080p up to 2x; Pixel uses nearest
-     * neighbour up to 4x; Off leaves the scaling to the compositor. In light
-     * mode (the device fell behind) nothing is drawn larger than the picture.
+     * Backing store: a 1080p picture is drawn at (at most) its own size and
+     * the compositor scales it up for free; only smaller pictures get the
+     * sharpened upscale, up to 2x. In light mode (the device fell behind)
+     * nothing is drawn larger than the picture and sharpening is off.
      */
-    const up = this.light || this.softGl || !this.gl ? 'off' : this.adjust.upscale || 'fsr';
+    const sharpOn = !this.light && !!this.gl;
     const sw = f.displayWidth, sh = f.displayHeight;
-    const maxScale = up === 'fsr' ? 2 : up === 'pixel' ? 4 : up === 'cas' && sh < 1000 && this.adjust.sharp >= 0.01 ? 2 : 1;
+    const maxScale = sharpOn && sh < 1000 && this.adjust.sharp >= 0.01 ? 2 : 1;
     const scale = Math.min((w * dpr) / sw, maxScale);
     const bw = Math.max(2, Math.round(sw * scale)), bh = Math.max(2, Math.round(sh * scale));
     if (c.width !== bw || c.height !== bh) { c.width = bw; c.height = bh; }
-    this.stat.up = up; this.stat.outW = bw; this.stat.outH = bh;
     const css = `${Math.round(w)}x${Math.round(h)}`;
     if (css !== this.cssSize) { this.cssSize = css; this.onCssSize(Math.round(w), Math.round(h)); }
     if (this.gl) {
@@ -718,24 +638,13 @@ export class VideoPlayer {
           }
         }
       } catch (e) { console.warn('render:', e); this.gl = null; return; }
-      let src = this.fgMid && this.midTex ? this.midTex : this.tex[1];
-      let tw = sw, th = sh;
-      if (up === 'fsr' && scale > 1.01 && this.pEasu) {
-        const t = this._fbo('easu', bw, bh);
-        this._pass(this.pEasu, t, bw, bh, [['tex', src]]);
-        gl.uniform2f(this.pEasu.u.inSize, sw, sh); this._draw();
-        src = t.tex; tw = bw; th = bh;
-      }
+      const src = this.fgMid && this.midTex ? this.midTex : this.tex[1];
       const p = this.pFinal;
       this._pass(p, null, bw, bh, [['tex', src]]);
-      const nearest = up === 'pixel' && src === this.tex[1] || up === 'pixel' && src === this.midTex;
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, nearest ? gl.NEAREST : gl.LINEAR);
       const a = this.adjust;
-      const algo = up === 'fsr' ? 2 : up === 'cas' ? 1 : 0;
-      const sharp = algo === 2 ? (a.sharp < 0.01 ? 0 : Math.pow(2, -(1 - a.sharp) * 2)) : a.sharp;
-      gl.uniform2f(p.u.texel, 1 / tw, 1 / th);
+      gl.uniform2f(p.u.texel, 1 / sw, 1 / sh);
       gl.uniform1f(p.u.bright, a.bright); gl.uniform1f(p.u.contrast, a.contrast);
-      gl.uniform1f(p.u.sat, a.sat); gl.uniform1f(p.u.sharp, sharp); gl.uniform1f(p.u.algo, algo);
+      gl.uniform1f(p.u.sat, a.sat); gl.uniform1f(p.u.sharp, sharpOn ? a.sharp : 0); gl.uniform1f(p.u.algo, sharpOn ? 1 : 0);
       this._draw();
     } else if (this.ctx2d) {
       this.ctx2d.drawImage(f, 0, 0, bw, bh);

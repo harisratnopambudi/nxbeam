@@ -27,7 +27,7 @@ Cara termudah di Windows 10/11 adalah memakai **NXBeam-Setup.exe** dari halaman 
 - **Driver USB untuk Switch ikut terpasang otomatis.** Tidak perlu Zadig, dan Switch tidak perlu dicolok dulu. Windows hanya meminta izin sekali. Driver disimpan di Windows dan langsung dipakai saat Switch pertama kali dicolok dalam mode USB.
   - Kalau perlu memasang ulang: Start menu > **NXBeam - Install USB driver**, atau lewat ikon NXBeam di tray.
 - NXBeam terbuka di **jendelanya sendiri**, tidak di tab browser. Mesinnya Edge (WebView2) yang sudah diatur untuk streaming:
-  - GPU selalu dipakai, dan di laptop dengan dua GPU yang dipakai GPU yang kencang, jadi FSR dan frame generation tetap tersedia;
+  - GPU selalu dipakai, dan di laptop dengan dua GPU yang dipakai GPU yang kencang, jadi frame generation tetap tersedia;
   - gambar tetap lancar walau jendelanya di belakang jendela lain (enak untuk OBS);
   - suara langsung keluar tanpa perlu klik dulu.
 - **F11** untuk layar penuh.
@@ -126,15 +126,15 @@ Overlay NXBeam punya bagian **Game display (ReverseNX-RT)**. Fungsinya sama deng
 - Status **Needs SaltyNX**: SaltyNX belum terpasang. **Not available in this game**: game 32-bit atau game yang dikecualikan SaltyNX.
 - Stream NXBeam hanya 1080p kalau game menggambar tepat 1920x1080 dan **Resolution** di overlay diset 1080p.
 
-## Upscaling FSR dan frame generation
+## Frame generation
 
 Pengaturannya ada di **Settings > Picture**, berlaku untuk perangkat yang sedang dipakai menonton.
 
-- **Upscaling: AMD FSR 1.0** (bawaan). Gambar dari Switch diperbesar ke ukuran layar dengan FSR 1 (EASU + RCAS), maksimal 2x: 720p menjadi 1440p, 1080p menjadi 4K. Hasilnya lebih tajam daripada diperbesar biasa. Slider **Ketajaman** mengatur kekuatan RCAS. Pilihan lain: **Penajaman (CAS)**, **Piksel** (nearest, cocok untuk game pixel art), atau **Mati**.
-- **Frame generation (beta)**, bawaan mati. Di antara dua frame asli disisipkan satu frame buatan. Gerakannya dihitung di GPU, jadi game 30 fps tampil 60 di monitor 60 Hz, dan game 60 fps tampil sekitar 120 di monitor 120/144 Hz. Fitur ini hanya aktif kalau game berjalan di bawah refresh layar. Jedanya bertambah sekitar setengah frame (17 ms di 30 fps), dan di gerakan yang sangat cepat atau objek yang tiba-tiba muncul bisa terlihat sedikit artefak.
-- FSR tidak menaikkan fps game; fps tetap ditentukan konsol. Triknya: kalau game tersendat di 1080p, set **Resolution** di overlay NXBeam ke **720p** (langsung berlaku, tanpa restart) agar konsol stabil 60 fps, lalu biarkan FSR menaikkan resolusinya di PC.
-- DLSS, FSR 2/3, dan XeSS tidak bisa dipakai. Ketiganya butuh data gerak dari engine game, sedangkan NXBeam hanya menerima video jadi.
-- Keduanya butuh akselerasi GPU di browser. Kalau browser berjalan tanpa GPU, atau perangkat tidak kuat (mode ringan aktif), keduanya mati sendiri. Statusnya bisa dilihat di halaman **Stats**.
+- **Frame generation (beta)**, bawaan mati. Di antara dua frame asli disisipkan satu frame buatan. Gerakannya dihitung di GPU, jadi game 30 fps tampil 60 di monitor 60 Hz, dan game 60 fps tampil sekitar 120 di monitor 120/144 Hz.
+- Fitur ini hanya aktif kalau game berjalan di bawah refresh layar.
+- Jedanya bertambah sekitar setengah frame (17 ms di 30 fps). Di gerakan yang sangat cepat atau objek yang tiba-tiba muncul, bisa terlihat bayangan (ghosting), terutama di layar penuh. Matikan kalau terasa mengganggu.
+- Fitur ini butuh akselerasi GPU di browser. Kalau browser berjalan tanpa GPU, atau perangkat tidak kuat (mode ringan aktif), frame generation mati sendiri. Statusnya bisa dilihat di halaman **Stats**.
+- Kalau game tersendat di 1080p, set **Resolution** di overlay NXBeam ke **720p**. Pengaturan ini langsung berlaku tanpa restart, dan konsol jadi lebih stabil di 60 fps.
 
 ## 1080p 60fps
 

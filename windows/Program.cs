@@ -187,7 +187,7 @@ namespace NXBeam
         /* ---- the window ---- */
         static readonly string BrowserArgs = string.Join(" ", new[]
         {
-            "--ignore-gpu-blocklist",              // FSR and frame generation on GPUs a browser would refuse
+            "--ignore-gpu-blocklist",              // frame generation on GPUs a browser would refuse
             "--force_high_performance_gpu",        // the discrete GPU on laptops with two
             "--enable-gpu-rasterization",
             "--enable-zero-copy",
