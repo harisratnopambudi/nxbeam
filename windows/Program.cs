@@ -95,6 +95,7 @@ namespace NXBeam
         readonly NotifyIcon tray;
         readonly ToolStripMenuItem autostartItem;
         readonly Server server = new Server();
+        VeyraEmbed veyra;
         readonly string selftest;
         bool webReady, webFailed, exiting, hintShown, fullscreen, openedInBrowser;
         string url;
@@ -240,6 +241,7 @@ namespace NXBeam
             core.WebMessageReceived += (s, e) =>
             {
                 string m = e.TryGetWebMessageAsString();
+                if (m != null && m.StartsWith("{")) { OnPageMessage(m); return; }
                 if (m == "restart") { url = null; ShowLoading(); StartServer(); }
                 if (m == "log") { OpenExternal(Server.LogPath); }
                 if (m == "f11") { SetFullscreen(!fullscreen); }
@@ -254,6 +256,23 @@ namespace NXBeam
             webReady = true;
             if (url != null) { Navigate(); } else { ShowLoading(); }
         }
+
+        /* ---- Veyra inside the NXBeam window ---- */
+        void OnPageMessage(string json)
+        {
+            string type = VeyraEmbed.Field(json, "type");
+            if (type == "veyraRect") { veyra?.Move(VeyraEmbed.Rect(json)); return; }
+            if (type != "veyra") { return; }
+            if (VeyraEmbed.Field(json, "on") == "true")
+            {
+                veyra?.Stop();
+                veyra = new VeyraEmbed(Form, state => Ui(() => ToPage("{\"type\":\"veyra\",\"state\":\"" + state.Item1 + "\",\"msg\":" + VeyraEmbed.Json(state.Item2) + "}")));
+                veyra.Start(VeyraEmbed.Field(json, "url"), VeyraEmbed.Rect(json));
+            }
+            else { veyra?.Stop(); veyra = null; ToPage("{\"type\":\"veyra\",\"state\":\"off\",\"msg\":\"\"}"); }
+        }
+
+        void ToPage(string json) { try { web.CoreWebView2?.PostWebMessageAsString(json); } catch { } }
 
         void Navigate()
         {
@@ -345,6 +364,7 @@ namespace NXBeam
         void Shutdown()
         {
             exiting = true;
+            veyra?.Stop();
             tray.Visible = false;
             server.Stop();
             tray.Dispose();
@@ -417,6 +437,24 @@ namespace NXBeam
             {
                 await web.CoreWebView2.CapturePreviewAsync(CoreWebView2CapturePreviewImageFormat.Png, f);
             }
+            if (Environment.GetCommandLineArgs().Contains("--selftest-veyra"))
+            {
+                // the Veyra button, as a user presses it; then where its window ended up
+                await web.CoreWebView2.ExecuteScriptAsync("document.querySelector('#btnVeyra').click()");
+                for (int i = 0; i < 90 && !(veyra?.Embedded ?? false); i++) { await Task.Delay(500); }
+                await Task.Delay(4000);
+                File.WriteAllText(Path.Combine(selftest, "veyra.txt"), (veyra?.Describe() ?? "not started") + "\n");
+                try
+                {
+                    var b = Form.RectangleToScreen(Form.ClientRectangle);
+                    using (var bmp = new Bitmap(b.Width, b.Height))
+                    {
+                        using (var g = Graphics.FromImage(bmp)) { g.CopyFromScreen(b.Location, Point.Empty, b.Size); }
+                        bmp.Save(Path.Combine(selftest, "veyra.png"), System.Drawing.Imaging.ImageFormat.Png);
+                    }
+                }
+                catch (Exception e) { File.AppendAllText(Path.Combine(selftest, "veyra.txt"), "screen: " + e.Message + "\n"); }
+            }
             FinishSelftest("ok");
         }
 
@@ -432,6 +470,196 @@ namespace NXBeam
             ExitCode = result == "ok" ? 0 : 1;
             Exit();
         }
+    }
+
+    /* ---- Veyra, shown inside the NXBeam window ------------------------------------
+     * Veyra (https://github.com/Likely7/Veyra-NRVideo, GPL-3.0, its own program)
+     * plays NXBeam's /live.mkv with its GPU frame generation and super
+     * resolution. NXBeam starts it with the stream's address (veyra://play?url=)
+     * and turns its window into a child of the NXBeam window, over the picture
+     * area the page reports; it closes it again when switched off. */
+    sealed class VeyraEmbed
+    {
+        const int GWL_STYLE = -16, GWL_EXSTYLE = -20;
+        const long WS_CHILD = 0x40000000L, WS_POPUP = 0x80000000L, WS_CAPTION = 0x00C00000L, WS_THICKFRAME = 0x00040000L,
+                   WS_SYSMENU = 0x00080000L, WS_MINIMIZEBOX = 0x00020000L, WS_MAXIMIZEBOX = 0x00010000L, WS_VISIBLE = 0x10000000L;
+        const long WS_EX_APPWINDOW = 0x00040000L, WS_EX_WINDOWEDGE = 0x100L, WS_EX_CLIENTEDGE = 0x200L, WS_EX_DLGMODALFRAME = 0x1L;
+        const uint SWP_NOZORDER = 0x4, SWP_FRAMECHANGED = 0x20, SWP_SHOWWINDOW = 0x40, SWP_NOACTIVATE = 0x10;
+        static readonly IntPtr HWND_TOP = IntPtr.Zero;
+
+        [DllImport("user32.dll", EntryPoint = "GetWindowLongPtrW")] static extern IntPtr GetWindowLongPtr(IntPtr h, int i);
+        [DllImport("user32.dll", EntryPoint = "SetWindowLongPtrW")] static extern IntPtr SetWindowLongPtr(IntPtr h, int i, IntPtr v);
+        [DllImport("user32.dll")] static extern IntPtr SetParent(IntPtr child, IntPtr parent);
+        [DllImport("user32.dll")] static extern bool SetWindowPos(IntPtr h, IntPtr after, int x, int y, int cx, int cy, uint flags);
+        [DllImport("user32.dll")] static extern bool IsWindowVisible(IntPtr h);
+        [DllImport("user32.dll")] static extern bool IsWindow(IntPtr h);
+        [DllImport("user32.dll")] static extern uint GetWindowThreadProcessId(IntPtr h, out uint pid);
+        [DllImport("user32.dll")] static extern bool GetWindowRect(IntPtr h, out RECT r);
+        [DllImport("user32.dll")] static extern IntPtr GetWindow(IntPtr h, uint cmd);
+        delegate bool EnumProc(IntPtr h, IntPtr l);
+        [DllImport("user32.dll")] static extern bool EnumWindows(EnumProc f, IntPtr l);
+        [StructLayout(LayoutKind.Sequential)] struct RECT { public int L, T, R, B; }
+
+        readonly Form host;
+        readonly Action<Tuple<string, string>> report;
+        Process proc;
+        IntPtr win;
+        Rectangle rect;
+        bool stopping;
+
+        public VeyraEmbed(Form host, Action<Tuple<string, string>> report) { this.host = host; this.report = report; }
+
+        static string PathFile => Path.Combine(Program.DataDir, "veyra-path.txt");
+
+        /* Veyra.exe: bundled, remembered, in the usual places, or picked once */
+        string FindExe()
+        {
+            try { var p = File.ReadAllText(PathFile).Trim(); if (File.Exists(p)) { return p; } } catch { }
+            var local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var pf = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+            foreach (var c in new[] {
+                Path.Combine(Program.AppDir, "veyra", "Veyra.exe"),
+                Path.Combine(local, "Programs", "Veyra", "Veyra.exe"),
+                Path.Combine(pf, "Veyra", "Veyra.exe"),
+            })
+            {
+                if (File.Exists(c)) { return c; }
+            }
+            using (var d = new OpenFileDialog
+            {
+                Title = Program.T("Where is Veyra.exe?", "Di mana Veyra.exe?"),
+                Filter = "Veyra|Veyra*.exe;veyra*.exe|Program|*.exe",
+                CheckFileExists = true,
+            })
+            {
+                if (d.ShowDialog(host) != DialogResult.OK) { return null; }
+                try { File.WriteAllText(PathFile, d.FileName); } catch { }
+                return d.FileName;
+            }
+        }
+
+        public async void Start(string url, Rectangle area)
+        {
+            rect = area;
+            var exe = FindExe();
+            if (exe == null) { report(Tuple.Create("off", "")); return; }
+            report(Tuple.Create("starting", ""));
+            try
+            {
+                proc = Process.Start(new ProcessStartInfo(exe, "\"veyra://play?url=" + Uri.EscapeDataString(url) + "\"")
+                {
+                    WorkingDirectory = Path.GetDirectoryName(exe),
+                    UseShellExecute = false,
+                });
+                proc.EnableRaisingEvents = true;
+                proc.Exited += (s, e) => { if (!stopping) { report(Tuple.Create("off", "")); } };
+            }
+            catch (Exception e)
+            {
+                report(Tuple.Create("error", Program.T("Veyra could not start: ", "Veyra gagal dijalankan: ") + e.Message));
+                return;
+            }
+            Server.Log("veyra: started " + exe);
+            // its main window: the largest visible top-level window of the process (Qt makes a few)
+            for (int i = 0; i < 100 && !stopping; i++)
+            {
+                await Task.Delay(200);
+                if (proc.HasExited) { report(Tuple.Create("error", Program.T("Veyra closed right after starting.", "Veyra langsung tertutup setelah dijalankan."))); return; }
+                var w = MainWindow((uint)proc.Id);
+                if (w != IntPtr.Zero) { win = w; break; }
+            }
+            if (win == IntPtr.Zero)
+            {
+                if (!stopping) { report(Tuple.Create("error", Program.T("Veyra's window did not appear.", "Jendela Veyra tidak muncul."))); }
+                return;
+            }
+            await Task.Delay(600);   // let it finish its own layout first
+            Embed();
+            report(Tuple.Create("on", ""));
+        }
+
+        static IntPtr MainWindow(uint pid)
+        {
+            IntPtr best = IntPtr.Zero;
+            long bestArea = 0;
+            EnumWindows((h, l) =>
+            {
+                GetWindowThreadProcessId(h, out uint p);
+                if (p != pid || !IsWindowVisible(h) || GetWindow(h, 4 /* GW_OWNER */) != IntPtr.Zero) { return true; }
+                GetWindowRect(h, out RECT r);
+                long a = (long)(r.R - r.L) * (r.B - r.T);
+                if (a > bestArea) { bestArea = a; best = h; }
+                return true;
+            }, IntPtr.Zero);
+            return bestArea >= 200 * 150 ? best : IntPtr.Zero;
+        }
+
+        void Embed()
+        {
+            long st = GetWindowLongPtr(win, GWL_STYLE).ToInt64();
+            st = (st & ~(WS_POPUP | WS_CAPTION | WS_THICKFRAME | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX)) | WS_CHILD | WS_VISIBLE;
+            SetWindowLongPtr(win, GWL_STYLE, new IntPtr(st));
+            long ex = GetWindowLongPtr(win, GWL_EXSTYLE).ToInt64();
+            ex &= ~(WS_EX_APPWINDOW | WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE | WS_EX_DLGMODALFRAME);
+            SetWindowLongPtr(win, GWL_EXSTYLE, new IntPtr(ex));
+            SetParent(win, host.Handle);
+            Place(SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+            Server.Log("veyra: embedded");
+        }
+
+        void Place(uint extra)
+        {
+            if (win == IntPtr.Zero || !IsWindow(win)) { return; }
+            // above the WebView2 page, inside the NXBeam window
+            SetWindowPos(win, HWND_TOP, rect.X, rect.Y, Math.Max(1, rect.Width), Math.Max(1, rect.Height), SWP_NOACTIVATE | extra);
+        }
+
+        public void Move(Rectangle r) { rect = r; Place(0); }
+
+        [DllImport("user32.dll")] static extern IntPtr GetParent(IntPtr h);
+        public bool Embedded => win != IntPtr.Zero && IsWindow(win) && GetParent(win) == host.Handle;
+        public string Describe()
+        {
+            if (win == IntPtr.Zero) { return "no window"; }
+            GetWindowRect(win, out RECT r);
+            return $"window={win} parentOk={Embedded} rect={r.L},{r.T},{r.R - r.L}x{r.B - r.T} target={rect}";
+        }
+
+        public void Stop()
+        {
+            stopping = true;
+            try
+            {
+                if (proc != null && !proc.HasExited)
+                {
+                    if (win != IntPtr.Zero && IsWindow(win)) { SetParent(win, IntPtr.Zero); }
+                    proc.CloseMainWindow();
+                    if (!proc.WaitForExit(3000)) { proc.Kill(); }
+                }
+            }
+            catch { }
+            win = IntPtr.Zero;
+        }
+
+        /* the page's tiny JSON messages: {"type":"veyra","on":true,"url":"...","x":..,"y":..,"w":..,"h":..,"dpr":..} */
+        public static string Field(string json, string name)
+        {
+            var m = Regex.Match(json, "\"" + name + "\"\\s*:\\s*(\"((?:[^\"\\\\]|\\\\.)*)\"|[-0-9.eE]+|true|false)");
+            if (!m.Success) { return null; }
+            return m.Groups[2].Success && m.Groups[1].Value.StartsWith("\"") ? Regex.Unescape(m.Groups[2].Value) : m.Groups[1].Value;
+        }
+
+        static double Num(string json, string name) =>
+            double.TryParse(Field(json, name), NumberStyles.Float, CultureInfo.InvariantCulture, out double v) ? v : 0;
+
+        public static Rectangle Rect(string json)
+        {
+            double d = Num(json, "dpr"); if (d <= 0) { d = 1; }
+            return new Rectangle((int)Math.Round(Num(json, "x") * d), (int)Math.Round(Num(json, "y") * d),
+                                 (int)Math.Round(Num(json, "w") * d), (int)Math.Round(Num(json, "h") * d));
+        }
+
+        public static string Json(string s) => "\"" + (s ?? "").Replace("\\", "\\\\").Replace("\"", "\\\"") + "\"";
     }
 
     /* ---- the NXBeam server (Node.js) ----------------------------------------- */

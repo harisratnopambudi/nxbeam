@@ -324,3 +324,5 @@ body.fs.idle { cursor: none; }
 
 .veyra-box { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); display: grid; gap: 8px; }
 .veyra-box .row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.deck-btn.icon.on { background: var(--beam); color: var(--base, #151b24); }

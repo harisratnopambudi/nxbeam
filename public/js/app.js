@@ -813,10 +813,36 @@ async function boot() {
 boot();
 
 /* ------------------------------------------------------------ Veyra */
-/* Veyra (Windows) plays the console's own stream with its frame generation and
- * super resolution: NXBeam serves it at /live.mkv and asks Veyra to open it */
+/* Veyra (Windows) plays the console's own stream with its GPU frame generation
+ * and super resolution. NXBeam serves the stream at /live.mkv. In the NXBeam
+ * Windows app, Veyra is shown inside this window, over the picture area; in a
+ * browser, NXBeam asks a running Veyra to open it. */
 const liveUrl = () => `${location.protocol}//127.0.0.1:${location.port || 80}/live.mkv`;
+const webview = window.chrome && window.chrome.webview;
+let veyraOn = false;
+
+function veyraRect() {
+  const r = $('#screen').getBoundingClientRect();
+  return { x: r.left, y: r.top, w: r.width, h: r.height, dpr: window.devicePixelRatio || 1 };
+}
+function sendVeyraRect() {
+  if (webview && veyraOn) webview.postMessage(JSON.stringify({ type: 'veyraRect', ...veyraRect() }));
+}
+function setVeyraOn(on) {
+  veyraOn = on;
+  document.body.classList.toggle('veyra-on', on);
+  $('#btnVeyra').classList.toggle('on', on);
+  // Veyra decodes and plays the stream: NXBeam stops drawing it and stays quiet
+  player.send({ type: 'subscribe', video: !on });
+  if (on && audio.enabled) $('#btnSound').click();
+}
+
 async function openInVeyra() {
+  if (webview) {
+    if (veyraOn) { webview.postMessage(JSON.stringify({ type: 'veyra', on: false })); return; }
+    webview.postMessage(JSON.stringify({ type: 'veyra', on: true, url: liveUrl(), ...veyraRect() }));
+    return;
+  }
   let r = {};
   try { r = await (await fetch('/api/veyra/open', { method: 'POST' })).json(); } catch (e) { r = { error: e.message }; }
   if (r.ok) {
@@ -825,6 +851,20 @@ async function openInVeyra() {
   } else {
     toast(t('veyraMissing') + (r.url || liveUrl()), 'error', 9000);
   }
+}
+if (webview) {
+  webview.addEventListener('message', (e) => {
+    let m;
+    try { m = JSON.parse(e.data); } catch { return; }
+    if (!m || m.type !== 'veyra') return;
+    if (m.state === 'starting') toast(t('veyraStarting'));
+    else if (m.state === 'on') { setVeyraOn(true); sendVeyraRect(); toast(t('veyraEmbedded'), 'info', 5000); }
+    else if (m.state === 'off') { if (veyraOn) setVeyraOn(false); }
+    else if (m.state === 'error') { if (veyraOn) setVeyraOn(false); toast(m.msg || 'Veyra', 'error', 9000); }
+  });
+  if (window.ResizeObserver) new ResizeObserver(sendVeyraRect).observe($('#screen'));
+  window.addEventListener('resize', sendVeyraRect);
+  document.addEventListener('fullscreenchange', () => setTimeout(sendVeyraRect, 100));
 }
 if (/Windows/.test(navigator.userAgent)) {
   $('#btnVeyra').hidden = false;
