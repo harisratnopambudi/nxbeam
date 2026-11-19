@@ -49,6 +49,60 @@ static u64 wait_for(u64 mask) {
     return HidNpadButton_Plus;
 }
 
+/* ------------------------------------------------------------ intro */
+/*
+ * A short "terminal login" before the download, for show: the login, the
+ * password and the lines are typed out (about 4 s; B skips to the end). The
+ * real work (HTTPS, the SHA-256 check) happens after it, as before.
+ */
+static int g_fast = 0;
+
+static void pause_ms(int ms) {
+    if (g_fast || ms <= 0) return;
+    const u64 end = armGetSystemTick() + armNsToTicks((u64)ms * 1000000ULL);
+    while (armGetSystemTick() < end) {
+        padUpdate(&g_pad);
+        if (padGetButtonsDown(&g_pad) & HidNpadButton_B) { g_fast = 1; return; }
+        svcSleepThread(4000000);
+    }
+}
+
+static void type(const char *s, int ms) {
+    for (; *s; s++) { putchar(*s); flush(); pause_ms(ms); }
+}
+
+static void type_masked(const char *s, int ms) {
+    for (; *s; s++) { putchar('*'); flush(); pause_ms(ms); }
+}
+
+static void step(const char *label) {
+    printf("  %-34s", label);
+    for (int i = 0; i < 12; i++) { putchar('.'); flush(); pause_ms(45); }
+    printf(" \x1b[1;32mOK\x1b[0;32m\n"); flush();
+    pause_ms(120);
+}
+
+static void intro(const char *version, int build) {
+    g_fast = 0;
+    printf("\x1b[2m  (B: lewati)\x1b[0m\n\n\x1b[32m");
+    printf("  nxbeam@switch:~$ "); flush(); pause_ms(300);
+    type("connect --release latest\n", 35);
+    pause_ms(250);
+    printf("  login: "); flush(); pause_ms(200);
+    type("haris.devlab\n", 70);
+    printf("  password: "); flush(); pause_ms(250);
+    type_masked("nxbeam-update", 75);
+    printf("\n\n"); flush(); pause_ms(300);
+    step("Resolving github.com");
+    step("Connecting to server :443");
+    step("Opening secure channel (TLS)");
+    step("Authenticating haris.devlab");
+    printf("\n  \x1b[1;32mACCESS GRANTED\x1b[0;32m\n"); flush();
+    pause_ms(600);
+    printf("  Fetching NXBeam %s (build %d)...\x1b[0m\n", version, build); flush();
+    pause_ms(300);
+}
+
 /* ------------------------------------------------------------ version */
 typedef struct { char version[32]; int build; } Ver;
 
@@ -271,7 +325,7 @@ static int run(void) {
     u64 k = wait_for(HidNpadButton_Plus | (newer ? HidNpadButton_A : HidNpadButton_Y));
     if (k & HidNpadButton_Plus) return 0;
 
-    printf("\n");
+    intro(version, build);
     Mem zip = {0};
     char url[256];
     snprintf(url, sizeof url, "https://github.com/" REPO "/releases/download/v%s/" ASSET, version);
