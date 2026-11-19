@@ -138,19 +138,21 @@ Pengaturannya ada di **Settings > Picture**, berlaku untuk perangkat yang sedang
 
 ## Veyra: frame generation dan super resolution dari GPU
 
-[Veyra](https://github.com/Likely7/Veyra-NRVideo) adalah aplikasi Windows (GPU NVIDIA/AMD) yang memperhalus video dengan frame generation, super resolution, dan denoise. Teknologinya DLSS, FSR, atau XeSS, jadi hasilnya jauh lebih bagus daripada frame generation bawaan NXBeam.
+[Veyra](https://github.com/Likely7/Veyra-NRVideo) adalah aplikasi Windows (GPU NVIDIA/AMD) yang memperhalus video dengan frame generation, super resolution, dan denoise. Teknologinya DLSS, FSR, atau XeSS, jadi hasilnya jauh lebih bagus daripada frame generation bawaan NXBeam. Di aplikasi NXBeam untuk Windows, Veyra tampil **di dalam jendela NXBeam**, jadi tidak perlu membuka dua aplikasi.
 
-1. Pasang dan buka **Veyra**.
-2. Di NXBeam PC, tekan tombol **bintang** di kanan bawah (atau **Settings > Picture > Buka di Veyra**).
-3. Veyra langsung memutar stream asli dari Switch. Atur frame generation dan super resolution di Veyra.
+1. Unduh dan ekstrak Veyra dari halaman rilisnya. Pilih versi NVIDIA atau AMD sesuai GPU kamu.
+2. Di aplikasi NXBeam, tekan tombol **bintang** di kanan bawah. Bisa juga lewat **Settings > Picture > Buka di Veyra**.
+3. Pertama kali, NXBeam bertanya letak Veyra. Pilih **veyra_qml_ui.exe** di folder Veyra. Pilihan ini diingat untuk seterusnya.
+4. Veyra muncul di area layar NXBeam dan langsung memutar gambar dari Switch. Atur frame generation dan super resolution lewat kontrol Veyra di bawah gambar.
+5. Tekan tombol bintang lagi untuk kembali ke tampilan NXBeam biasa.
 
 Hal yang perlu diketahui:
 
+- **Profil terpisah**: NXBeam menjalankan Veyra dengan profilnya sendiri, tanpa buffer jaringan supaya delay sekecil mungkin. Pengaturan Veyra yang biasa kamu pakai tidak berubah.
 - **Suara**: suara NXBeam otomatis dimatikan karena suaranya keluar dari Veyra.
 - **Frame generation NXBeam**: matikan, tidak perlu dipakai bersamaan dengan Veyra.
-- **Kontroler**: kontroler yang tersambung ke Switch tetap jalan seperti biasa. Kontroler yang lewat NXBeam di PC hanya terbaca saat jendela NXBeam sedang aktif.
-- **Kalau Veyra belum terbuka**: NXBeam menampilkan alamat stream-nya, `http://127.0.0.1:8090/live.mkv`. Alamat ini juga bisa ditempel manual di Veyra lewat menu buka alamat jaringan (tombol **Salin alamat stream**).
-- **Delay**: Veyra memproses video di GPU, jadi delay-nya bisa sedikit lebih besar daripada tampilan NXBeam biasa. Cocok untuk game yang tidak butuh reaksi super cepat.
+- **Kontroler**: kontroler yang tersambung ke Switch tetap jalan seperti biasa.
+- **Di browser** (bukan aplikasi NXBeam): tombol yang sama menyuruh Veyra yang sudah terbuka untuk memutar stream. Alamat stream-nya `http://127.0.0.1:8090/live.mkv` juga bisa ditempel manual di Veyra.
 
 ## 1080p 60fps
 

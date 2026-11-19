@@ -34,6 +34,8 @@ jobs:
         run: ./windows/build.ps1 -Build $env:GITHUB_RUN_NUMBER
       - name: Test
         shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           $ErrorActionPreference = "Continue"
           $out = "e2e"; New-Item -ItemType Directory -Force $out | Out-Null
@@ -51,6 +53,37 @@ jobs:
           "exit=$($p.ExitCode)" | Out-File "$out/window-exit.txt"
           Copy-Item "$env:LOCALAPPDATA\NXBeam\nxbeam.log" "$out/nxbeam.log" -ErrorAction SilentlyContinue
           Get-Process node, NXBeam -ErrorAction SilentlyContinue | Out-File "$out/left-running.txt"
+
+          # 2b. Veyra inside the window: a stand-in program (Notepad), then the real Veyra
+          New-Item -ItemType Directory -Force "$env:LOCALAPPDATA\NXBeam" | Out-Null
+          New-Item -ItemType Directory -Force "$env:TEMP\fakeveyra" | Out-Null
+          Copy-Item "$env:WINDIR\System32\notepad.exe" "$env:TEMP\fakeveyra\Veyra.exe"
+          Set-Content "$env:LOCALAPPDATA\NXBeam\veyra-path.txt" "$env:TEMP\fakeveyra\Veyra.exe"
+          $p = Start-Process "$app\NXBeam.exe" -ArgumentList "--selftest `"$PWD\$out\stand-in`" --selftest-veyra" -PassThru
+          if (-not $p.WaitForExit(180000)) { $p.Kill() }
+          Get-Process notepad, Veyra -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+          gh release download v2.1.9 -R Likely7/Veyra-NRVideo -D veyra-dl 2>&1 | Out-File "$out/veyra-download.txt"
+          Get-ChildItem veyra-dl -ErrorAction SilentlyContinue | Select-Object Name, Length | Out-File -Append "$out/veyra-download.txt"
+          $zip = Get-ChildItem veyra-dl -Filter *.zip -ErrorAction SilentlyContinue | Sort-Object Length -Descending | Select-Object -First 1
+          if ($zip) {
+            Expand-Archive $zip.FullName veyra-x -Force
+            $vexe = Get-ChildItem veyra-x -Recurse -Filter *.exe | Where-Object { $_.Name -match '^Veyra' } | Sort-Object Length -Descending | Select-Object -First 1
+            Get-ChildItem veyra-x -Recurse -Filter *.exe | Select-Object FullName, Length | Out-File -Append "$out/veyra-download.txt"
+            if ($vexe) {
+              # a console for it to show: the simulator (test picture, 30 fps)
+              $sim = Start-Process node -ArgumentList "tools/simulate-console.js --size 1280x720 --fps 30 --no-beacon" -PassThru -WindowStyle Hidden
+              $env:NXBEAM_EXTRA_ARGS = "--console 127.0.0.1"
+              Set-Content "$env:LOCALAPPDATA\NXBeam\veyra-path.txt" $vexe.FullName
+              $p = Start-Process "$app\NXBeam.exe" -ArgumentList "--selftest `"$PWD\$out\veyra`" --selftest-veyra" -PassThru
+              if (-not $p.WaitForExit(240000)) { $p.Kill() }
+              $env:NXBEAM_EXTRA_ARGS = ""
+              $sim.Kill()
+              # Veyra keeps its logs next to itself, in logs\
+              New-Item -ItemType Directory -Force "$out/veyra-logs" | Out-Null
+              Get-ChildItem (Join-Path $vexe.DirectoryName "logs") -Recurse -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 6 | ForEach-Object { Copy-Item $_.FullName "$out/veyra-logs/" }
+            }
+          }
+          Copy-Item "$env:LOCALAPPDATA\NXBeam\nxbeam.log" "$out/nxbeam-veyra.log" -ErrorAction SilentlyContinue
 
           # 3. the USB driver with no Switch plugged in: staged in the driver store
           $drv = Start-Process "$app\driver\wdi-simple.exe" -Wait -PassThru -NoNewWindow -RedirectStandardOutput "$out/driver.txt" -RedirectStandardError "$out/driver-err.txt" `
