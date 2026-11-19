@@ -103,6 +103,12 @@ jobs:
       - name: Build nxbeam.ovl
         working-directory: overlay
         run: |
+          # the update check uses libcurl (HTTPS through mbedTLS); pkg.devkitpro.org sometimes answers 403: try again
+          for i in 1 2 3 4 5 6; do
+            dkp-pacman -Sy --noconfirm --needed switch-curl switch-zlib switch-mbedtls && break
+            [ "$i" = 6 ] && exit 1
+            sleep $((i * 20))
+          done
           git clone --depth 1 https://github.com/WerWolv/libtesla libs/libtesla
           # the overlay shows the NXBeam version, not a number of its own
           make -j"$(nproc)" APP_VERSION="$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' ../package.json | head -1)"

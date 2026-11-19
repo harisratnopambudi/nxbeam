@@ -113,7 +113,8 @@ if __name__ == '__main__':
     open(os.path.join(a, 'exefs.nsp'), 'wb').write(patch_nsp(c20))
     open(os.path.join(b, 'exefs.nsp'), 'wb').write(patch_nsp(c21))
     open(os.path.join(b, 'flags/boot2.flag'), 'wb').close()
-    open(os.path.join(b, 'toolbox.json'), 'w').write('{\n    "name": "NXBeam",\n    "tid": "0100000000000C21",\n    "requires_reboot": true\n}\n')
+    # no toolbox.json: the sysmodules menu (Ultrahand) would put a boot flag on
+    # the module itself when switched on; the NXBeam overlay has the switches
     for d in ['NXBeam/console-settings', 'NXBeam/console-captures/screenshots']: os.makedirs(os.path.join(out, d), exist_ok=True)
     if '--dvr' in sys.argv:
         src = sys.argv[sys.argv.index('--dvr') + 1]

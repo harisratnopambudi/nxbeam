@@ -16,10 +16,13 @@
 #define TESLA_INIT_IMPL
 #include <tesla.hpp>
 
+#include <atomic>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <string>
 #include <sys/stat.h>
+#include <curl/curl.h>
 
 /* SaltyNX's IPC, from ReverseNX-RT by masagrator (MIT, include/ReverseNX-RT-LICENSE.txt) */
 #include "SaltyNX.h"
@@ -182,6 +185,219 @@ std::string InstalledVersion() {
     return out;
 }
 
+/* ---- the NXBeam sysmodule: running now, and started at boot ----
+ * 0100000000000C20 is the sysmodule; 0100000000000C21 its launcher (boot2,
+ * starts it once the system has booted) and memory helper while streaming.
+ * The sysmodules menu of Ultrahand would mark 0100000000000C20 itself to start
+ * at boot when switched on, too early for some consoles, so NXBeam has its own
+ * switches here: on/off now, and the launcher's boot flag. */
+namespace svc {
+
+constexpr u64 Module = 0x0100000000000C20ULL;
+constexpr u64 Launcher = 0x0100000000000C21ULL;
+constexpr const char *BootFlag = "sdmc:/atmosphere/contents/0100000000000C21/flags/boot2.flag";
+
+bool Running(u64 tid) {
+    u64 pid = 0;
+    return R_SUCCEEDED(pmdmntGetProcessId(&pid, tid)) && pid != 0;
+}
+
+bool Start() {
+    const NcmProgramLocation loc{ .program_id = Module, .storageID = NcmStorageId_None };
+    u64 pid = 0;
+    return R_SUCCEEDED(pmshellLaunchProgram(0, &loc, &pid));
+}
+
+/* the helper too: it may be lending its memory to the module */
+void Stop() {
+    pmshellTerminateProgram(Module);
+    if (Running(Launcher)) { pmshellTerminateProgram(Launcher); }
+}
+
+bool AtBoot() { struct stat st; return stat(BootFlag, &st) == 0; }
+
+bool SetAtBoot(bool on) {
+    if (!on) { return remove(BootFlag) == 0 || !AtBoot(); }
+    mkdir("sdmc:/atmosphere/contents/0100000000000C21/flags", 0777);
+    FILE *f = std::fopen(BootFlag, "wb");
+    if (f == nullptr) { return false; }
+    std::fclose(f);
+    return true;
+}
+
+}  // namespace svc
+
+/* ---- is there a newer NXBeam? latest.json of the latest GitHub release ----
+ * Checked in the background (the menu opens at once), at most every 6 hours:
+ * the answer is kept in sdmc:/NXBeam/update-check.txt. No internet, an old
+ * pack without NXBeam/cacert.pem, too little memory: nothing is shown. */
+namespace upd {
+
+constexpr const char *Latest = "https://github.com/harisratnopambudi/nxbeam/releases/latest/download/latest.json";
+constexpr const char *Cache = "sdmc:/NXBeam/update-check.txt";
+constexpr const char *CaFile = "sdmc:/NXBeam/cacert.pem";
+constexpr u64 MaxAge = 6 * 3600;
+
+enum : int { Idle, Checking, Done };
+std::atomic<int> g_state{Idle};
+std::atomic<bool> g_abort{false};
+char g_ver[32] = {};
+int g_build = 0;
+bool g_known = false;
+Thread g_thread;
+bool g_threadUp = false;
+
+u64 Now() {
+    u64 t = 0;
+    if (R_FAILED(timeGetCurrentTime(TimeType_UserSystemClock, &t))) { return 0; }
+    return t;
+}
+
+/* "1.20.0" and 50 from sdmc:/NXBeam/versi.txt */
+void Installed(char *ver, size_t n, int *build) {
+    ver[0] = 0; *build = 0;
+    FILE *f = std::fopen("sdmc:/NXBeam/versi.txt", "r");
+    if (f == nullptr) { return; }
+    char b[16] = {};
+    if (std::fgets(ver, n, f) != nullptr) { ver[std::strcspn(ver, "\r\n")] = 0; }
+    if (std::fgets(b, sizeof(b), f) != nullptr) { *build = std::atoi(b); }
+    std::fclose(f);
+}
+
+bool Newer() {
+    if (!g_known) { return false; }
+    char v[32]; int b;
+    Installed(v, sizeof(v), &b);
+    if (g_build > 0 && b > 0) { return g_build > b; }
+    return v[0] != 0 && std::strcmp(v, g_ver) != 0;
+}
+
+std::string Latest_() {
+    std::string s = g_ver;
+    if (g_build > 0) { s += " (build " + std::to_string(g_build) + ")"; }
+    return s;
+}
+
+/* the cached answer; true when it is recent enough to skip the network */
+bool ReadCache(bool anyAge) {
+    FILE *f = std::fopen(Cache, "r");
+    if (f == nullptr) { return false; }
+    unsigned long long at = 0; int build = 0; char ver[32] = {};
+    const bool ok = std::fscanf(f, "%llu %31s %d", &at, ver, &build) == 3;
+    std::fclose(f);
+    if (!ok) { return false; }
+    std::snprintf(g_ver, sizeof(g_ver), "%s", ver);
+    g_build = build;
+    g_known = true;
+    const u64 now = Now();
+    return anyAge || (now != 0 && now >= at && now - at < MaxAge);
+}
+
+void WriteCache() {
+    FILE *f = std::fopen(Cache, "w");
+    if (f == nullptr) { return; }
+    std::fprintf(f, "%llu %s %d\n", static_cast<unsigned long long>(Now()), g_ver, g_build);
+    std::fclose(f);
+}
+
+size_t Collect(char *p, size_t sz, size_t n, void *u) {
+    auto *out = static_cast<std::string *>(u);
+    if (out->size() + sz * n > 16384) { return 0; }
+    out->append(p, sz * n);
+    return sz * n;
+}
+
+int Progress(void *, curl_off_t, curl_off_t, curl_off_t, curl_off_t) { return g_abort ? 1 : 0; }
+
+/* "version": "1.20.0" and "build": 50 out of latest.json */
+void Parse(const std::string &j) {
+    const size_t v = j.find("\"version\"");
+    const size_t b = j.find("\"build\"");
+    if (v == std::string::npos || b == std::string::npos) { return; }
+    const size_t q1 = j.find('"', j.find(':', v) + 1);
+    const size_t q2 = j.find('"', q1 + 1);
+    if (q1 == std::string::npos || q2 == std::string::npos || q2 - q1 > 30) { return; }
+    std::snprintf(g_ver, sizeof(g_ver), "%s", j.substr(q1 + 1, q2 - q1 - 1).c_str());
+    g_build = std::atoi(j.c_str() + j.find(':', b) + 1);
+    g_known = true;
+}
+
+void Work(void *) {
+    bool sock = false;
+    tsl::hlp::doWithSmSession([&sock] {
+        SocketInitConfig cfg = {};
+        cfg.tcp_tx_buf_size = 0x2000;
+        cfg.tcp_rx_buf_size = 0x8000;
+        cfg.tcp_tx_buf_max_size = 0;
+        cfg.tcp_rx_buf_max_size = 0;
+        cfg.udp_tx_buf_size = 0x800;
+        cfg.udp_rx_buf_size = 0x1000;
+        cfg.sb_efficiency = 1;
+        cfg.num_bsd_sessions = 1;
+        cfg.bsd_service_type = BsdServiceType_User;
+        sock = R_SUCCEEDED(socketInitialize(&cfg));
+    });
+    if (sock) {
+        if (curl_global_init(CURL_GLOBAL_DEFAULT) == CURLE_OK) {
+            CURL *c = curl_easy_init();
+            if (c != nullptr) {
+                std::string body;
+                curl_easy_setopt(c, CURLOPT_URL, Latest);
+                curl_easy_setopt(c, CURLOPT_CAINFO, CaFile);
+                curl_easy_setopt(c, CURLOPT_FOLLOWLOCATION, 1L);
+                curl_easy_setopt(c, CURLOPT_CONNECTTIMEOUT, 5L);
+                curl_easy_setopt(c, CURLOPT_TIMEOUT, 10L);
+                curl_easy_setopt(c, CURLOPT_USERAGENT, "NXBeam-overlay");
+                curl_easy_setopt(c, CURLOPT_WRITEFUNCTION, Collect);
+                curl_easy_setopt(c, CURLOPT_WRITEDATA, &body);
+                curl_easy_setopt(c, CURLOPT_NOPROGRESS, 0L);
+                curl_easy_setopt(c, CURLOPT_XFERINFOFUNCTION, Progress);
+                long code = 0;
+                if (curl_easy_perform(c) == CURLE_OK && curl_easy_getinfo(c, CURLINFO_RESPONSE_CODE, &code) == CURLE_OK && code == 200) {
+                    const bool before = g_known;
+                    g_known = false;
+                    Parse(body);
+                    if (g_known) { WriteCache(); } else { g_known = before; }
+                }
+                curl_easy_cleanup(c);
+            }
+            curl_global_cleanup();
+        }
+        socketExit();
+    }
+    g_state = Done;
+}
+
+void Start() {
+    if (g_state != Idle) { return; }
+    if (ReadCache(false)) { g_state = Done; return; }
+    FILE *ca = std::fopen(CaFile, "r");
+    if (ca == nullptr) { g_state = Done; return; }
+    std::fclose(ca);
+    NifmInternetConnectionType type;
+    u32 strength = 0;
+    NifmInternetConnectionStatus st;
+    if (R_FAILED(nifmGetInternetConnectionStatus(&type, &strength, &st)) || st != NifmInternetConnectionStatus_Connected) {
+        ReadCache(true);   /* offline: the last answer, however old */
+        g_state = Done;
+        return;
+    }
+    g_state = Checking;
+    if (R_SUCCEEDED(threadCreate(&g_thread, Work, nullptr, nullptr, 0x20000, 0x3B, -2))) {
+        g_threadUp = true;
+        threadStart(&g_thread);
+    } else {
+        g_state = Done;
+    }
+}
+
+void Stop() {
+    g_abort = true;
+    if (g_threadUp) { threadWaitForExit(&g_thread); threadClose(&g_thread); g_threadUp = false; }
+}
+
+}  // namespace upd
+
 /* the console's address on the network, or a note when it has none */
 std::string SwitchIp() {
     u32 ip = 0;
@@ -304,8 +520,12 @@ class GuiMain : public tsl::Gui {
 public:
     tsl::elm::Element *createUI() override {
         MigrateConfig();
+        remove("sdmc:/atmosphere/contents/0100000000000C21/toolbox.json");   /* old packs: a sysmodules-menu entry that could not work */
         auto frame = new tsl::elm::OverlayFrame("NXBeam", std::string(APP_VERSION) + "  by Haris DevLab");
         auto list = new tsl::elm::List();
+        this->frame = frame;
+        this->list = list;
+        upd::Start();
 
         this->saved = CurrentMode();
         this->header = new tsl::elm::CategoryHeader(std::string("Current mode: ") + Label(this->saved));
@@ -420,22 +640,71 @@ public:
         });
         list->addItem(restart);
 
+        list->addItem(new tsl::elm::CategoryHeader("NXBeam sysmodule"));
+        auto run = new tsl::elm::ToggleListItem("Running", svc::Running(svc::Module), "On", "Off");
+        run->setStateChangedListener([this, run](bool on) {
+            if (on) {
+                if (!svc::Start()) { this->header->setText("Could not start the sysmodule"); }
+            } else {
+                svc::Stop();
+            }
+            svcSleepThread(300'000'000ULL);
+            run->setState(svc::Running(svc::Module));
+        });
+        list->addItem(run);
+        auto boot = new tsl::elm::ToggleListItem("Start at boot", svc::AtBoot(), "On", "Off");
+        boot->setStateChangedListener([this, boot](bool on) {
+            if (!svc::SetAtBoot(on)) { this->header->setText("Could not save to the SD card"); }
+            boot->setState(svc::AtBoot());
+        });
+        list->addItem(boot);
+
         list->addItem(new tsl::elm::CategoryHeader("About"));
         auto ver = new tsl::elm::ListItem("Version");
         ver->setValue(InstalledVersion(), true);
         list->addItem(ver);
-        auto upd = new tsl::elm::ListItem("Update");
-        upd->setValue("NXBeam Update app", true);
-        list->addItem(upd);
+        this->updItem = new tsl::elm::ListItem("Update");
+        this->updItem->setValue("NXBeam Update app", true);
+        list->addItem(this->updItem);
         auto by = new tsl::elm::ListItem("Made by");
         by->setValue("Haris DevLab", true);
         list->addItem(by);
 
         frame->setContent(list);
+        this->ShowUpdate();
         return frame;
     }
 
+    /* the update check ends while the menu is open */
+    void update() override {
+        if (!this->updShown && upd::g_state == upd::Done) { this->ShowUpdate(); }
+    }
+
 private:
+    tsl::elm::OverlayFrame *frame = nullptr;
+    tsl::elm::List *list = nullptr;
+    tsl::elm::ListItem *updItem = nullptr;
+    bool updShown = false;
+
+    void ShowUpdate() {
+        if (upd::g_state == upd::Checking) { this->updItem->setValue("Checking...", true); return; }
+        if (upd::g_state != upd::Done || this->updShown) { return; }
+        this->updShown = true;
+        if (!upd::Newer()) {
+            this->updItem->setValue(upd::g_known ? "Up to date" : "NXBeam Update app", true);
+            return;
+        }
+        /* at the top of the menu, and next to the version under the title */
+        const std::string latest = upd::Latest_();
+        this->frame->setSubtitle(std::string(APP_VERSION) + "  by Haris DevLab  -  update available");
+        this->updItem->setValue(std::string(upd::g_ver) + " available");
+        auto head = new tsl::elm::CategoryHeader("Update available");
+        auto item = new tsl::elm::ListItem("NXBeam " + latest);
+        item->setValue("Open NXBeam Update");
+        this->list->addItem(head, 0, 0);
+        this->list->addItem(item, 0, 1);
+    }
+
     std::string saved;
     tsl::elm::CategoryHeader *header = nullptr;
     tsl::elm::ListItem *usbItem = nullptr;
@@ -467,11 +736,16 @@ public:
             spsmInitialize();
             nifmInitialize(NifmServiceType_User);
             pmdmntInitialize();
+            pmshellInitialize();
+            timeInitialize();
             rnx::Init();
         });
     }
     void exitServices() override {
+        upd::Stop();
+        timeExit();
         rnx::Exit();
+        pmshellExit();
         pmdmntExit();
         if (g_sftap_open) { serviceClose(&g_sftap); g_sftap_open = false; }
         nifmExit();

@@ -288,6 +288,13 @@ static void migrate_config(void) {
 }
 
 /* ------------------------------------------------------------ main */
+/* files of older packs that are gone now */
+static void remove_stale(void) {
+    /* the sysmodules menu (Ultrahand) entry: its switch could not work (it
+     * pointed at the launcher); the NXBeam overlay has the switches now */
+    remove("sdmc:/atmosphere/contents/0100000000000C21/toolbox.json");
+}
+
 static int run(void) {
     Ver cur = read_installed();
     title();
@@ -361,6 +368,7 @@ static int run(void) {
         return 0;
     }
     migrate_config();
+    remove_stale();
     printf("\n\x1b[1;32mSelesai.\x1b[0m %d file diperbarui", n);
     if (kept) printf(", pengaturan Anda (config.ini) tetap");
     printf(".\n\nSwitch perlu di-restart agar versi baru aktif.\nTekan A untuk restart sekarang, + untuk keluar.\n");
