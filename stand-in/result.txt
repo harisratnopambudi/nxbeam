@@ -1,0 +1,16 @@
+ok
+url=http://localhost:8090/
+
+---- 2026-11-19 16:09:14 starting NXBeam
+
+  NXBeam 1.21.0
+  ----------------------------------------
+  http://localhost:8090
+  http://10.1.0.8:8090
+  http://172.17.224.1:8090
+  OBS overlay: http://localhost:8090/overlay
+  ffmpeg: C:\Users\runneradmin\AppData\Local\Programs\NXBeam\node_modules\ffmpeg-static\ffmpeg.exe
+  media:  C:\Users\runneradmin\Videos\NXBeam
+  build:  9
+
+veyra: started C:\Users\RUNNER~1\AppData\Local\Temp\fakeveyra\Veyra.exe

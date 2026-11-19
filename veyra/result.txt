@@ -1,0 +1,19 @@
+ok
+url=http://localhost:8090/
+
+---- 2026-11-19 16:10:36 starting NXBeam
+
+  NXBeam 1.21.0
+  ----------------------------------------
+  http://localhost:8090
+  http://10.1.0.8:8090
+  http://172.17.224.1:8090
+  OBS overlay: http://localhost:8090/overlay
+  ffmpeg: C:\Users\runneradmin\AppData\Local\Programs\NXBeam\node_modules\ffmpeg-static\ffmpeg.exe
+  media:  C:\Users\runneradmin\Videos\NXBeam
+  build:  9
+
+[hub] connected over network (127.0.0.1)
+veyra: started D:\a\nxbeam\nxbeam\veyra-x\Veyra-2.1.9-virtual-camera-NVIDIA-win64-portable\veyra_qml_ui.exe
+[live] Lavf/63.1.101 opened /live.mkv (1280x720)
+veyra: embedded

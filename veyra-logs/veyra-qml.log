@@ -1,0 +1,256 @@
+2026-11-19T16:10:43.331Z t=7376 [INFO ] [app] software UI: cached raster paths; normal partial updates; no additional frame requests
+2026-11-19T16:10:43.331Z t=7376 [INFO ] [app] software UI by default (interface drawing preference: software); native D3D12 video unchanged
+2026-11-19T16:10:43.331Z t=7376 [INFO ] [app] RivaTuner running=false injected=false compat=auto OSD in this process=on
+2026-11-19T16:10:43.331Z t=7376 [INFO ] [app] NVIDIA overlay running=false GamePP running=false Douyin companion running=false interface=software
+2026-11-19T16:10:43.400Z t=7376 [INFO ] [app-icon] embedded window icon sizes=10
+2026-11-19T16:10:43.400Z t=7376 [INFO ] [app] Veyra QML session started
+2026-11-19T16:10:43.400Z t=7376 [INFO ] [app] test data directory C:\Users\runneradmin\AppData\Local\NXBeam\veyra
+2026-11-19T16:10:43.402Z t=7376 [INFO ] [nr-default] adapter=Microsoft Basic Render Driver selected=community-SF-RTX20-RTX50
+2026-11-19T16:10:43.403Z t=7376 [INFO ] [ui-shortcuts] fullscreen=F gameExit=Ctrl+Alt+Home gamePanel=Home hold=V lock=Ctrl+L playPause=Space record=F8 replay=F9 screenshot=F7 toggleMode=Tab custom=none
+2026-11-19T16:10:43.403Z t=7376 [INFO ] [ui-replay] replay off seconds=60 microphone=off
+2026-11-19T16:10:43.513Z t=7376 [INFO ] [perf] gpu monitor wanted=auto using=all adapters
+2026-11-19T16:10:43.513Z t=7376 [INFO ] [perf] compute gpu follow=false wanted=auto using=default order (highest-performance adapter)
+2026-11-19T16:10:43.516Z t=7376 [INFO ] [gpu-priority] requested=4 actual=4 state=1 ntstatus=0x00000000 cap=5
+2026-11-19T16:10:43.518Z t=2364 [INFO ] [prewarm] event=disabled released=true
+2026-11-19T16:10:43.533Z t=7376 [INFO ] [i18n] catalog en entries=2943 patterns=121
+2026-11-19T16:10:43.533Z t=7376 [INFO ] [i18n] interface language en
+2026-11-19T16:10:43.534Z t=7376 [INFO ] [ui-settings-request] accepted srTarget=1 quality=2 fgBackend=0 flowBackend=1 srPrescale=0 srOutput=0
+2026-11-19T16:10:43.565Z t=7376 [INFO ] [qml-cache] folder=C:\Users\runneradmin\AppData\Local\Veyra\Veyra\cache\qmlcache-cb0498c32d4608bf digest=cb0498c32d4608bf files=120 bytes=5107292 ms=30.0
+2026-11-19T16:10:43.568Z t=7376 [INFO ] [qml-window] probe mode=normal
+2026-11-19T16:10:47.261Z t=7376 [INFO ] [display-query] query reason=ui monitor=0x10001 generation=1 force=false (background thread; nothing waits for it)
+2026-11-19T16:10:47.328Z t=7376 [INFO ] [display-query] result reason=ui monitor=0x10001 generation=1 refreshHz=64.000 vrrLevel=0 status=0 hdr=off peakNits=270 refreshMs=0.035 vrrMs=0.084 colorMs=0.277 (driver wall time on the worker thread)
+2026-11-19T16:10:48.333Z t=7376 [INFO ] [startup-music] loading volume=1.00 muted=false
+2026-11-19T16:10:48.350Z t=7376 [INFO ] [qml-window] taskbar minimise enabled style=0x960A0000
+2026-11-19T16:10:48.355Z t=7376 [INFO ] [subtitle] overlay created ok=true err=0
+2026-11-19T16:10:48.355Z t=7376 [INFO ] [qml-window] source-state session=0 transport=0 running=false image=false failed=false opening=false revision=1
+2026-11-19T16:10:48.413Z t=7376 [INFO ] [startup-music] stopped permanently at 0.00 s
+2026-11-19T16:10:48.430Z t=7376 [INFO ] [app-focus] active=true running=false transport=0 sourceFps=0.00 submitFps=0.00 nr=false sr=false fg=false powerKnown=false control=0x0 state=0x0 err=87
+2026-11-19T16:10:48.503Z t=7376 [INFO ] [ui-intro] started music=true
+2026-11-19T16:10:48.691Z t=7376 [INFO ] [qml] pre-open: host=true size=727x409 contentChildren=25
+2026-11-19T16:10:48.692Z t=7376 [INFO ] [qml-window] film pixel rounding allowance=1.28125 height pixels
+2026-11-19T16:10:48.692Z t=7376 [INFO ] [qml-window] SetWindowPos rect=(0,0) 727x409 result=true error=0
+2026-11-19T16:10:48.692Z t=7376 [INFO ] [qml-window] geometry probe=normal root=727x409 dpr=1.000 host=(0.0,0.0) 727.0x409.0 parent=true parentClient=727x409 client=727x409 screen=(186,166) 727x409 style=0x56000000 visible=true regionType=0 regionBoxType=1 regionBox=(0,0) 0x0
+2026-11-19T16:10:48.692Z t=7376 [INFO ] [qml-window] pre-open: show video wasVisible=true nowVisible=true sourceSnapshot=false
+2026-11-19T16:10:48.692Z t=7376 [INFO ] [qml] video window 727x409 parent=true
+2026-11-19T16:10:48.705Z t=2364 [INFO ] [dred] configured before device creation hr=0x0 breadcrumbs=true pageFault=true
+2026-11-19T16:10:48.706Z t=2364 [INFO ] [gfx] adapter[0] vendorId=0x1414 software=false dedicatedVideoMiB=0 desc=Microsoft Basic Render Driver
+2026-11-19T16:10:48.720Z t=7376 [INFO ] [qml-window] blank video until the new source presents (opening) result=1
+2026-11-19T16:10:48.722Z t=7376 [INFO ] [app-focus] active=false running=false transport=1 sourceFps=0.00 submitFps=0.00 nr=false sr=false fg=false powerKnown=false control=0x0 state=0x0 err=87
+2026-11-19T16:10:48.732Z t=2364 [INFO ] [gfx] device created featureLevelMax=12_1 checkHr=0x00000000 (S_OK)
+2026-11-19T16:10:48.737Z t=7376 [INFO ] [subtitle] tracks=0 primary=-1 secondary=-1
+2026-11-19T16:10:48.738Z t=7376 [INFO ] [qml-window] source-state session=1 transport=1 running=false image=false failed=false opening=true revision=2
+2026-11-19T16:10:48.748Z t=2364 [INFO ] [gfx] device context initialized adapter=Microsoft Basic Render Driver vendor=0x1414 luid=0x00000000:0x0000000000007357 driver=<none> (unavailable) featureLevel=12_1 slots=6
+2026-11-19T16:10:48.748Z t=2364 [INFO ] [gfx] slot-ring: timestamp heap created slots=16 pairs=32 frequencyHz=10000000 freqQuery=0x00000000 (S_OK)
+2026-11-19T16:10:48.761Z t=2364 [INFO ] [gfx] slot-ring: initialized slots=16
+2026-11-19T16:10:48.761Z t=2364 [INFO ] [decode] file decode preference=hardware-first
+2026-11-19T16:10:48.977Z t=7376 [INFO ] [ui-intro] dismissed ms=0 frames=0 worstFrameMs=0 size=658x400
+2026-11-19T16:10:50.650Z t=7376 [INFO ] [qml] [update-check-start] automatic
+2026-11-19T16:10:50.769Z t=7376 [INFO ] [qml] [update-check] current
+2026-11-19T16:10:50.801Z t=2364 [INFO ] [net-session] opened format=matroska,webm live=true durationUs=0 containerBitRate=0 videoStream=0 audioStream=1 streams=2 startSeconds=0.0 aheadSeconds=2.0 aheadMiB=32 holds=false autoReconnect=true
+2026-11-19T16:10:50.801Z t=2364 [INFO ] [media] demuxer: opened shared session codecId=27 streams=2 videoStream=0 durationUs=0 timeBase=1/1000 format=matroska,webm
+2026-11-19T16:10:50.801Z t=5820 [INFO ] [net-buffer] state=playing leadSec=0.00 targetSec=0.00 videoQ=0 audioQ=0 queuedMiB=0.0 downloadMBps=0.00 serverMBps=0.00 bitrateMBps=0.00 bandwidthLow=false reconnects=0 attempt=0 stalls=0 corruptPackets=0 totalMiB=0.0 eof=false failed=false
+2026-11-19T16:10:50.801Z t=2364 [ERROR] [media] decoder: av_hwdevice_ctx_init failed code=-22
+2026-11-19T16:10:50.801Z t=2364 [WARN ] [source-file] D3D12VA open failed; falling back to software decode (explicit)
+2026-11-19T16:10:50.801Z t=2364 [INFO ] [media] decoder: software decoder opened codec=h264 1280x720 pixFmt=0 threads=2 activeThreadType=1 lowLatency=false
+2026-11-19T16:10:50.801Z t=2364 [INFO ] [source-file] display aspect=1.7778 sar=1/1 rotation=0
+2026-11-19T16:10:50.801Z t=2364 [INFO ] [source-file] opened 1280x720 dur=-1s avgFps=30.000 container=matroska,webm codec=h264 pixelFmt=yuv420p hw=false matrix=2(assumed) range=1(assumed) transfer=2(assumed)
+2026-11-19T16:10:50.803Z t=2364 [INFO ] [media] decoder: frame#1 stamp=0 tb=1/1000 -> ptsUs=0 format=0
+2026-11-19T16:10:50.803Z t=2364 [INFO ] [source-file] first-frame codec=h264 format=yuv420p hw=false hdr=false matrix=2 transfer=2 range=1 chromaLocation=1
+2026-11-19T16:10:50.803Z t=2364 [INFO ] [display-color] hdrInput=false hdrOutput=false forceSdrPreview=false
+2026-11-19T16:10:50.803Z t=2364 [INFO ] [graph] fixed execution plan accepted: steps=0 nr=0 output=1280x720; fixed base with node pre-NR/tail Color; mode=list
+2026-11-19T16:10:50.804Z t=2364 [INFO ] [resolution] source=1280x720 base=1280x720 nr=1280x720 flow=1280x720 fg=1280x720 output=1280x720
+2026-11-19T16:10:50.804Z t=2364 [INFO ] [pipeline-order] SR -> NR -> residual -> FG
+2026-11-19T16:10:50.804Z t=2364 [INFO ] [memory] graph lower-bound=130MiB budget=7523MiB usage=1MiB; SDK allocations additional
+2026-11-19T16:10:50.804Z t=2364 [INFO ] [memory] admission textures=130MiB sdkReserve=0MiB available=7522MiB headroom=0%
+2026-11-19T16:10:50.807Z t=2364 [INFO ] [graph] NV12 upload ring persistently mapped (2 buffer sets)
+2026-11-19T16:10:50.813Z t=2364 [INFO ] [graph] depth/zero guidance textures initialized
+2026-11-19T16:10:50.813Z t=2364 [INFO ] [graph] optical-flow session skipped: no external motion consumer
+2026-11-19T16:10:50.813Z t=2364 [INFO ] [graph] NGX core/features skipped by disabled-feature configuration
+2026-11-19T16:10:50.821Z t=2364 [INFO ] [graph] initialized src=1280x720 work=1280x720 sr=0 nr=0 fg=0 nvof=0
+2026-11-19T16:10:50.821Z t=2364 [INFO ] [motion-policy] sr=flow nr=flow fg=flow standalone=false hdrOutput=SDR
+2026-11-19T16:10:50.821Z t=2364 [INFO ] [present] sink-shutdown: sub-step backbuffers-release
+2026-11-19T16:10:50.821Z t=2364 [INFO ] [present] sink-shutdown: sub-step swapchain-release
+2026-11-19T16:10:50.821Z t=2364 [INFO ] [present] sink-shutdown: sub-step window-destroy-last
+2026-11-19T16:10:50.821Z t=2364 [INFO ] [present] sink-shutdown: sub-step factory-release
+2026-11-19T16:10:50.821Z t=2364 [INFO ] [present] sink-shutdown: complete
+2026-11-19T16:10:50.822Z t=2364 [INFO ] [present-priority] actualType=0 actualPriority=0
+2026-11-19T16:10:50.822Z t=2364 [INFO ] [gfx] slot-ring: timestamp heap created slots=3 pairs=6 frequencyHz=10000000 freqQuery=0x00000000 (S_OK)
+2026-11-19T16:10:50.822Z t=2364 [INFO ] [gfx] slot-ring: initialized slots=3
+2026-11-19T16:10:50.822Z t=2364 [INFO ] [present] native presentation uses persistent independent queue/fence, 3 command slots; shared textures use producer/consumer GPU fences
+2026-11-19T16:10:50.824Z t=2364 [INFO ] [present] output=SDR RGB G22
+2026-11-19T16:10:50.824Z t=2364 [INFO ] [pacing] DXGI enabled=false maximumLatency=3 vsync=false tearing=false hr=0x0 staleLatencyCounts=0
+2026-11-19T16:10:50.824Z t=2364 [INFO ] [display-refresh] monitor refresh=64.000 Hz at swapchain creation (0 = unknown); submissions above this rate cannot all be scanned out
+2026-11-19T16:10:50.824Z t=2364 [INFO ] [present] present-sink: window 727x409 swapEffect=flip-discard buffers=3 vsync=0 tearing=0 captureCompatible=false (capture not verified)
+2026-11-19T16:10:50.826Z t=2364 [INFO ] [present-copy] enabled=false format=28 extent=727x409 (GPU-only final composition; no pixel readback)
+2026-11-19T16:10:50.826Z t=2364 [INFO ] [display-query] query reason=session-start monitor=0x10001 generation=1 force=true (background thread; nothing waits for it)
+2026-11-19T16:10:50.826Z t=2364 [INFO ] [display-vrr] level=0 known=false monitorSupportsVrr=false currentlyCapable=false trueGsync=false capsKnown=false possible=false requested=false active=false displayInVrrMode=false indicator=false simulated=false status=0 refreshHz=64.000 (NVIDIA G-SYNC / G-SYNC Compatible state of the window's monitor; read-only monitor query, per-application setup is a separate explicit action)
+2026-11-19T16:10:50.826Z t=2364 [INFO ] [display-query] presentation chain start monitor=0x10001 cached=true answered=true (read again only on events, never on a timer)
+2026-11-19T16:10:50.826Z t=2364 [INFO ] [settings] xess capability: active=false maxInterpolatedFrames=0 unlockApplied=false (active context only)
+2026-11-19T16:10:50.826Z t=2364 [INFO ] [audio-format] file input channels=2 mask=0x3; preserve to renderer
+2026-11-19T16:10:50.826Z t=2364 [INFO ] [audio] audio stream idx=1 codec=pcm_s16le rate=48000
+2026-11-19T16:10:50.826Z t=2364 [INFO ] [audio-continuity] event=hold coverageMs=-1.000
+2026-11-19T16:10:50.826Z t=2364 [INFO ] [scheduler] high resolution waitable timer active; no global timer resolution changes
+2026-11-19T16:10:50.826Z t=2364 [INFO ] [scheduler] single GPU owner thread=2364 capacity=2 source=file (bounded enhanced lookahead)
+2026-11-19T16:10:50.826Z t=2364 [INFO ] [display-query] result reason=session-start monitor=0x10001 generation=1 refreshHz=64.000 vrrLevel=0 status=0 hdr=off peakNits=270 refreshMs=0.011 vrrMs=0.000 colorMs=0.038 (driver wall time on the worker thread)
+2026-11-19T16:10:50.826Z t=2364 [INFO ] [pacing] DXGI enabled=false maximumLatency=3 vsync=false tearing=false hr=0x0 staleLatencyCounts=0
+2026-11-19T16:10:50.826Z t=2364 [INFO ] [pacing] revision=1 requested=false/0/2 effective=false/0/2 displayQueuePaced=false variableRefresh=false vrrLevel=0 vrrSync=false
+2026-11-19T16:10:50.826Z t=2364 [INFO ] [color] range=1 assumed=true matrix=2 assumed=true transfer=2 assumed=true display709=false preserveSdrCodes=true workingTransfer=1
+2026-11-19T16:10:50.826Z t=1608 [ERROR] [audio] GetDefaultAudioEndpoint hr=0x80070490
+2026-11-19T16:10:50.826Z t=1608 [WARN ] [audio-recovery] endpoint unavailable hr=0x80070490 holdPtsMs=0.000
+2026-11-19T16:10:50.831Z t=7376 [INFO ] [ui-aspect] mode=0 zoom=1.000 dar=1.7778 client=727x409 image=0x0
+2026-11-19T16:10:50.831Z t=7376 [INFO ] [qml-window] source-state session=1 transport=2 running=true image=false failed=false opening=false revision=4
+2026-11-19T16:10:50.831Z t=7376 [INFO ] [playback-power] playback display/system request acquired
+2026-11-19T16:10:50.831Z t=7376 [INFO ] [playback-power] process power throttling disabled for playback ok=false win32=87
+2026-11-19T16:10:50.831Z t=7376 [INFO ] [ui-fullscreen] control window visible=true
+2026-11-19T16:10:50.840Z t=7376 [INFO ] [qml] video host lookup: found=true contentChildren=25
+2026-11-19T16:10:50.840Z t=7376 [INFO ] [qml] video host geometry 658x370 at 0,0
+2026-11-19T16:10:50.840Z t=7376 [INFO ] [qml-window] SetWindowPos rect=(0,0) 658x370 result=true error=0
+2026-11-19T16:10:50.840Z t=7376 [INFO ] [qml-window] geometry probe=normal root=658x370 dpr=1.000 host=(0.0,0.0) 658.0x370.0 parent=true parentClient=658x370 client=658x370 screen=(221,215) 658x370 style=0x56000000 visible=true regionType=1 regionBoxType=1 regionBox=(0,0) 0x0
+2026-11-19T16:10:50.841Z t=7376 [INFO ] [qml-window] SetWindowRgn covers=1 size=658x370 result=1 error=0
+2026-11-19T16:10:50.841Z t=7376 [INFO ] [qml-window] region probe=normal root=658x370 dpr=1.000 host=(0.0,0.0) 658.0x370.0 parent=true parentClient=658x370 client=658x370 screen=(221,215) 658x370 style=0x56000000 visible=true regionType=2 regionBoxType=2 regionBox=(0,0) 658x370
+2026-11-19T16:10:50.845Z t=7376 [INFO ] [qml-window] SetWindowRgn covers=1 size=658x370 result=1 error=0
+2026-11-19T16:10:50.845Z t=7376 [INFO ] [qml-window] region probe=normal root=658x370 dpr=1.000 host=(0.0,0.0) 658.0x370.0 parent=true parentClient=658x370 client=658x370 screen=(221,215) 658x370 style=0x56000000 visible=true regionType=2 regionBoxType=2 regionBox=(0,0) 658x370
+2026-11-19T16:10:50.847Z t=7376 [INFO ] [ui-aspect] mode=0 zoom=1.000 dar=1.7778 client=658x370 image=0x0
+2026-11-19T16:10:50.855Z t=2364 [INFO ] [metrics] reset session=1 appliedRevision=2 epoch=1 sourceBase=0
+2026-11-19T16:10:50.855Z t=2364 [INFO ] [capture-rate] revision=2 requested60To30=false active=false transportFps=0 originalPtsPreserved=true
+2026-11-19T16:10:50.855Z t=2364 [INFO ] [media] decoder: frame#2 stamp=32 tb=1/1000 -> ptsUs=32000 format=0
+2026-11-19T16:10:50.863Z t=7376 [INFO ] [ui-aspect] mode=0 zoom=1.000 dar=1.7778 client=658x370 image=1280x720
+2026-11-19T16:10:50.930Z t=2364 [INFO ] [reset-lifecycle] session=1 revision=2 epoch=1 source=1 reason=1 outcome=1 drainMs=0.000 destroyMs=0.000 createMs=0.000 warmupSubmitMs=28.848 firstValidObserveMs=74.984 totalMs=103.832 (CPU observed; -1=not measured)
+2026-11-19T16:10:51.581Z t=1608 [INFO ] [audio] startup prefill done in 755ms firstPtsMs=16.0 bufferedMs=1003
+2026-11-19T16:10:51.581Z t=1608 [INFO ] [audio] packet read-ahead off (limit 2500 ms of audio packets; the endpoint thread never reads the file)
+2026-11-19T16:10:51.581Z t=1608 [ERROR] [audio] GetDefaultAudioEndpoint hr=0x80070490
+2026-11-19T16:10:51.581Z t=1608 [WARN ] [audio-recovery] endpoint unavailable hr=0x80070490 holdPtsMs=0.000
+2026-11-19T16:10:51.801Z t=5820 [INFO ] [net-buffer] state=playing leadSec=1.23 targetSec=0.00 videoQ=35 audioQ=10 queuedMiB=0.9 downloadMBps=0.38 serverMBps=1.12 bitrateMBps=0.00 bandwidthLow=false reconnects=0 attempt=0 stalls=0 corruptPackets=0 totalMiB=1.1 eof=false failed=false
+2026-11-19T16:10:52.084Z t=1608 [ERROR] [audio] GetDefaultAudioEndpoint hr=0x80070490
+2026-11-19T16:10:52.084Z t=1608 [WARN ] [audio-recovery] endpoint unavailable hr=0x80070490 holdPtsMs=0.000
+2026-11-19T16:10:52.587Z t=1608 [ERROR] [audio] GetDefaultAudioEndpoint hr=0x80070490
+2026-11-19T16:10:52.587Z t=1608 [WARN ] [audio-recovery] endpoint unavailable hr=0x80070490 holdPtsMs=0.000
+2026-11-19T16:10:52.803Z t=5820 [INFO ] [net-buffer] state=playing leadSec=2.00 targetSec=0.00 videoQ=58 audioQ=47 queuedMiB=1.6 downloadMBps=0.63 serverMBps=1.04 bitrateMBps=0.00 bandwidthLow=false reconnects=0 attempt=0 stalls=0 corruptPackets=0 totalMiB=1.9 eof=false failed=false
+2026-11-19T16:10:53.090Z t=1608 [ERROR] [audio] GetDefaultAudioEndpoint hr=0x80070490
+2026-11-19T16:10:53.090Z t=1608 [WARN ] [audio-recovery] endpoint unavailable hr=0x80070490 holdPtsMs=0.000
+2026-11-19T16:10:53.596Z t=1608 [ERROR] [audio] GetDefaultAudioEndpoint hr=0x80070490
+2026-11-19T16:10:53.596Z t=1608 [WARN ] [audio-recovery] endpoint unavailable hr=0x80070490 holdPtsMs=0.000
+2026-11-19T16:10:53.804Z t=5820 [INFO ] [net-buffer] state=playing leadSec=2.00 targetSec=0.00 videoQ=58 audioQ=47 queuedMiB=1.6 downloadMBps=0.63 serverMBps=1.04 bitrateMBps=0.00 bandwidthLow=false reconnects=0 attempt=0 stalls=0 corruptPackets=0 totalMiB=1.9 eof=false failed=false
+2026-11-19T16:10:54.099Z t=1608 [ERROR] [audio] GetDefaultAudioEndpoint hr=0x80070490
+2026-11-19T16:10:54.099Z t=1608 [WARN ] [audio-recovery] endpoint unavailable hr=0x80070490 holdPtsMs=0.000
+2026-11-19T16:10:54.602Z t=1608 [ERROR] [audio] GetDefaultAudioEndpoint hr=0x80070490
+2026-11-19T16:10:54.602Z t=1608 [WARN ] [audio-recovery] endpoint unavailable hr=0x80070490 holdPtsMs=0.000
+2026-11-19T16:10:54.805Z t=5820 [INFO ] [net-buffer] state=playing leadSec=2.00 targetSec=0.00 videoQ=58 audioQ=47 queuedMiB=1.6 downloadMBps=0.63 serverMBps=1.04 bitrateMBps=0.00 bandwidthLow=false reconnects=0 attempt=0 stalls=0 corruptPackets=0 totalMiB=1.9 eof=false failed=false
+2026-11-19T16:10:55.105Z t=1608 [ERROR] [audio] GetDefaultAudioEndpoint hr=0x80070490
+2026-11-19T16:10:55.105Z t=1608 [WARN ] [audio-recovery] endpoint unavailable hr=0x80070490 holdPtsMs=0.000
+2026-11-19T16:10:55.606Z t=1608 [ERROR] [audio] GetDefaultAudioEndpoint hr=0x80070490
+2026-11-19T16:10:55.607Z t=1608 [WARN ] [audio-recovery] endpoint unavailable hr=0x80070490 holdPtsMs=0.000
+2026-11-19T16:10:55.805Z t=5820 [INFO ] [net-buffer] state=playing leadSec=2.00 targetSec=0.00 videoQ=58 audioQ=47 queuedMiB=1.6 downloadMBps=0.63 serverMBps=1.04 bitrateMBps=0.00 bandwidthLow=false reconnects=0 attempt=0 stalls=0 corruptPackets=0 totalMiB=1.9 eof=false failed=false
+2026-11-19T16:10:56.107Z t=1608 [ERROR] [audio] GetDefaultAudioEndpoint hr=0x80070490
+2026-11-19T16:10:56.107Z t=1608 [WARN ] [audio-recovery] endpoint unavailable hr=0x80070490 holdPtsMs=0.000
+2026-11-19T16:10:56.612Z t=1608 [ERROR] [audio] GetDefaultAudioEndpoint hr=0x80070490
+2026-11-19T16:10:56.612Z t=1608 [WARN ] [audio-recovery] endpoint unavailable hr=0x80070490 holdPtsMs=0.000
+2026-11-19T16:10:56.807Z t=5820 [INFO ] [net-buffer] state=playing leadSec=2.00 targetSec=0.00 videoQ=58 audioQ=47 queuedMiB=1.6 downloadMBps=0.63 serverMBps=1.04 bitrateMBps=0.00 bandwidthLow=false reconnects=0 attempt=0 stalls=0 corruptPackets=0 totalMiB=1.9 eof=false failed=false
+2026-11-19T16:10:57.115Z t=1608 [ERROR] [audio] GetDefaultAudioEndpoint hr=0x80070490
+2026-11-19T16:10:57.115Z t=1608 [WARN ] [audio-recovery] endpoint unavailable hr=0x80070490 holdPtsMs=0.000
+2026-11-19T16:10:57.621Z t=1608 [ERROR] [audio] GetDefaultAudioEndpoint hr=0x80070490
+2026-11-19T16:10:57.621Z t=1608 [WARN ] [audio-recovery] endpoint unavailable hr=0x80070490 holdPtsMs=0.000
+2026-11-19T16:10:57.807Z t=5820 [INFO ] [net-buffer] state=playing leadSec=2.00 targetSec=0.00 videoQ=58 audioQ=47 queuedMiB=1.6 downloadMBps=0.63 serverMBps=1.04 bitrateMBps=0.00 bandwidthLow=false reconnects=0 attempt=0 stalls=0 corruptPackets=0 totalMiB=1.9 eof=false failed=false
+2026-11-19T16:10:58.122Z t=1608 [ERROR] [audio] GetDefaultAudioEndpoint hr=0x80070490
+2026-11-19T16:10:58.122Z t=1608 [WARN ] [audio-recovery] endpoint unavailable hr=0x80070490 holdPtsMs=0.000
+2026-11-19T16:10:58.346Z t=7376 [INFO ] [qml-frames] ui presents per 10 s: main=40 controlBar=53
+2026-11-19T16:10:58.623Z t=1608 [ERROR] [audio] GetDefaultAudioEndpoint hr=0x80070490
+2026-11-19T16:10:58.623Z t=1608 [WARN ] [audio-recovery] endpoint unavailable hr=0x80070490 holdPtsMs=0.000
+2026-11-19T16:10:58.809Z t=5820 [INFO ] [net-buffer] state=playing leadSec=2.00 targetSec=0.00 videoQ=58 audioQ=47 queuedMiB=1.6 downloadMBps=0.63 serverMBps=1.04 bitrateMBps=0.00 bandwidthLow=false reconnects=0 attempt=0 stalls=0 corruptPackets=0 totalMiB=1.9 eof=false failed=false
+2026-11-19T16:10:58.949Z t=6328 [ERROR] [engine-hang] owner=2364 stalledMs=8093 lastStage=collect cpuMs=15 stackFrames=10 nvidiaOverlay=false rtss=false gamePP=false (playback loop made no progress; capture/audio threads are separate)
+2026-11-19T16:10:58.949Z t=6328 [ERROR] [engine-hang] stack frame=0 module=ntdll.dll rva=0xA03F4 near=NtWaitForSingleObject+0x14
+2026-11-19T16:10:58.949Z t=6328 [ERROR] [engine-hang] stack frame=1 module=KERNELBASE.dll rva=0x3D7FE near=WaitForSingleObjectEx+0x8E
+2026-11-19T16:10:58.949Z t=6328 [ERROR] [engine-hang] stack frame=2 module=veyra_qml_ui.exe rva=0x29B2F3
+2026-11-19T16:10:58.949Z t=6328 [ERROR] [engine-hang] stack frame=3 module=veyra_qml_ui.exe rva=0x28D490
+2026-11-19T16:10:58.949Z t=6328 [ERROR] [engine-hang] stack frame=4 module=veyra_qml_ui.exe rva=0x25BEE6
+2026-11-19T16:10:58.949Z t=6328 [ERROR] [engine-hang] stack frame=5 module=veyra_qml_ui.exe rva=0x26EF76
+2026-11-19T16:10:58.949Z t=6328 [ERROR] [engine-hang] stack frame=6 module=veyra_qml_ui.exe rva=0x248262
+2026-11-19T16:10:58.949Z t=6328 [ERROR] [engine-hang] stack frame=7 module=veyra_qml_ui.exe rva=0xCC0F0F
+2026-11-19T16:10:58.949Z t=6328 [ERROR] [engine-hang] stack frame=8 module=KERNEL32.DLL rva=0x14F80 near=BaseThreadInitThunk+0x10
+2026-11-19T16:10:58.949Z t=6328 [ERROR] [engine-hang] stack frame=9 module=ntdll.dll rva=0x7EDCB near=RtlUserThreadStart+0x2B
+2026-11-19T16:10:59.377Z t=1608 [ERROR] [audio] GetDefaultAudioEndpoint hr=0x80070490
+2026-11-19T16:10:59.377Z t=1608 [WARN ] [audio-recovery] endpoint unavailable hr=0x80070490 holdPtsMs=0.000
+2026-11-19T16:10:59.378Z t=6328 [ERROR] [engine-hang] minidump written=true file=veyra-hang-20261119-161058-3816.dmp bytes=1343189
+2026-11-19T16:10:59.809Z t=5820 [INFO ] [net-buffer] state=playing leadSec=2.00 targetSec=0.00 videoQ=58 audioQ=47 queuedMiB=1.6 downloadMBps=0.63 serverMBps=1.04 bitrateMBps=0.00 bandwidthLow=false reconnects=0 attempt=0 stalls=0 corruptPackets=0 totalMiB=1.9 eof=false failed=false
+2026-11-19T16:10:59.880Z t=1608 [ERROR] [audio] GetDefaultAudioEndpoint hr=0x80070490
+2026-11-19T16:10:59.881Z t=1608 [WARN ] [audio-recovery] endpoint unavailable hr=0x80070490 holdPtsMs=0.000
+2026-11-19T16:11:00.168Z t=7376 [INFO ] [qml-window] SetWindowRgn covers=2 size=658x370 result=1 error=0
+2026-11-19T16:11:00.168Z t=7376 [INFO ] [qml-window] region probe=normal root=658x370 dpr=1.000 host=(0.0,0.0) 658.0x370.0 parent=true parentClient=658x370 client=658x370 screen=(221,215) 658x370 style=0x56000000 visible=true regionType=3 regionBoxType=3 regionBox=(0,0) 658x370
+2026-11-19T16:11:00.184Z t=7376 [INFO ] [qml-window] SetWindowRgn covers=2 size=658x370 result=1 error=0
+2026-11-19T16:11:00.184Z t=7376 [INFO ] [qml-window] region probe=normal root=658x370 dpr=1.000 host=(0.0,0.0) 658.0x370.0 parent=true parentClient=658x370 client=658x370 screen=(221,215) 658x370 style=0x56000000 visible=true regionType=3 regionBoxType=3 regionBox=(0,0) 658x370
+2026-11-19T16:11:00.200Z t=7376 [INFO ] [qml-window] SetWindowRgn covers=2 size=658x370 result=1 error=0
+2026-11-19T16:11:00.200Z t=7376 [INFO ] [qml-window] region probe=normal root=658x370 dpr=1.000 host=(0.0,0.0) 658.0x370.0 parent=true parentClient=658x370 client=658x370 screen=(221,215) 658x370 style=0x56000000 visible=true regionType=3 regionBoxType=3 regionBox=(0,0) 658x370
+2026-11-19T16:11:00.216Z t=7376 [INFO ] [qml-window] SetWindowRgn covers=2 size=658x370 result=1 error=0
+2026-11-19T16:11:00.216Z t=7376 [INFO ] [qml-window] region probe=normal root=658x370 dpr=1.000 host=(0.0,0.0) 658.0x370.0 parent=true parentClient=658x370 client=658x370 screen=(221,215) 658x370 style=0x56000000 visible=true regionType=3 regionBoxType=3 regionBox=(0,0) 658x370
+2026-11-19T16:11:00.232Z t=7376 [INFO ] [qml-window] SetWindowRgn covers=2 size=658x370 result=1 error=0
+2026-11-19T16:11:00.232Z t=7376 [INFO ] [qml-window] region probe=normal root=658x370 dpr=1.000 host=(0.0,0.0) 658.0x370.0 parent=true parentClient=658x370 client=658x370 screen=(221,215) 658x370 style=0x56000000 visible=true regionType=3 regionBoxType=3 regionBox=(0,0) 658x370
+2026-11-19T16:11:00.248Z t=7376 [INFO ] [qml-window] SetWindowRgn covers=2 size=658x370 result=1 error=0
+2026-11-19T16:11:00.248Z t=7376 [INFO ] [qml-window] region probe=normal root=658x370 dpr=1.000 host=(0.0,0.0) 658.0x370.0 parent=true parentClient=658x370 client=658x370 screen=(221,215) 658x370 style=0x56000000 visible=true regionType=3 regionBoxType=3 regionBox=(0,0) 658x370
+2026-11-19T16:11:00.344Z t=7376 [INFO ] [qml-window] SetWindowRgn covers=2 size=658x370 result=1 error=0
+2026-11-19T16:11:00.344Z t=7376 [INFO ] [qml-window] region probe=normal root=658x370 dpr=1.000 host=(0.0,0.0) 658.0x370.0 parent=true parentClient=658x370 client=658x370 screen=(221,215) 658x370 style=0x56000000 visible=true regionType=3 regionBoxType=3 regionBox=(0,0) 658x370
+2026-11-19T16:11:00.383Z t=1608 [ERROR] [audio] GetDefaultAudioEndpoint hr=0x80070490
+2026-11-19T16:11:00.383Z t=1608 [WARN ] [audio-recovery] endpoint unavailable hr=0x80070490 holdPtsMs=0.000
+2026-11-19T16:11:00.424Z t=7376 [INFO ] [qml-window] SetWindowRgn covers=2 size=658x370 result=1 error=0
+2026-11-19T16:11:00.424Z t=7376 [INFO ] [qml-window] region probe=normal root=658x370 dpr=1.000 host=(0.0,0.0) 658.0x370.0 parent=true parentClient=658x370 client=658x370 screen=(221,215) 658x370 style=0x56000000 visible=true regionType=3 regionBoxType=3 regionBox=(0,0) 658x370
+2026-11-19T16:11:00.810Z t=5820 [INFO ] [net-buffer] state=playing leadSec=2.00 targetSec=0.00 videoQ=58 audioQ=47 queuedMiB=1.6 downloadMBps=0.63 serverMBps=1.04 bitrateMBps=0.00 bandwidthLow=false reconnects=0 attempt=0 stalls=0 corruptPackets=0 totalMiB=1.9 eof=false failed=false
+2026-11-19T16:11:00.887Z t=1608 [ERROR] [audio] GetDefaultAudioEndpoint hr=0x80070490
+2026-11-19T16:11:00.888Z t=1608 [WARN ] [audio-recovery] endpoint unavailable hr=0x80070490 holdPtsMs=0.000
+2026-11-19T16:11:01.389Z t=1608 [ERROR] [audio] GetDefaultAudioEndpoint hr=0x80070490
+2026-11-19T16:11:01.389Z t=1608 [WARN ] [audio-recovery] endpoint unavailable hr=0x80070490 holdPtsMs=0.000
+2026-11-19T16:11:01.812Z t=5820 [INFO ] [net-buffer] state=playing leadSec=2.00 targetSec=0.00 videoQ=58 audioQ=47 queuedMiB=1.6 downloadMBps=0.63 serverMBps=1.04 bitrateMBps=0.00 bandwidthLow=false reconnects=0 attempt=0 stalls=0 corruptPackets=0 totalMiB=1.9 eof=false failed=false
+2026-11-19T16:11:01.891Z t=1608 [ERROR] [audio] GetDefaultAudioEndpoint hr=0x80070490
+2026-11-19T16:11:01.891Z t=1608 [WARN ] [audio-recovery] endpoint unavailable hr=0x80070490 holdPtsMs=0.000
+2026-11-19T16:11:02.397Z t=1608 [ERROR] [audio] GetDefaultAudioEndpoint hr=0x80070490
+2026-11-19T16:11:02.397Z t=1608 [WARN ] [audio-recovery] endpoint unavailable hr=0x80070490 holdPtsMs=0.000
+2026-11-19T16:11:02.766Z t=7376 [INFO ] [qml-window] SetWindowRgn covers=2 size=658x370 result=1 error=0
+2026-11-19T16:11:02.766Z t=7376 [INFO ] [qml-window] region probe=normal root=658x370 dpr=1.000 host=(0.0,0.0) 658.0x370.0 parent=true parentClient=658x370 client=658x370 screen=(221,215) 658x370 style=0x56000000 visible=true regionType=3 regionBoxType=3 regionBox=(0,0) 658x370
+2026-11-19T16:11:02.781Z t=7376 [INFO ] [qml-window] SetWindowRgn covers=2 size=658x370 result=1 error=0
+2026-11-19T16:11:02.781Z t=7376 [INFO ] [qml-window] region probe=normal root=658x370 dpr=1.000 host=(0.0,0.0) 658.0x370.0 parent=true parentClient=658x370 client=658x370 screen=(221,215) 658x370 style=0x56000000 visible=true regionType=3 regionBoxType=3 regionBox=(0,0) 658x370
+2026-11-19T16:11:02.798Z t=7376 [INFO ] [qml-window] SetWindowRgn covers=2 size=658x370 result=1 error=0
+2026-11-19T16:11:02.798Z t=7376 [INFO ] [qml-window] region probe=normal root=658x370 dpr=1.000 host=(0.0,0.0) 658.0x370.0 parent=true parentClient=658x370 client=658x370 screen=(221,215) 658x370 style=0x56000000 visible=true regionType=3 regionBoxType=3 regionBox=(0,0) 658x370
+2026-11-19T16:11:02.813Z t=5820 [INFO ] [net-buffer] state=playing leadSec=2.00 targetSec=0.00 videoQ=58 audioQ=47 queuedMiB=1.6 downloadMBps=0.63 serverMBps=1.04 bitrateMBps=0.00 bandwidthLow=false reconnects=0 attempt=0 stalls=0 corruptPackets=0 totalMiB=1.9 eof=false failed=false
+2026-11-19T16:11:02.813Z t=7376 [INFO ] [qml-window] SetWindowRgn covers=2 size=658x370 result=1 error=0
+2026-11-19T16:11:02.813Z t=7376 [INFO ] [qml-window] region probe=normal root=658x370 dpr=1.000 host=(0.0,0.0) 658.0x370.0 parent=true parentClient=658x370 client=658x370 screen=(221,215) 658x370 style=0x56000000 visible=true regionType=3 regionBoxType=3 regionBox=(0,0) 658x370
+2026-11-19T16:11:02.829Z t=7376 [INFO ] [qml-window] SetWindowRgn covers=2 size=658x370 result=1 error=0
+2026-11-19T16:11:02.829Z t=7376 [INFO ] [qml-window] region probe=normal root=658x370 dpr=1.000 host=(0.0,0.0) 658.0x370.0 parent=true parentClient=658x370 client=658x370 screen=(221,215) 658x370 style=0x56000000 visible=true regionType=3 regionBoxType=3 regionBox=(0,0) 658x370
+2026-11-19T16:11:02.844Z t=7376 [INFO ] [qml-window] SetWindowRgn covers=2 size=658x370 result=1 error=0
+2026-11-19T16:11:02.844Z t=7376 [INFO ] [qml-window] region probe=normal root=658x370 dpr=1.000 host=(0.0,0.0) 658.0x370.0 parent=true parentClient=658x370 client=658x370 screen=(221,215) 658x370 style=0x56000000 visible=true regionType=3 regionBoxType=3 regionBox=(0,0) 658x370
+2026-11-19T16:11:02.898Z t=1608 [ERROR] [audio] GetDefaultAudioEndpoint hr=0x80070490
+2026-11-19T16:11:02.898Z t=1608 [WARN ] [audio-recovery] endpoint unavailable hr=0x80070490 holdPtsMs=0.000
+2026-11-19T16:11:02.942Z t=7376 [INFO ] [qml-window] SetWindowRgn covers=2 size=658x370 result=1 error=0
+2026-11-19T16:11:02.942Z t=7376 [INFO ] [qml-window] region probe=normal root=658x370 dpr=1.000 host=(0.0,0.0) 658.0x370.0 parent=true parentClient=658x370 client=658x370 screen=(221,215) 658x370 style=0x56000000 visible=true regionType=3 regionBoxType=3 regionBox=(0,0) 658x370
+2026-11-19T16:11:02.958Z t=7376 [INFO ] [qml-window] SetWindowRgn covers=1 size=658x370 result=1 error=0
+2026-11-19T16:11:02.958Z t=7376 [INFO ] [qml-window] region probe=normal root=658x370 dpr=1.000 host=(0.0,0.0) 658.0x370.0 parent=true parentClient=658x370 client=658x370 screen=(221,215) 658x370 style=0x56000000 visible=true regionType=2 regionBoxType=2 regionBox=(0,0) 658x370
+2026-11-19T16:11:03.399Z t=1608 [ERROR] [audio] GetDefaultAudioEndpoint hr=0x80070490
+2026-11-19T16:11:03.399Z t=1608 [WARN ] [audio-recovery] endpoint unavailable hr=0x80070490 holdPtsMs=0.000
+2026-11-19T16:11:03.814Z t=5820 [INFO ] [net-buffer] state=playing leadSec=2.00 targetSec=0.00 videoQ=58 audioQ=47 queuedMiB=1.6 downloadMBps=0.63 serverMBps=1.04 bitrateMBps=0.00 bandwidthLow=false reconnects=0 attempt=0 stalls=0 corruptPackets=0 totalMiB=1.9 eof=false failed=false
+2026-11-19T16:11:03.902Z t=1608 [ERROR] [audio] GetDefaultAudioEndpoint hr=0x80070490
+2026-11-19T16:11:03.902Z t=1608 [WARN ] [audio-recovery] endpoint unavailable hr=0x80070490 holdPtsMs=0.000
+2026-11-19T16:11:04.329Z t=7376 [INFO ] [qml] closing: quitting the application loop
+2026-11-19T16:11:04.330Z t=7376 [INFO ] [qml-window] taskbar fullscreen mark=false hr=0x0
+2026-11-19T16:11:04.330Z t=7376 [INFO ] [qml-window] taskbar minimise enabled style=0x960A0000
+2026-11-19T16:11:04.403Z t=1608 [ERROR] [audio] GetDefaultAudioEndpoint hr=0x80070490
+2026-11-19T16:11:04.403Z t=1608 [WARN ] [audio-recovery] endpoint unavailable hr=0x80070490 holdPtsMs=0.000
+2026-11-19T16:11:04.606Z t=7376 [INFO ] [playback-power] playback display/system request released
+2026-11-19T16:11:04.606Z t=7376 [INFO ] [playback-power] process power throttling returned to system policy ok=true win32=0
+2026-11-19T16:11:04.608Z t=2364 [INFO ] [engine-stall] frame=2 totalMs=13752.076 collectMs=0.000 tailMs=13752.076
+2026-11-19T16:11:04.609Z t=2364 [INFO ] [frame-flow] state=closed session=1 revision=2 epoch=1 source=2 batch=2 readyFence=3 consumerFence=0 captureReceived=0 mailboxOverwritten=0 sourceAccepted=2 sourceSkippedBeforeGraph=0 realSubmitted=2 fgCandidate=0 fgSkippedBeforeEval=0 fgEvaluated=0 fgWarmup=0 fgSkippedForReset=0 fgReduced=0 fgReadyValid=0 fgInvalid=0 realPresented=0 generatedPresented=0 generatedExpiredAfterEval=0 cancelledBeforePresent=2 commandSlots=2 commandHighWater=2 presentationHighWater=2 slotWaitCount=0 slotWaitMs=0.000 generatedFps=0.00 presentSubmitFps=0.00 resetRevision=2 resetEpoch=1 resetReason=1 resetOutcome=1 resetDrainMs=0.000 resetDestroyMs=0.000 resetCreateMs=0.000 resetWarmupMs=28.848 resetFirstValidMs=74.984 resetTotalMs=103.832
+2026-11-19T16:11:04.609Z t=2364 [INFO ] [engine] teardown: audio stopped
+2026-11-19T16:11:04.609Z t=2364 [INFO ] [gfx] slot-ring: drainQueue completed fenceValue=4 (covers post-Present queue ops)
+2026-11-19T16:11:04.609Z t=2364 [INFO ] [gfx] slot-ring: drainQueue completed fenceValue=1 (covers post-Present queue ops)
+2026-11-19T16:11:04.609Z t=2364 [INFO ] [present] sink-shutdown: sub-step backbuffers-release
+2026-11-19T16:11:04.609Z t=2364 [INFO ] [present] sink-shutdown: sub-step swapchain-release
+2026-11-19T16:11:04.609Z t=2364 [INFO ] [present] sink-shutdown: swapchain pre-release refcount=1 (2 = only our ComPtr + probe)
+2026-11-19T16:11:04.610Z t=2364 [INFO ] [present] sink-shutdown: sub-step window-destroy-last
+2026-11-19T16:11:04.610Z t=2364 [INFO ] [present] sink-shutdown: sub-step factory-release
+2026-11-19T16:11:04.610Z t=2364 [INFO ] [present] sink-shutdown: complete
+2026-11-19T16:11:04.610Z t=2364 [INFO ] [gfx] slot-ring: shutdown complete
+2026-11-19T16:11:04.610Z t=2364 [INFO ] [gfx] slot-ring: drainQueue completed fenceValue=5 (covers post-Present queue ops)
+2026-11-19T16:11:04.610Z t=2364 [INFO ] [graph] shutdown: core retention/device health check begin
+2026-11-19T16:11:04.610Z t=2364 [INFO ] [graph] shutdown: core retention/device health check complete retain=false
+2026-11-19T16:11:04.616Z t=2364 [INFO ] [graph] shutdown complete (ordered)
+2026-11-19T16:11:04.616Z t=2364 [INFO ] [engine] teardown: closing sources
+2026-11-19T16:11:04.616Z t=2364 [INFO ] [engine] teardown: sources closed
+2026-11-19T16:11:04.616Z t=2364 [INFO ] [gfx] slot-ring: drainQueue completed fenceValue=6 (covers post-Present queue ops)
+2026-11-19T16:11:04.617Z t=2364 [INFO ] [gfx] slot-ring: shutdown complete
+2026-11-19T16:11:04.618Z t=2364 [INFO ] [gfx] device context shutdown complete

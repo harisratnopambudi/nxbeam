@@ -1,0 +1,16 @@
+
+Name                                                    Length
+----                                                    ------
+SHA256SUMS.txt                                             401
+Veyra-2.1.9-AMD-win64-portable.zip                   722006907
+Veyra-2.1.9-NVIDIA-win64-portable.zip                731012476
+Veyra-2.1.9-virtual-camera-AMD-win64-portable.zip    722473307
+Veyra-2.1.9-virtual-camera-NVIDIA-win64-portable.zip 731460246
+Veyra-2.1.9-virtual-camera-SHA256SUMS.txt                  342
+
+
+FullName                                                                                                        Length
+--------                                                                                                        ------
+D:\a\nxbeam\nxbeam\veyra-x\Veyra-2.1.9-virtual-camera-NVIDIA-win64-portable\veyra_qml_ui.exe                  19832832
+D:\a\nxbeam\nxbeam\veyra-x\Veyra-2.1.9-virtual-camera-NVIDIA-win64-portable\virtualcam\veyra-camera-setup.exe   216064
+
