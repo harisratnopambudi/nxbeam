@@ -144,7 +144,6 @@ Start NXBeam with its launcher (`Start NXBeam.bat`, `Start NXBeam.command` or `s
 | **Frame rate that follows the game** | 60 fps when the game holds it; an even, locked 30 fps when it does not. |
 | **Smooth on Wi-Fi** | Adaptive frame pacing and an audio buffer that absorbs bursts and clock drift. |
 | **Frame generation** (beta) | Inserts a generated frame between every two real ones, so a 30 fps game shows at 60 on a 60 Hz screen (or 60 at 120 on a high-refresh screen). Motion is estimated on the GPU; adds about half a frame of delay. Off by default: **Settings > Picture**. |
-| **Veyra** (Windows) | [Veyra](https://github.com/Likely7/Veyra-NRVideo)'s GPU frame generation, super resolution and denoising (DLSS / FSR / XeSS, NVIDIA or AMD) on the Switch picture, **inside the NXBeam window**: press the sparkle button in the NXBeam Windows app (the first time, pick `veyra_qml_ui.exe` in your Veyra folder). NXBeam starts Veyra with its own profile (no network buffer, your own Veyra settings stay untouched), feeds it the untouched stream from `http://127.0.0.1:8090/live.mkv`, and keeps it over the picture area. Press the button again to go back. In a browser, the same button asks a running Veyra to open the stream. |
 | **Instant replay** | Save the last 30 seconds as MP4 with one click (or `C`). |
 | **Record & go live** | MP4 and RTMP (YouTube, Twitch), as sent by the console or scaled to 1080p60. |
 | **OBS** | `http://localhost:8090/overlay`: the game's video and sound only, ready for a Browser Source. |

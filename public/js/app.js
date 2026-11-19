@@ -155,7 +155,6 @@ const player = new StreamView($('#video'), {
     setTimeout(connectWs, 1500);
   },
 }, { allowWorker: store.get('worker', true) });
-let veyraOn = false;   /* Veyra shows the picture (NXBeam Windows app) */
 const adjDefaults = { bright: 0, contrast: 1, sat: 1, sharp: 0.35, audioMs: 80, smooth: 'balanced', fpsCap: 'auto', framegen: false };
 let adj = { ...adjDefaults, ...store.get('adjust', {}) };
 player.setAdjust(adj);
@@ -326,12 +325,7 @@ function renderStage() {
   screen.classList.toggle('blank', !showPicture);
   ph.hidden = showPicture;
   if (!showPicture) {
-    if (connected && veyraOn) {
-      // the picture is Veyra's now: NXBeam does not draw it
-      $('#phTitle').textContent = t('veyraTitle');
-      $('#phText').textContent = t('veyraShowing');
-      $('#ipForm').hidden = true;
-    } else if (connected) {
+    if (connected) {
       $('#phTitle').textContent = st.consoleStatus ? st.consoleStatus.head : t('connected');
       $('#phText').textContent = st.consoleStatus ? st.consoleStatus.detail : t('waitingPicture');
       $('#ipForm').hidden = true;
@@ -817,71 +811,3 @@ async function boot() {
   connectWs();
 }
 boot();
-
-/* ------------------------------------------------------------ Veyra */
-/* Veyra (Windows) plays the console's own stream with its GPU frame generation
- * and super resolution. NXBeam serves the stream at /live.mkv. In the NXBeam
- * Windows app, Veyra is shown inside this window, over the picture area; in a
- * browser, NXBeam asks a running Veyra to open it. */
-const liveUrl = () => `${location.protocol}//127.0.0.1:${location.port || 80}/live.mkv`;
-const webview = window.chrome && window.chrome.webview;
-
-/* the picture area, 16:9 and centred (Veyra keeps its window at the picture's shape) */
-function veyraRect() {
-  const r = $('#screen').getBoundingClientRect();
-  let w = r.width, h = r.height;
-  if (w / h > 16 / 9) w = h * 16 / 9; else h = w * 9 / 16;
-  return { x: r.left + (r.width - w) / 2, y: r.top + (r.height - h) / 2, w, h, dpr: window.devicePixelRatio || 1 };
-}
-function sendVeyraRect() {
-  if (webview && veyraOn) webview.postMessage(JSON.stringify({ type: 'veyraRect', ...veyraRect() }));
-}
-function setVeyraOn(on) {
-  veyraOn = on;
-  S.firstFrame = on ? false : S.firstFrame;
-  document.body.classList.toggle('veyra-on', on);
-  $('#btnVeyra').classList.toggle('on', on);
-  // Veyra decodes and plays the stream: NXBeam stops drawing it and stays quiet
-  player.send({ type: 'subscribe', video: !on });
-  if (on && audio.enabled) $('#btnSound').click();
-  renderStage();
-}
-
-async function openInVeyra() {
-  if (webview) {
-    if (veyraOn) { webview.postMessage(JSON.stringify({ type: 'veyra', on: false })); return; }
-    webview.postMessage(JSON.stringify({ type: 'veyra', on: true, url: liveUrl(), ...veyraRect() }));
-    return;
-  }
-  let r = {};
-  try { r = await (await fetch('/api/veyra/open', { method: 'POST' })).json(); } catch (e) { r = { error: e.message }; }
-  if (r.ok) {
-    if (audio.enabled) $('#btnSound').click();
-    toast(t('veyraOk'), 'info', 5000);
-  } else {
-    toast(t('veyraMissing') + (r.url || liveUrl()), 'error', 9000);
-  }
-}
-if (webview) {
-  webview.addEventListener('message', (e) => {
-    let m;
-    try { m = JSON.parse(e.data); } catch { return; }
-    if (!m || m.type !== 'veyra') return;
-    if (m.state === 'starting') toast(t('veyraStarting'));
-    else if (m.state === 'on') { setVeyraOn(true); sendVeyraRect(); toast(t('veyraEmbedded'), 'info', 5000); }
-    else if (m.state === 'off') { if (veyraOn) setVeyraOn(false); }
-    else if (m.state === 'error') { if (veyraOn) setVeyraOn(false); toast(m.msg || 'Veyra', 'error', 9000); }
-  });
-  if (window.ResizeObserver) new ResizeObserver(sendVeyraRect).observe($('#screen'));
-  window.addEventListener('resize', sendVeyraRect);
-  document.addEventListener('fullscreenchange', () => setTimeout(sendVeyraRect, 100));
-}
-if (/Windows/.test(navigator.userAgent)) {
-  $('#btnVeyra').hidden = false;
-  $('#veyraBox').hidden = false;
-}
-$('#btnVeyra').onclick = openInVeyra;
-$('#setVeyra').onclick = openInVeyra;
-$('#copyLive').onclick = async () => {
-  try { await navigator.clipboard.writeText(liveUrl()); toast(t('veyraCopied')); } catch { toast(liveUrl(), 'info', 9000); }
-};

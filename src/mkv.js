@@ -49,8 +49,6 @@ class MkvWriter {
     const tracks = [el('ae', Buffer.concat([
       uint('d7', 1), uint('73c5', 1), uint('83', 1), uint('9c', 0),
       str('86', 'V_MPEG4/ISO/AVC'),
-      // the frame rate, when known: a player that probes the stream (FFmpeg) starts sooner
-      ...(this.video.fps ? [uint('23e383', Math.round(1e9 / this.video.fps))] : []),
       el('63a2', avcC(this.video.sps, this.video.pps)),
       el('e0', Buffer.concat([uint('b0', this.video.width), uint('ba', this.video.height)])),
     ]))];

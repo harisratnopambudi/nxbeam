@@ -136,24 +136,6 @@ Pengaturannya ada di **Settings > Picture**, berlaku untuk perangkat yang sedang
 - Fitur ini butuh akselerasi GPU di browser. Kalau browser berjalan tanpa GPU, atau perangkat tidak kuat (mode ringan aktif), frame generation mati sendiri. Statusnya bisa dilihat di halaman **Stats**.
 - Kalau game tersendat di 1080p, set **Resolution** di overlay NXBeam ke **720p**. Pengaturan ini langsung berlaku tanpa restart, dan konsol jadi lebih stabil di 60 fps.
 
-## Veyra: frame generation dan super resolution dari GPU
-
-[Veyra](https://github.com/Likely7/Veyra-NRVideo) adalah aplikasi Windows (GPU NVIDIA/AMD) yang memperhalus video dengan frame generation, super resolution, dan denoise. Teknologinya DLSS, FSR, atau XeSS, jadi hasilnya jauh lebih bagus daripada frame generation bawaan NXBeam. Di aplikasi NXBeam untuk Windows, Veyra tampil **di dalam jendela NXBeam**, jadi tidak perlu membuka dua aplikasi.
-
-1. Unduh dan ekstrak Veyra dari halaman rilisnya. Pilih versi NVIDIA atau AMD sesuai GPU kamu.
-2. Di aplikasi NXBeam, tekan tombol **bintang** di kanan bawah. Bisa juga lewat **Settings > Picture > Buka di Veyra**.
-3. Pertama kali, NXBeam bertanya letak Veyra. Pilih **veyra_qml_ui.exe** di folder Veyra. Pilihan ini diingat untuk seterusnya.
-4. Veyra muncul di area layar NXBeam dan langsung memutar gambar dari Switch. Atur frame generation dan super resolution lewat kontrol Veyra di bawah gambar.
-5. Tekan tombol bintang lagi untuk kembali ke tampilan NXBeam biasa.
-
-Hal yang perlu diketahui:
-
-- **Profil terpisah**: NXBeam menjalankan Veyra dengan profilnya sendiri, tanpa buffer jaringan supaya delay sekecil mungkin. Pengaturan Veyra yang biasa kamu pakai tidak berubah.
-- **Suara**: suara NXBeam otomatis dimatikan karena suaranya keluar dari Veyra.
-- **Frame generation NXBeam**: matikan, tidak perlu dipakai bersamaan dengan Veyra.
-- **Kontroler**: kontroler yang tersambung ke Switch tetap jalan seperti biasa.
-- **Di browser** (bukan aplikasi NXBeam): tombol yang sama menyuruh Veyra yang sudah terbuka untuk memutar stream. Alamat stream-nya `http://127.0.0.1:8090/live.mkv` juga bisa ditempel manual di Veyra.
-
 ## 1080p 60fps
 
 - **Gambar asli 1080p dari konsol:** resolusi ditentukan oleh konsol, bukan oleh NXBeam. Pasang Switch di dock, lalu di aplikasi Switch Frame Tap halaman **Picture** set resolusi maksimum ke 1080p dan aktifkan scaling ke 1080p. Untuk 60 fps penuh, naikkan CPU ke 1785 MHz dengan sys-clk. Mode genggam tetap 720p, kecuali memakai ReverseNX-RT lewat USB.
