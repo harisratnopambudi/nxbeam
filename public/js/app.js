@@ -811,3 +811,27 @@ async function boot() {
   connectWs();
 }
 boot();
+
+/* ------------------------------------------------------------ Veyra */
+/* Veyra (Windows) plays the console's own stream with its frame generation and
+ * super resolution: NXBeam serves it at /live.mkv and asks Veyra to open it */
+const liveUrl = () => `${location.protocol}//127.0.0.1:${location.port || 80}/live.mkv`;
+async function openInVeyra() {
+  let r = {};
+  try { r = await (await fetch('/api/veyra/open', { method: 'POST' })).json(); } catch (e) { r = { error: e.message }; }
+  if (r.ok) {
+    if (audio.enabled) $('#btnSound').click();
+    toast(t('veyraOk'), 'info', 5000);
+  } else {
+    toast(t('veyraMissing') + (r.url || liveUrl()), 'error', 9000);
+  }
+}
+if (/Windows/.test(navigator.userAgent)) {
+  $('#btnVeyra').hidden = false;
+  $('#veyraBox').hidden = false;
+}
+$('#btnVeyra').onclick = openInVeyra;
+$('#setVeyra').onclick = openInVeyra;
+$('#copyLive').onclick = async () => {
+  try { await navigator.clipboard.writeText(liveUrl()); toast(t('veyraCopied')); } catch { toast(liveUrl(), 'info', 9000); }
+};

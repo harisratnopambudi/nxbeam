@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { WebSocketServer } = require('ws');
+const veyra = require('./veyra');
 
 const PUBLIC = path.join(__dirname, '..', 'public');
 const MIME = {
@@ -107,6 +108,10 @@ function createServer(hub, config, saveConfig) {
       return json(res, 401, { ok: false });
     }
     if (p === '/api/session') return json(res, 200, { authed: authed(req), pinSet: !!config.pin });
+    if (p === '/api/veyra/open' && req.method === 'POST') {
+      if (!authed(req)) return json(res, 401, { ok: false });
+      return json(res, 200, await veyra.openInVeyra(req.socket.localPort));
+    }
     if (!authed(req)) return json(res, 401, { error: 'login required' });
 
     if (p === '/api/update' && req.method === 'GET') return json(res, 200, hub.updater ? hub.updater.info() : { enabled: false });
@@ -195,6 +200,11 @@ function createServer(hub, config, saveConfig) {
     const url = new URL(req.url, 'http://x');
     try {
       if (url.pathname.startsWith('/api/')) return await api(req, res, url);
+      // the raw stream for Veyra and other players; this PC needs no PIN
+      if (url.pathname === '/live.mkv') {
+        if (!veyra.isLoopback(req.socket.remoteAddress) && !authed(req)) { res.writeHead(401); return res.end(); }
+        return veyra.serveLive(hub, req, res);
+      }
       let p = decodeURIComponent(url.pathname);
       if (p === '/' ) p = '/index.html';
       if (p === '/overlay' || p === '/obs') p = '/overlay.html';

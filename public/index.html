@@ -26,6 +26,7 @@
     <symbol id="i-live" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.5"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M5 5a10 10 0 0 0 0 14M19 5a10 10 0 0 1 0 14"/></symbol>
     <symbol id="i-pad" viewBox="0 0 24 24"><path d="M7 7h10a5 5 0 0 1 4.8 6.3l-1 3.6a2.5 2.5 0 0 1-4.3 1L15 16H9l-1.5 1.9a2.5 2.5 0 0 1-4.3-1l-1-3.6A5 5 0 0 1 7 7z"/><path d="M7 10.5v3M5.5 12h3"/><circle cx="16" cy="11" r=".8" fill="currentColor"/><circle cx="17.8" cy="13" r=".8" fill="currentColor"/></symbol>
     <symbol id="i-picture" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4v16" /><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M10 3l1.8 5.2L17 10l-5.2 1.8L10 17l-1.8-5.2L3 10l5.2-1.8z"/><path d="M18 14l.9 2.1L21 17l-2.1.9L18 20l-.9-2.1L15 17l2.1-.9z"/></symbol>
     <symbol id="i-full" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
     <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
     <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></symbol>
@@ -182,6 +183,7 @@
       </div>
       <div class="deck-group">
         <button class="deck-btn icon" id="btnTouch" data-i18n-title="touchPad" hidden><svg><use href="#i-touch"/></svg></button>
+        <button class="deck-btn icon" id="btnVeyra" data-i18n-title="veyraOpen" hidden><svg><use href="#i-spark"/></svg></button>
         <button class="deck-btn icon" id="btnFull" data-i18n-title="fullscreen"><svg><use href="#i-full"/></svg></button>
       </div>
     </footer>
@@ -270,6 +272,14 @@
         </label>
         <label class="check"><input type="checkbox" id="setFrameGen"><span data-i18n="frameGenOpt"></span></label>
         <p class="note" data-i18n="frameGenNote"></p>
+        <div class="veyra-box" id="veyraBox" hidden>
+          <span class="label" data-i18n="veyraTitle"></span>
+          <p class="note" data-i18n="veyraNote"></p>
+          <div class="row">
+            <button class="btn" id="setVeyra" type="button"><svg><use href="#i-spark"/></svg><span data-i18n="veyraOpen"></span></button>
+            <button class="btn ghost" id="copyLive" type="button"><svg><use href="#i-copy"/></svg><span data-i18n="veyraCopy"></span></button>
+          </div>
+        </div>
         <label><span data-i18n="smoothMode"></span>
           <select id="setSmooth"><option value="latency" data-i18n="modeLatency"></option><option value="balanced" data-i18n="modeBalanced"></option><option value="smooth" data-i18n="modeSmooth"></option></select>
         </label>

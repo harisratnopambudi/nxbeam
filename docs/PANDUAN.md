@@ -136,6 +136,22 @@ Pengaturannya ada di **Settings > Picture**, berlaku untuk perangkat yang sedang
 - Fitur ini butuh akselerasi GPU di browser. Kalau browser berjalan tanpa GPU, atau perangkat tidak kuat (mode ringan aktif), frame generation mati sendiri. Statusnya bisa dilihat di halaman **Stats**.
 - Kalau game tersendat di 1080p, set **Resolution** di overlay NXBeam ke **720p**. Pengaturan ini langsung berlaku tanpa restart, dan konsol jadi lebih stabil di 60 fps.
 
+## Veyra: frame generation dan super resolution dari GPU
+
+[Veyra](https://github.com/Likely7/Veyra-NRVideo) adalah aplikasi Windows (GPU NVIDIA/AMD) yang memperhalus video dengan frame generation, super resolution, dan denoise. Teknologinya DLSS, FSR, atau XeSS, jadi hasilnya jauh lebih bagus daripada frame generation bawaan NXBeam.
+
+1. Pasang dan buka **Veyra**.
+2. Di NXBeam PC, tekan tombol **bintang** di kanan bawah (atau **Settings > Picture > Buka di Veyra**).
+3. Veyra langsung memutar stream asli dari Switch. Atur frame generation dan super resolution di Veyra.
+
+Hal yang perlu diketahui:
+
+- **Suara**: suara NXBeam otomatis dimatikan karena suaranya keluar dari Veyra.
+- **Frame generation NXBeam**: matikan, tidak perlu dipakai bersamaan dengan Veyra.
+- **Kontroler**: kontroler yang tersambung ke Switch tetap jalan seperti biasa. Kontroler yang lewat NXBeam di PC hanya terbaca saat jendela NXBeam sedang aktif.
+- **Kalau Veyra belum terbuka**: NXBeam menampilkan alamat stream-nya, `http://127.0.0.1:8090/live.mkv`. Alamat ini juga bisa ditempel manual di Veyra lewat menu buka alamat jaringan (tombol **Salin alamat stream**).
+- **Delay**: Veyra memproses video di GPU, jadi delay-nya bisa sedikit lebih besar daripada tampilan NXBeam biasa. Cocok untuk game yang tidak butuh reaksi super cepat.
+
 ## 1080p 60fps
 
 - **Gambar asli 1080p dari konsol:** resolusi ditentukan oleh konsol, bukan oleh NXBeam. Pasang Switch di dock, lalu di aplikasi Switch Frame Tap halaman **Picture** set resolusi maksimum ke 1080p dan aktifkan scaling ke 1080p. Untuk 60 fps penuh, naikkan CPU ke 1785 MHz dengan sys-clk. Mode genggam tetap 720p, kecuali memakai ReverseNX-RT lewat USB.
