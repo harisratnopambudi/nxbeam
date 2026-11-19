@@ -55,8 +55,11 @@ jobs:
 
   pc-macos:
     name: PC viewer (macOS, portable)
-    timeout-minutes: 12
-    runs-on: macos-latest
+    # assembled on Linux: nothing is compiled (the official Node.js for macOS, ffmpeg
+    # for macOS, the USB module's own macOS build); GitHub's macOS machines were
+    # often not available for many minutes
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -86,7 +89,8 @@ jobs:
             cp "dist/$arch/node-$NODEV-darwin-$arch/bin/node" "$dst/runtime/node"
             file "$dst/runtime/node"
             chmod +x "$dst/runtime/node" "$dst/node_modules/ffmpeg-static/ffmpeg" "$dst/Start NXBeam.command"
-            (cd dist/$arch && ditto -c -k --keepParent NXBeam "../NXBeam-PC-macOS-$label.zip")
+            test -f "$dst/node_modules/usb/prebuilds/darwin-x64+arm64/node.napi.node" || ls "$dst/node_modules/usb/prebuilds/darwin-x64+arm64"
+            (cd dist/$arch && zip -qry "../NXBeam-PC-macOS-$label.zip" NXBeam)
           done
           ls -la dist
       - uses: actions/upload-artifact@v4
