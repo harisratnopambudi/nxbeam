@@ -442,7 +442,7 @@ namespace NXBeam
                 // the Veyra button, as a user presses it; then where its window ended up
                 await web.CoreWebView2.ExecuteScriptAsync("document.querySelector('#btnVeyra').click()");
                 for (int i = 0; i < 90 && !(veyra?.Embedded ?? false); i++) { await Task.Delay(500); }
-                await Task.Delay(4000);
+                await Task.Delay(15000);   // Veyra opens the stream and starts playing
                 File.WriteAllText(Path.Combine(selftest, "veyra.txt"), (veyra?.Describe() ?? "not started") + "\n");
                 try
                 {
@@ -726,7 +726,8 @@ namespace NXBeam
             if (File.Exists(next)) { try { File.Delete(Node); File.Move(next, Node); } catch (Exception e) { Log("node.next: " + e.Message); } }
             if (!File.Exists(Node)) { throw new FileNotFoundException(Program.T("runtime\\node.exe is missing - reinstall NXBeam.", "runtime\\node.exe tidak ada - pasang ulang NXBeam.")); }
 
-            var psi = new ProcessStartInfo(Node, "src\\index.js --no-open")
+            var extra = Environment.GetEnvironmentVariable("NXBEAM_EXTRA_ARGS");   // tests: e.g. --console 127.0.0.1
+            var psi = new ProcessStartInfo(Node, "src\\index.js --no-open" + (string.IsNullOrEmpty(extra) ? "" : " " + extra))
             {
                 WorkingDirectory = Program.AppDir,
                 UseShellExecute = false,

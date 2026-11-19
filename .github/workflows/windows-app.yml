@@ -70,9 +70,14 @@ jobs:
             $vexe = Get-ChildItem veyra-x -Recurse -Filter *.exe | Where-Object { $_.Name -match '^Veyra' } | Sort-Object Length -Descending | Select-Object -First 1
             Get-ChildItem veyra-x -Recurse -Filter *.exe | Select-Object FullName, Length | Out-File -Append "$out/veyra-download.txt"
             if ($vexe) {
+              # a console for it to show: the simulator (test picture, 30 fps)
+              $sim = Start-Process node -ArgumentList "tools/simulate-console.js --size 1280x720 --fps 30 --no-beacon" -PassThru -WindowStyle Hidden
+              $env:NXBEAM_EXTRA_ARGS = "--console 127.0.0.1"
               Set-Content "$env:LOCALAPPDATA\NXBeam\veyra-path.txt" $vexe.FullName
               $p = Start-Process "$app\NXBeam.exe" -ArgumentList "--selftest `"$PWD\$out\veyra`" --selftest-veyra" -PassThru
               if (-not $p.WaitForExit(240000)) { $p.Kill() }
+              $env:NXBEAM_EXTRA_ARGS = ""
+              $sim.Kill()
               Get-ChildItem "$env:LOCALAPPDATA" -Recurse -Filter *.log -ErrorAction SilentlyContinue | Where-Object { $_.FullName -match 'Veyra' } | Select-Object -First 3 | ForEach-Object { Copy-Item $_.FullName "$out/" }
             }
           }
