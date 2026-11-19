@@ -531,10 +531,35 @@ namespace NXBeam
         static string PathFile => Path.Combine(Program.DataDir, "veyra-path.txt");
         static string DataDir => Path.Combine(Program.DataDir, "veyra");
 
-        /* Veyra.exe: bundled, remembered, in the usual places, or picked once */
+        /* the player itself: a launcher or shortcut next to it would drop the stream's
+         * address, and Veyra would come back with its last source instead */
+        static string Player(string picked)
+        {
+            if (picked == null || !File.Exists(picked)) { return null; }
+            if (Path.GetFileName(picked).Equals("veyra_qml_ui.exe", StringComparison.OrdinalIgnoreCase)) { return picked; }
+            var dir = Path.GetDirectoryName(picked);
+            foreach (var d in new[] { dir, Path.GetDirectoryName(dir) })
+            {
+                if (string.IsNullOrEmpty(d)) { continue; }
+                try
+                {
+                    var f = Directory.GetFiles(d, "veyra_qml_ui.exe", SearchOption.AllDirectories).FirstOrDefault();
+                    if (f != null) { return f; }
+                }
+                catch { }
+            }
+            return picked;
+        }
+
+        /* Veyra: bundled, remembered, in the usual places, or picked once */
         string FindExe()
         {
-            try { var p = File.ReadAllText(PathFile).Trim(); if (File.Exists(p)) { return p; } } catch { }
+            try
+            {
+                var p = Player(File.ReadAllText(PathFile).Trim());
+                if (p != null) { File.WriteAllText(PathFile, p); return p; }
+            }
+            catch { }
             var local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             var pf = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
             foreach (var c in new[] {
@@ -553,8 +578,9 @@ namespace NXBeam
             })
             {
                 if (d.ShowDialog(host) != DialogResult.OK) { return null; }
-                try { File.WriteAllText(PathFile, d.FileName); } catch { }
-                return d.FileName;
+                var chosen = Player(d.FileName);
+                try { File.WriteAllText(PathFile, chosen); } catch { }
+                return chosen;
             }
         }
 
@@ -600,7 +626,7 @@ namespace NXBeam
                 report(Tuple.Create("error", Program.T("Veyra could not start: ", "Veyra gagal dijalankan: ") + e.Message));
                 return;
             }
-            Server.Log("veyra: started " + exe);
+            Server.Log("veyra: started " + exe + " with " + url);
             // its main window: the largest visible top-level window of the process (Qt makes a few)
             for (int i = 0; i < 100 && !stopping; i++)
             {

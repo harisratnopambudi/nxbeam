@@ -155,6 +155,7 @@ const player = new StreamView($('#video'), {
     setTimeout(connectWs, 1500);
   },
 }, { allowWorker: store.get('worker', true) });
+let veyraOn = false;   /* Veyra shows the picture (NXBeam Windows app) */
 const adjDefaults = { bright: 0, contrast: 1, sat: 1, sharp: 0.35, audioMs: 80, smooth: 'balanced', fpsCap: 'auto', framegen: false };
 let adj = { ...adjDefaults, ...store.get('adjust', {}) };
 player.setAdjust(adj);
@@ -325,7 +326,12 @@ function renderStage() {
   screen.classList.toggle('blank', !showPicture);
   ph.hidden = showPicture;
   if (!showPicture) {
-    if (connected) {
+    if (connected && veyraOn) {
+      // the picture is Veyra's now: NXBeam does not draw it
+      $('#phTitle').textContent = t('veyraTitle');
+      $('#phText').textContent = t('veyraShowing');
+      $('#ipForm').hidden = true;
+    } else if (connected) {
       $('#phTitle').textContent = st.consoleStatus ? st.consoleStatus.head : t('connected');
       $('#phText').textContent = st.consoleStatus ? st.consoleStatus.detail : t('waitingPicture');
       $('#ipForm').hidden = true;
@@ -819,7 +825,6 @@ boot();
  * browser, NXBeam asks a running Veyra to open it. */
 const liveUrl = () => `${location.protocol}//127.0.0.1:${location.port || 80}/live.mkv`;
 const webview = window.chrome && window.chrome.webview;
-let veyraOn = false;
 
 /* the picture area, 16:9 and centred (Veyra keeps its window at the picture's shape) */
 function veyraRect() {
@@ -833,11 +838,13 @@ function sendVeyraRect() {
 }
 function setVeyraOn(on) {
   veyraOn = on;
+  S.firstFrame = on ? false : S.firstFrame;
   document.body.classList.toggle('veyra-on', on);
   $('#btnVeyra').classList.toggle('on', on);
   // Veyra decodes and plays the stream: NXBeam stops drawing it and stays quiet
   player.send({ type: 'subscribe', video: !on });
   if (on && audio.enabled) $('#btnSound').click();
+  renderStage();
 }
 
 async function openInVeyra() {
