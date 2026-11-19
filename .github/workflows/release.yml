@@ -104,7 +104,9 @@ jobs:
         working-directory: overlay
         run: |
           # the update check uses libcurl (HTTPS through mbedTLS); pkg.devkitpro.org sometimes answers 403: try again
+          # the devkita64 image already has them; ask pkg.devkitpro.org only when one is missing
           for i in 1 2 3 4 5 6; do
+            [ -f "$DEVKITPRO/portlibs/switch/lib/libcurl.a" ] && [ -f "$DEVKITPRO/portlibs/switch/lib/libmbedtls.a" ] && [ -f "$DEVKITPRO/portlibs/switch/lib/libz.a" ] && break
             dkp-pacman -Sy --noconfirm --needed switch-curl switch-zlib switch-mbedtls && break
             [ "$i" = 6 ] && exit 1
             sleep $((i * 20))
@@ -127,7 +129,9 @@ jobs:
         working-directory: switch-updater
         run: |
           # pkg.devkitpro.org sometimes answers 403 for a while: try again
+          # the devkita64 image already has them; ask pkg.devkitpro.org only when one is missing
           for i in 1 2 3 4 5 6; do
+            [ -f "$DEVKITPRO/portlibs/switch/lib/libcurl.a" ] && [ -f "$DEVKITPRO/portlibs/switch/lib/libmbedtls.a" ] && [ -f "$DEVKITPRO/portlibs/switch/lib/libz.a" ] && break
             dkp-pacman -Sy --noconfirm --needed switch-curl switch-zlib switch-mbedtls && break
             [ "$i" = 6 ] && exit 1
             echo "devkitPro packages not reachable, again in $((i * 20)) s"; sleep $((i * 20))
