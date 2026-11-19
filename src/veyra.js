@@ -41,6 +41,7 @@ function serveLive(hub, req, res) {
     req.on('close', () => clearInterval(wait));
     return;
   }
+  console.log(`[live] ${req.headers['user-agent'] || 'player'} opened /live.mkv (${hub.video.width}x${hub.video.height})`);
   res.writeHead(200, { 'content-type': 'video/x-matroska', 'cache-control': 'no-store', connection: 'close' });
   if (res.socket) res.socket.setNoDelay(true);
   const audio = hub.audio.seen ? { rate: hub.audio.rate, channels: hub.audio.channels } : { rate: 48000, channels: 2 };
@@ -53,6 +54,7 @@ function serveLive(hub, req, res) {
   const close = () => {
     if (closed) return;
     closed = true;
+    console.log('[live] /live.mkv closed');
     hub.off('video', onVideo);
     hub.off('audio', onAudio);
     try { res.end(); } catch { /* gone */ }

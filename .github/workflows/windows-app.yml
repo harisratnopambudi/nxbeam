@@ -78,7 +78,9 @@ jobs:
               if (-not $p.WaitForExit(240000)) { $p.Kill() }
               $env:NXBEAM_EXTRA_ARGS = ""
               $sim.Kill()
-              Get-ChildItem "$env:LOCALAPPDATA" -Recurse -Filter *.log -ErrorAction SilentlyContinue | Where-Object { $_.FullName -match 'Veyra' } | Select-Object -First 3 | ForEach-Object { Copy-Item $_.FullName "$out/" }
+              # Veyra keeps its logs next to itself, in logs\
+              New-Item -ItemType Directory -Force "$out/veyra-logs" | Out-Null
+              Get-ChildItem (Join-Path $vexe.DirectoryName "logs") -Recurse -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 6 | ForEach-Object { Copy-Item $_.FullName "$out/veyra-logs/" }
             }
           }
           Copy-Item "$env:LOCALAPPDATA\NXBeam\nxbeam.log" "$out/nxbeam-veyra.log" -ErrorAction SilentlyContinue
