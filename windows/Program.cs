@@ -502,12 +502,25 @@ namespace NXBeam
 
         readonly Form host;
         readonly Action<Tuple<string, string>> report;
+        readonly Panel frame;                 /* the picture area: Veyra's window lives in it, clipped to it */
+        readonly System.Windows.Forms.Timer keep;
         Process proc;
         IntPtr win;
         Rectangle rect;
         bool stopping;
 
-        public VeyraEmbed(Form host, Action<Tuple<string, string>> report) { this.host = host; this.report = report; }
+        public VeyraEmbed(Form host, Action<Tuple<string, string>> report)
+        {
+            this.host = host;
+            this.report = report;
+            frame = new Panel { BackColor = Color.Black, Visible = false };
+            host.Controls.Add(frame);
+            frame.BringToFront();
+            // Veyra sizes its own window too (minimum sizes, its layout): keep it on the frame
+            keep = new System.Windows.Forms.Timer { Interval = 400 };
+            keep.Tick += (s, e) => Fit(false);
+            keep.Start();
+        }
 
         static string PathFile => Path.Combine(Program.DataDir, "veyra-path.txt");
 
@@ -602,27 +615,34 @@ namespace NXBeam
             long ex = GetWindowLongPtr(win, GWL_EXSTYLE).ToInt64();
             ex &= ~(WS_EX_APPWINDOW | WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE | WS_EX_DLGMODALFRAME);
             SetWindowLongPtr(win, GWL_EXSTYLE, new IntPtr(ex));
-            SetParent(win, host.Handle);
-            Place(SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+            frame.Bounds = rect;
+            frame.Visible = true;
+            frame.BringToFront();
+            SetParent(win, frame.Handle);
+            Fit(true);
             Server.Log("veyra: embedded");
         }
 
-        void Place(uint extra)
+        /* the frame on the picture area, Veyra's window filling the frame */
+        void Fit(bool force)
         {
             if (win == IntPtr.Zero || !IsWindow(win)) { return; }
-            // above the WebView2 page, inside the NXBeam window
-            SetWindowPos(win, HWND_TOP, rect.X, rect.Y, Math.Max(1, rect.Width), Math.Max(1, rect.Height), SWP_NOACTIVATE | extra);
+            if (frame.Bounds != rect) { frame.Bounds = rect; force = true; }
+            GetWindowRect(win, out RECT r);
+            if (!force && r.R - r.L == rect.Width && r.B - r.T == rect.Height) { return; }
+            SetWindowPos(win, HWND_TOP, 0, 0, Math.Max(1, rect.Width), Math.Max(1, rect.Height),
+                SWP_NOACTIVATE | SWP_FRAMECHANGED | SWP_SHOWWINDOW);
         }
 
-        public void Move(Rectangle r) { rect = r; Place(0); }
+        public void Move(Rectangle r) { rect = r; Fit(true); }
 
         [DllImport("user32.dll")] static extern IntPtr GetParent(IntPtr h);
-        public bool Embedded => win != IntPtr.Zero && IsWindow(win) && GetParent(win) == host.Handle;
+        public bool Embedded => win != IntPtr.Zero && IsWindow(win) && GetParent(win) == frame.Handle;
         public string Describe()
         {
             if (win == IntPtr.Zero) { return "no window"; }
             GetWindowRect(win, out RECT r);
-            return $"window={win} parentOk={Embedded} rect={r.L},{r.T},{r.R - r.L}x{r.B - r.T} target={rect}";
+            return $"window={win} parentOk={Embedded} size={r.R - r.L}x{r.B - r.T} target={rect} frame={frame.Bounds}";
         }
 
         public void Stop()
@@ -639,6 +659,11 @@ namespace NXBeam
             }
             catch { }
             win = IntPtr.Zero;
+            keep.Stop();
+            keep.Dispose();
+            frame.Visible = false;
+            host.Controls.Remove(frame);
+            frame.Dispose();
         }
 
         /* the page's tiny JSON messages: {"type":"veyra","on":true,"url":"...","x":..,"y":..,"w":..,"h":..,"dpr":..} */

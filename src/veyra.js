@@ -31,7 +31,16 @@ function liveFps(hub) {
 
 /* one live viewer of the raw stream; starts at a fresh keyframe so it is not behind */
 function serveLive(hub, req, res) {
-  if (!hub.video) { res.writeHead(503, { 'retry-after': '1', 'content-type': 'text/plain' }); res.end('no picture yet'); return; }
+  // no picture yet (the console is still connecting): wait for it a while
+  if (!hub.video) {
+    const deadline = Date.now() + 30000;
+    const wait = setInterval(() => {
+      if (hub.video) { clearInterval(wait); serveLive(hub, req, res); }
+      else if (Date.now() > deadline || req.destroyed) { clearInterval(wait); res.writeHead(503, { 'retry-after': '1' }); res.end(); }
+    }, 200);
+    req.on('close', () => clearInterval(wait));
+    return;
+  }
   res.writeHead(200, { 'content-type': 'video/x-matroska', 'cache-control': 'no-store', connection: 'close' });
   if (res.socket) res.socket.setNoDelay(true);
   const audio = hub.audio.seen ? { rate: hub.audio.rate, channels: hub.audio.channels } : { rate: 48000, channels: 2 };
