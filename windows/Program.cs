@@ -502,27 +502,34 @@ namespace NXBeam
 
         readonly Form host;
         readonly Action<Tuple<string, string>> report;
-        readonly Panel frame;                 /* the picture area: Veyra's window lives in it, clipped to it */
         readonly System.Windows.Forms.Timer keep;
         Process proc;
         IntPtr win;
-        Rectangle rect;
+        Rectangle rect;           /* the picture area, in the NXBeam window's client pixels */
         bool stopping;
+
+        const int GWLP_HWNDPARENT = -8;
+        const long WS_EX_TOOLWINDOW = 0x80L;
+        [DllImport("user32.dll")] static extern bool ShowWindow(IntPtr h, int cmd);
 
         public VeyraEmbed(Form host, Action<Tuple<string, string>> report)
         {
             this.host = host;
             this.report = report;
-            frame = new Panel { BackColor = Color.Black, Visible = false };
-            host.Controls.Add(frame);
-            frame.BringToFront();
-            // Veyra sizes its own window too (minimum sizes, its layout): keep it on the frame
-            keep = new System.Windows.Forms.Timer { Interval = 400 };
+            // Veyra's window stays a top-level window (its popups and controls need
+            // that), owned by the NXBeam window and kept exactly over the picture area
+            keep = new System.Windows.Forms.Timer { Interval = 300 };
             keep.Tick += (s, e) => Fit(false);
             keep.Start();
+            host.Move += OnHostChanged;
+            host.Resize += OnHostChanged;
+            host.VisibleChanged += OnHostChanged;
         }
 
+        void OnHostChanged(object s, EventArgs e) => Fit(true);
+
         static string PathFile => Path.Combine(Program.DataDir, "veyra-path.txt");
+        static string DataDir => Path.Combine(Program.DataDir, "veyra");
 
         /* Veyra.exe: bundled, remembered, in the usual places, or picked once */
         string FindExe()
@@ -531,17 +538,17 @@ namespace NXBeam
             var local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             var pf = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
             foreach (var c in new[] {
-                Path.Combine(Program.AppDir, "veyra", "Veyra.exe"),
-                Path.Combine(local, "Programs", "Veyra", "Veyra.exe"),
-                Path.Combine(pf, "Veyra", "Veyra.exe"),
+                Path.Combine(Program.AppDir, "veyra", "veyra_qml_ui.exe"),
+                Path.Combine(local, "Programs", "Veyra", "veyra_qml_ui.exe"),
+                Path.Combine(pf, "Veyra", "veyra_qml_ui.exe"),
             })
             {
                 if (File.Exists(c)) { return c; }
             }
             using (var d = new OpenFileDialog
             {
-                Title = Program.T("Where is Veyra.exe?", "Di mana Veyra.exe?"),
-                Filter = "Veyra|Veyra*.exe;veyra*.exe|Program|*.exe",
+                Title = Program.T("Where is Veyra? Pick veyra_qml_ui.exe in the Veyra folder", "Di mana Veyra? Pilih veyra_qml_ui.exe di folder Veyra"),
+                Filter = "Veyra|veyra*.exe;Veyra*.exe|Program|*.exe",
                 CheckFileExists = true,
             })
             {
@@ -551,16 +558,36 @@ namespace NXBeam
             }
         }
 
+        /* NXBeam's own Veyra profile: the user's Veyra settings stay as they are,
+         * and this one plays a live game stream without a network buffer */
+        static void PrepareProfile()
+        {
+            Directory.CreateDirectory(DataDir);
+            var file = Path.Combine(DataDir, "qml-preferences.v1.json");
+            string json = "{}";
+            try { if (File.Exists(file)) { json = File.ReadAllText(file); } } catch { }
+            if (!json.TrimStart().StartsWith("{")) { json = "{}"; }
+            if (Regex.IsMatch(json, "\"networkBuffer\"\\s*:")) {
+                json = Regex.Replace(json, "\"networkBuffer\"\\s*:\\s*\"[^\"]*\"", "\"networkBuffer\": \"off\"");
+            } else {
+                int i = json.IndexOf('{');
+                bool empty = json.Substring(i + 1).Trim().StartsWith("}");
+                json = json.Substring(0, i + 1) + "\n    \"networkBuffer\": \"off\"" + (empty ? "\n" : ",") + json.Substring(i + 1);
+            }
+            try { File.WriteAllText(file, json); } catch (Exception e) { Server.Log("veyra profile: " + e.Message); }
+        }
+
         public async void Start(string url, Rectangle area)
         {
             rect = area;
             var exe = FindExe();
             if (exe == null) { report(Tuple.Create("off", "")); return; }
             report(Tuple.Create("starting", ""));
+            PrepareProfile();
             try
             {
                 // Veyra opens an address given on its command line like a file, through FFmpeg
-                proc = Process.Start(new ProcessStartInfo(exe, "\"" + url + "\"")
+                proc = Process.Start(new ProcessStartInfo(exe, "--data-dir \"" + DataDir + "\" \"" + url + "\"")
                 {
                     WorkingDirectory = Path.GetDirectoryName(exe),
                     UseShellExecute = false,
@@ -611,39 +638,41 @@ namespace NXBeam
         void Embed()
         {
             long st = GetWindowLongPtr(win, GWL_STYLE).ToInt64();
-            st = (st & ~(WS_POPUP | WS_CAPTION | WS_THICKFRAME | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX)) | WS_CHILD | WS_VISIBLE;
+            st = (st & ~(WS_CAPTION | WS_THICKFRAME | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX)) | WS_POPUP;
             SetWindowLongPtr(win, GWL_STYLE, new IntPtr(st));
             long ex = GetWindowLongPtr(win, GWL_EXSTYLE).ToInt64();
-            ex &= ~(WS_EX_APPWINDOW | WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE | WS_EX_DLGMODALFRAME);
+            ex = (ex & ~(WS_EX_APPWINDOW | WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE | WS_EX_DLGMODALFRAME)) | WS_EX_TOOLWINDOW;
             SetWindowLongPtr(win, GWL_EXSTYLE, new IntPtr(ex));
-            frame.Bounds = rect;
-            frame.Visible = true;
-            frame.BringToFront();
-            SetParent(win, frame.Handle);
+            // owned by NXBeam: always above it, gone from the taskbar, minimised with it
+            SetWindowLongPtr(win, GWLP_HWNDPARENT, host.Handle);
             Fit(true);
             Server.Log("veyra: embedded");
         }
 
-        /* the frame on the picture area, Veyra's window filling the frame */
+        Rectangle Target => host.RectangleToScreen(rect);
+
+        /* Veyra's window exactly over the picture area */
         void Fit(bool force)
         {
             if (win == IntPtr.Zero || !IsWindow(win)) { return; }
-            if (frame.Bounds != rect) { frame.Bounds = rect; force = true; }
+            bool visible = host.Visible && host.WindowState != FormWindowState.Minimized && rect.Width > 0;
+            if (!visible) { if (IsWindowVisible(win)) { ShowWindow(win, 0 /* SW_HIDE */); } return; }
+            var t = Target;
             GetWindowRect(win, out RECT r);
-            if (!force && r.R - r.L == rect.Width && r.B - r.T == rect.Height) { return; }
-            SetWindowPos(win, HWND_TOP, 0, 0, Math.Max(1, rect.Width), Math.Max(1, rect.Height),
-                SWP_NOACTIVATE | SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+            if (!force && IsWindowVisible(win) && r.L == t.X && r.T == t.Y && r.R - r.L == t.Width && r.B - r.T == t.Height) { return; }
+            SetWindowPos(win, IntPtr.Zero, t.X, t.Y, Math.Max(1, t.Width), Math.Max(1, t.Height),
+                SWP_NOACTIVATE | SWP_FRAMECHANGED | SWP_SHOWWINDOW | SWP_NOZORDER);
         }
 
         public void Move(Rectangle r) { rect = r; Fit(true); }
 
         [DllImport("user32.dll")] static extern IntPtr GetParent(IntPtr h);
-        public bool Embedded => win != IntPtr.Zero && IsWindow(win) && GetParent(win) == frame.Handle;
+        public bool Embedded => win != IntPtr.Zero && IsWindow(win) && GetWindowLongPtr(win, GWLP_HWNDPARENT) == host.Handle;
         public string Describe()
         {
             if (win == IntPtr.Zero) { return "no window"; }
             GetWindowRect(win, out RECT r);
-            return $"window={win} parentOk={Embedded} size={r.R - r.L}x{r.B - r.T} target={rect} frame={frame.Bounds}";
+            return $"window={win} ownedOk={Embedded} at={r.L},{r.T} size={r.R - r.L}x{r.B - r.T} target={Target}";
         }
 
         public void Stop()
@@ -653,7 +682,7 @@ namespace NXBeam
             {
                 if (proc != null && !proc.HasExited)
                 {
-                    if (win != IntPtr.Zero && IsWindow(win)) { SetParent(win, IntPtr.Zero); }
+                    if (win != IntPtr.Zero && IsWindow(win)) { SetWindowLongPtr(win, GWLP_HWNDPARENT, IntPtr.Zero); }
                     proc.CloseMainWindow();
                     if (!proc.WaitForExit(3000)) { proc.Kill(); }
                 }
@@ -662,9 +691,9 @@ namespace NXBeam
             win = IntPtr.Zero;
             keep.Stop();
             keep.Dispose();
-            frame.Visible = false;
-            host.Controls.Remove(frame);
-            frame.Dispose();
+            host.Move -= OnHostChanged;
+            host.Resize -= OnHostChanged;
+            host.VisibleChanged -= OnHostChanged;
         }
 
         /* the page's tiny JSON messages: {"type":"veyra","on":true,"url":"...","x":..,"y":..,"w":..,"h":..,"dpr":..} */

@@ -821,9 +821,12 @@ const liveUrl = () => `${location.protocol}//127.0.0.1:${location.port || 80}/li
 const webview = window.chrome && window.chrome.webview;
 let veyraOn = false;
 
+/* the picture area, 16:9 and centred (Veyra keeps its window at the picture's shape) */
 function veyraRect() {
   const r = $('#screen').getBoundingClientRect();
-  return { x: r.left, y: r.top, w: r.width, h: r.height, dpr: window.devicePixelRatio || 1 };
+  let w = r.width, h = r.height;
+  if (w / h > 16 / 9) w = h * 16 / 9; else h = w * 9 / 16;
+  return { x: r.left + (r.width - w) / 2, y: r.top + (r.height - h) / 2, w, h, dpr: window.devicePixelRatio || 1 };
 }
 function sendVeyraRect() {
   if (webview && veyraOn) webview.postMessage(JSON.stringify({ type: 'veyraRect', ...veyraRect() }));
