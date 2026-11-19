@@ -221,7 +221,8 @@ Open the overlay with your overlay combo and pick **NXBeam**. The combo depends 
 | **HOME menu** (beta, off by default) | **On**: the HOME menu, the Album and system screens stream too, not only games. In some games it makes the HOME button slow to respond, so it is off unless you turn it on. |
 | **System overlays** (beta, off by default) | **On**: the volume bar, quick settings, power menu and Tesla / Ultrahand menus appear in the stream. |
 | **Restart Switch** | Applies the changes. |
-| **About** | The installed NXBeam version and how to update (the NXBeam Update app). Made by Haris DevLab. |
+| **NXBeam sysmodule** | **Running**: switch NXBeam on or off now, no restart. **Start at boot**: whether it starts with the Switch. (These replace the sysmodules menu of Ultrahand for NXBeam: switching it on there would start the module too early at boot.) |
+| **About** | The installed NXBeam version. When a newer release is out, the menu says so at the top (**Update available**) and under the title: open the **NXBeam Update** app to install it. The check runs in the background at most every 6 hours, only with internet. Made by Haris DevLab. |
 
 - **Network**: works docked or handheld; NXBeam finds the console on its own.
 - **USB**: handheld only (the dock uses the port). On Windows it needs the WinUSB driver once, see below.

@@ -106,6 +106,14 @@ Sejak v1.4, video di-decode dan digambar di **thread terpisah** (Web Worker + Of
 
 Tips jaringan: pakai WiFi 5 GHz, letakkan Switch dekat router, atau sambungkan dock dengan kabel LAN. Bila memungkinkan, sambungkan juga PC hub ke router dengan kabel.
 
+## Notifikasi update dan saklar NXBeam di overlay
+
+- Kalau ada versi NXBeam yang lebih baru, overlay menampilkan **Update available** di bagian paling atas dan di bawah judul. Untuk memasangnya, buka aplikasi **NXBeam Update**. Pengecekan berjalan di belakang, paling sering setiap 6 jam, dan hanya kalau Switch tersambung internet.
+- Bagian **NXBeam sysmodule** di overlay:
+  - **Running**: menyalakan atau mematikan NXBeam saat itu juga, tanpa restart.
+  - **Start at boot**: mengatur apakah NXBeam ikut menyala saat Switch dinyalakan.
+- NXBeam tidak lagi muncul di menu sysmodules Ultrahand. Di menu itu NXBeam memang tidak bisa dinyalakan. Kalaupun dipaksa, modulnya akan start terlalu awal saat booting dan bisa membuat sebagian konsol error. Pakai saklar di overlay NXBeam sebagai gantinya.
+
 ## Mode docked/handheld dan resolusi game (ReverseNX-RT)
 
 Overlay NXBeam punya bagian **Game display (ReverseNX-RT)**. Fungsinya sama dengan ReverseNX-RT, jadi tidak perlu membuka overlay ReverseNX-RT lagi. Bagian ini butuh **SaltyNX** terpasang di Switch.
