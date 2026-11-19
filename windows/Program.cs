@@ -475,7 +475,7 @@ namespace NXBeam
     /* ---- Veyra, shown inside the NXBeam window ------------------------------------
      * Veyra (https://github.com/Likely7/Veyra-NRVideo, GPL-3.0, its own program)
      * plays NXBeam's /live.mkv with its GPU frame generation and super
-     * resolution. NXBeam starts it with the stream's address (veyra://play?url=)
+     * resolution. NXBeam starts it with the stream's address on its command line
      * and turns its window into a child of the NXBeam window, over the picture
      * area the page reports; it closes it again when switched off. */
     sealed class VeyraEmbed
@@ -559,7 +559,8 @@ namespace NXBeam
             report(Tuple.Create("starting", ""));
             try
             {
-                proc = Process.Start(new ProcessStartInfo(exe, "\"veyra://play?url=" + Uri.EscapeDataString(url) + "\"")
+                // Veyra opens an address given on its command line like a file, through FFmpeg
+                proc = Process.Start(new ProcessStartInfo(exe, "\"" + url + "\"")
                 {
                     WorkingDirectory = Path.GetDirectoryName(exe),
                     UseShellExecute = false,
