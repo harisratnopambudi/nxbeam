@@ -52,7 +52,16 @@ class NetworkSource extends EventEmitter {
 
   send(buf) { if (this.sock && !this.sock.destroyed) this.sock.write(buf); }
 
-  close() { if (this.sock) { this.sock.destroy(); } this._closed('closed by hub'); }
+  /* a goodbye first, as over USB: the console ends the stream at once (and its
+   * screen comes back with "Screen off while streaming") instead of noticing later */
+  close() {
+    const s = this.sock;
+    if (s && !s.destroyed) {
+      try { s.write(Cmd.BYE); s.end(); } catch { /* gone */ }
+      setTimeout(() => { try { s.destroy(); } catch { /* gone */ } }, 300);
+    }
+    this._closed('closed by hub');
+  }
 
   _closed(reason) {
     if (this.closed) return;

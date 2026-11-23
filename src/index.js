@@ -142,7 +142,8 @@ const shutdown = async () => {
   await hub.stopRecording().catch(() => {});
   for (const id of [...hub.restreams.keys()]) await hub.stopRestream(id).catch(() => {});
   hub.stop();
-  process.exit(0);
+  // the goodbye to the console (USB or network) leaves before the process ends
+  setTimeout(() => process.exit(0), 400);
 };
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
