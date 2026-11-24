@@ -110,12 +110,12 @@ namespace NXBeam
             {
                 Text = "NXBeam",
                 Icon = Program.AppIcon,
-                BackColor = Color.FromArgb(0x15, 0x1b, 0x24),
+                BackColor = Color.FromArgb(0x17, 0x19, 0x1C),
                 MinimumSize = new Size(640, 400),
                 StartPosition = FormStartPosition.Manual,
             };
             RestoreWindow();
-            web = new WebView2 { Dock = DockStyle.Fill, DefaultBackgroundColor = Color.FromArgb(0x15, 0x1b, 0x24) };
+            web = new WebView2 { Dock = DockStyle.Fill, DefaultBackgroundColor = Color.FromArgb(0x17, 0x19, 0x1C) };
             Form.Controls.Add(web);
 
             var menu = new ContextMenuStrip();
@@ -282,11 +282,11 @@ namespace NXBeam
 
         static string Page(string title, string body) =>
             "<!doctype html><html><head><meta charset=\"utf-8\"><style>" +
-            "html,body{margin:0;height:100%;background:#151b24;color:#e4eaf2;font:15px 'Segoe UI',sans-serif}" +
+            "html,body{margin:0;height:100%;background:#17191C;color:#ECE8E1;font:15px 'Segoe UI',sans-serif}" +
             "main{max-width:760px;margin:0 auto;padding:12vh 32px}h1{font-size:22px;font-weight:600}" +
-            "pre{background:#0e131a;border:1px solid #263142;border-radius:10px;padding:14px;white-space:pre-wrap;max-height:40vh;overflow:auto;font-size:12px;color:#aab6c6}" +
-            "button{font:inherit;border:0;border-radius:10px;padding:9px 18px;background:#f2b84b;color:#151b24;font-weight:600;cursor:pointer}" +
-            "button.ghost{background:#263142;color:#e4eaf2}" +
+            "pre{background:#1A1D20;border:1px solid #30343A;border-radius:10px;padding:14px;white-space:pre-wrap;max-height:40vh;overflow:auto;font-size:12px;color:#A9AEB5}" +
+            "button{font:inherit;border:0;border-radius:10px;padding:9px 18px;background:#f2b84b;color:#17191C;font-weight:600;cursor:pointer}" +
+            "button.ghost{background:#30343A;color:#ECE8E1}" +
             "</style></head><body><main><h1>" + WebUtility.HtmlEncode(title) + "</h1>" + body + "</main></body></html>";
 
         void SetFullscreen(bool on)

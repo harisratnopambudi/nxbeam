@@ -1,6 +1,15 @@
-/* NXBeam UI strings: Indonesian (default) and English */
+/* NXBeam UI strings: English (default) and Indonesian */
 const DICT = {
   id: {
+    noSignal: 'Belum ada sinyal', wayTitle: 'Sambung lewat', wayUsb: 'Lewat USB',
+    wayUsbText: 'Di overlay NXBeam pada Switch, pilih mode USB, lalu colok kabel data ke PC ini.',
+    usbCheckLink: 'Kabel sudah dicolok tapi tidak terbaca?', controls: 'Kontrol', volume: 'Volume', recording: 'Merekam',
+    allDetails: 'Semua detail', soundTitle: 'Suara', connectedUsb: 'Tersambung lewat USB', connectedNet: 'Tersambung lewat Wi-Fi',
+    chkUsb: 'Switch di kabel USB', chkNet: 'Switch di jaringan', chkNetAt: 'Switch di {0}',
+    stFound: 'ditemukan', stNotSeen: 'belum terlihat', stDriver: 'driver belum WinUSB', stPerm: 'tidak ada izin akses', stBusy: 'dipakai program lain',
+    stNolib: 'modul USB tidak termuat', stErr: 'gagal dibuka', stOff: 'mati di mode ini', stScanning: 'memindai', stConnecting: 'menyambung',
+    stRefused: 'menolak koneksi', stTimeout: 'tidak menjawab', stWaiting: 'menunggu gambar dari game', hwDecoder: 'dekoder hardware', swDecoder: 'dekoder otomatis',
+    statsSteady: 'Sinyal stabil', statsWaiting: 'Belum ada gambar',
     stage: 'Layar', library: 'Galeri', stats: 'Statistik', settings: 'Pengaturan',
     updAvailable: (v) => `NXBeam ${v} tersedia`, updDetail: (cur) => `Versi sekarang ${cur}. Update mengunduh versi baru lalu menyalakan ulang NXBeam.`,
     updApply: 'Update', updLater: 'Nanti', updDownloading: (p) => `Mengunduh update... ${p}%`, updRestarting: 'Memasang update dan menyalakan ulang NXBeam...',
@@ -10,9 +19,9 @@ const DICT = {
     updError: (e) => `Update gagal: ${e}`, updManual: 'Tutup NXBeam lalu buka lagi lewat Start NXBeam untuk bisa update dari sini.', updRetry: 'Coba lagi',
     searching: 'Mencari konsol', scanning: 'Memindai jaringan', connecting: 'Menyambung', connected: 'Tersambung',
     waitingPicture: 'Tersambung. Menunggu gambar dari game.',
-    noConsole: 'Belum ada konsol',
-    noConsoleHint: 'Nyalakan Switch, aktifkan streaming jaringan di aplikasi sysmodule, lalu jalankan game. NXBeam akan menemukannya sendiri.',
-    enterIp: 'Atau sambungkan ke alamat IP', connect: 'Sambungkan',
+    noConsole: 'Mencari Switch',
+    noConsoleHint: 'NXBeam memeriksa kabel USB dan jaringan Wi-Fi sekaligus. Gambar muncul sendiri begitu Switch ditemukan dan game berjalan.',
+    enterIp: 'Lewat Wi-Fi: ketik IP yang tertera di overlay NXBeam', connect: 'Sambungkan',
     soundOn: 'Suara aktif', soundOff: 'Suara mati', tapForSound: 'Ketuk untuk menyalakan suara',
     screenshot: 'Tangkapan', clip: 'Simpan klip', record: 'Rekam', stopRecord: 'Berhenti', restream: 'Siaran',
     control: 'Kontrol', releaseControl: 'Lepas kontrol', picture: 'Gambar', fullscreen: 'Layar penuh',
@@ -62,7 +71,7 @@ const DICT = {
     audioUnderruns: 'Suara sempat habis', audioTrimmed: 'dipangkas', audioPath: 'Jalur audio',
     srcHitches: 'Tersendat dari konsol', maxGap: 'jeda maks', lateHere: 'Frame telat di browser', renderPath: 'Jalur render', mainThread: 'Thread utama',
     workerOpt: 'Decode & render di thread terpisah (lebih stabil; matikan hanya bila layar hitam)',
-    modeTitle: 'Sambung lewat', mAuto: 'Otomatis', mUsb: 'USB', mNet: 'Jaringan',
+    modeTitle: 'Sambung lewat', mAuto: 'Otomatis', mUsb: 'USB', mNet: 'Wi-Fi',
     usbCheck: 'Cek perangkat USB', usbSeenList: 'Perangkat USB yang terlihat oleh NXBeam ({0}):',
     usbDiagSft: 'Switch Frame Tap terdeteksi di USB (1209:5F1E).',
     usbDiagSftDriver: 'Switch Frame Tap terdeteksi (1209:5F1E), tapi driver-nya belum WinUSB. Pasang dengan Zadig: Options > List All Devices, pilih USB ID 1209 5F1E, pilih WinUSB, lalu klik Install Driver.',
@@ -88,11 +97,20 @@ const DICT = {
     noAudio: 'Gambar sudah masuk, tapi konsol tidak mengirim suara. Di aplikasi Switch Frame Tap, halaman Stream: nyalakan Game audio. Untuk game yang memblokir rekaman, nyalakan juga Sound in no-record games.',
     audioPlayback: 'Pemutaran suara', playing: 'berjalan', blocked: 'menunggu ketukan', off: 'mati', none: 'konsol tidak mengirim audio',
     errRefusedTitle: 'Konsol menolak koneksi ({0})',
-    errRefused: 'Alamat ini terjangkau, tapi port 9950 tertutup. Pastikan di overlay NXBeam modenya Jaringan, Switch sudah di-restart, dan tunggu sekitar 30 detik setelah HOME menu muncul. IP Switch tertulis di overlay NXBeam.',
+    errRefused: 'Alamat ini terjangkau, tapi port 9950 tertutup. Pastikan di overlay NXBeam modenya Wi-Fi, Switch sudah di-restart, dan tunggu sekitar 30 detik setelah HOME menu muncul. IP Switch tertulis di overlay NXBeam.',
     errTimeoutTitle: 'Konsol tidak menjawab ({0})',
     errTimeout: 'Switch hanya melayani satu penonton: kalau NXBeam di HP atau PC lain sedang tersambung, tutup dulu. Selain itu, pastikan Switch tidak dalam mode tidur dan IP-nya benar (lihat overlay NXBeam). Beda frekuensi 2,4/5 GHz tidak masalah selama satu router.',
   },
   en: {
+    noSignal: 'No signal yet', wayTitle: 'Connect over', wayUsb: 'Over USB',
+    wayUsbText: 'In the NXBeam overlay on the Switch, choose USB mode, then plug a data cable into this PC.',
+    usbCheckLink: 'Cable plugged in but not found?', controls: 'Controls', volume: 'Volume', recording: 'Recording',
+    allDetails: 'All details', soundTitle: 'Sound', connectedUsb: 'Connected over USB', connectedNet: 'Connected over Wi-Fi',
+    chkUsb: 'Switch on the USB cable', chkNet: 'Switch on the network', chkNetAt: 'Switch at {0}',
+    stFound: 'found', stNotSeen: 'not seen yet', stDriver: 'driver is not WinUSB', stPerm: 'no permission', stBusy: 'used by another program',
+    stNolib: 'USB module did not load', stErr: 'could not be opened', stOff: 'off in this mode', stScanning: 'scanning', stConnecting: 'connecting',
+    stRefused: 'refused the connection', stTimeout: 'does not answer', stWaiting: 'waiting for a picture from the game', hwDecoder: 'hardware decoder', swDecoder: 'automatic decoder',
+    statsSteady: 'Signal is steady', statsWaiting: 'No picture yet',
     stage: 'Screen', library: 'Library', stats: 'Stats', settings: 'Settings',
     updAvailable: (v) => `NXBeam ${v} is available`, updDetail: (cur) => `You have ${cur}. Update downloads the new version and restarts NXBeam.`,
     updApply: 'Update', updLater: 'Later', updDownloading: (p) => `Downloading the update... ${p}%`, updRestarting: 'Installing the update and restarting NXBeam...',
@@ -102,9 +120,9 @@ const DICT = {
     updError: (e) => `Update failed: ${e}`, updManual: 'Close NXBeam and start it again with Start NXBeam to update from here.', updRetry: 'Try again',
     searching: 'Looking for the console', scanning: 'Scanning the network', connecting: 'Connecting', connected: 'Connected',
     waitingPicture: 'Connected. Waiting for a picture from the game.',
-    noConsole: 'No console yet',
-    noConsoleHint: 'Turn on the Switch, enable network streaming in the sysmodule app and start a game. NXBeam finds it by itself.',
-    enterIp: 'Or connect to an IP address', connect: 'Connect',
+    noConsole: 'Looking for the Switch',
+    noConsoleHint: 'NXBeam checks the USB cable and the Wi-Fi network at the same time. The picture appears by itself once the Switch is found and a game runs.',
+    enterIp: 'Over Wi-Fi: type the IP shown in the NXBeam overlay', connect: 'Connect',
     soundOn: 'Sound on', soundOff: 'Sound off', tapForSound: 'Tap to turn sound on',
     screenshot: 'Screenshot', clip: 'Save clip', record: 'Record', stopRecord: 'Stop', restream: 'Go live',
     control: 'Control', releaseControl: 'Release control', picture: 'Picture', fullscreen: 'Fullscreen',
@@ -154,7 +172,7 @@ const DICT = {
     audioUnderruns: 'Sound ran dry', audioTrimmed: 'trimmed', audioPath: 'Audio path',
     srcHitches: 'Hitches from the console', maxGap: 'max gap', lateHere: 'Late frames in the browser', renderPath: 'Render path', mainThread: 'Main thread',
     workerOpt: 'Decode & draw on a separate thread (steadier; turn off only if the screen stays black)',
-    modeTitle: 'Connect over', mAuto: 'Automatic', mUsb: 'USB', mNet: 'Network',
+    modeTitle: 'Connect over', mAuto: 'Automatic', mUsb: 'USB', mNet: 'Wi-Fi',
     usbCheck: 'Check USB devices', usbSeenList: 'USB devices NXBeam can see ({0}):',
     usbDiagSft: 'Switch Frame Tap is on USB (1209:5F1E).',
     usbDiagSftDriver: 'Switch Frame Tap is on USB (1209:5F1E), but its driver is not WinUSB. Install it with Zadig: Options > List All Devices, pick USB ID 1209 5F1E, choose WinUSB, click Install Driver.',
@@ -180,21 +198,21 @@ const DICT = {
     noAudio: 'The picture is in, but the console sends no sound. In the Switch Frame Tap app, Stream page: turn on Game audio. For games that block recording, also turn on Sound in no-record games.',
     audioPlayback: 'Sound playback', playing: 'playing', blocked: 'waiting for a tap', off: 'off', none: 'console sends no audio',
     errRefusedTitle: 'The console refused the connection ({0})',
-    errRefused: 'The address answers but port 9950 is closed. Set the NXBeam overlay to Network mode, restart the Switch and wait about 30 seconds after the HOME menu appears. The overlay shows the Switch IP.',
+    errRefused: 'The address answers but port 9950 is closed. Set the NXBeam overlay to Wi-Fi mode, restart the Switch and wait about 30 seconds after the HOME menu appears. The overlay shows the Switch IP.',
     errTimeoutTitle: 'The console does not answer ({0})',
     errTimeout: 'The Switch serves one viewer at a time: if NXBeam on a phone or another PC is connected, close it first. Otherwise check that the Switch is awake and the IP is right (see the NXBeam overlay). 2.4 and 5 GHz on one router is fine.',
   },
 };
 
-let lang = 'id';
+let lang = 'en';
 try {
   const saved = localStorage.getItem('nxb.lang');
-  lang = saved || ((navigator.language || 'id').toLowerCase().startsWith('en') ? 'en' : 'id');
+  lang = saved === 'id' ? 'id' : 'en';
 } catch { /* storage blocked */ }
 
 export function getLang() { return lang; }
 export function setLang(l) {
-  lang = DICT[l] ? l : 'id';
+  lang = DICT[l] ? l : 'en';
   try { localStorage.setItem('nxb.lang', lang); } catch { /* ignore */ }
   applyI18n();
 }
@@ -208,5 +226,6 @@ export function applyI18n(root = document) {
   document.documentElement.lang = lang;
   root.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
   root.querySelectorAll('[data-i18n-title]').forEach((el) => { el.title = t(el.dataset.i18nTitle); el.setAttribute('aria-label', el.title); });
+  root.querySelectorAll('[data-i18n-aria]').forEach((el) => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
   root.querySelectorAll('[data-i18n-ph]').forEach((el) => { el.placeholder = t(el.dataset.i18nPh); });
 }

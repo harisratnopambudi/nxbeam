@@ -9,7 +9,7 @@ const { WebSocketServer } = require('ws');
 const PUBLIC = path.join(__dirname, '..', 'public');
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
-  '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.json': 'application/json',
+  '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.json': 'application/json', '.woff2': 'font/woff2',
   '.mp4': 'video/mp4', '.mkv': 'video/x-matroska', '.webmanifest': 'application/manifest+json', '.ico': 'image/x-icon',
 };
 const MEDIA_KINDS = ['recordings', 'clips', 'screenshots'];

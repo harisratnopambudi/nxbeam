@@ -1,12 +1,13 @@
 <!doctype html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<meta name="theme-color" content="#151b24">
+<meta name="theme-color" content="#17191C">
 <title>NXBeam</title>
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
 <link rel="manifest" href="/manifest.webmanifest">
+<link rel="preload" href="/fonts/plex-sans-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/css/app.css">
 </head>
 <body>
@@ -38,94 +39,63 @@
     <symbol id="i-touch" viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><circle cx="12" cy="17.5" r="1.2" fill="currentColor"/></symbol>
     <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 5l12 7-12 7z"/></symbol>
     <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14a6.5 6.5 0 0 1 3.5 6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 7v6"/><circle cx="12" cy="16.5" r=".9" fill="currentColor"/><circle cx="12" cy="12" r="9"/></symbol>
+    <symbol id="i-ring" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" stroke-dasharray="3 3.3"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><path d="M7 12h10"/></symbol>
   </defs>
 </svg>
 
 <div id="login" class="login" hidden>
   <form class="login-card" id="loginForm">
     <svg class="login-logo"><use href="#i-logo"/></svg>
-    <h1 data-i18n="loginTitle">Masukkan PIN</h1>
+    <h1 data-i18n="loginTitle">Enter PIN</h1>
     <p data-i18n="loginHint"></p>
     <input id="loginPin" type="password" inputmode="numeric" autocomplete="current-password" required>
     <p class="login-err" id="loginErr" hidden data-i18n="wrongPin"></p>
-    <button class="btn primary" type="submit" data-i18n="login">Masuk</button>
+    <button class="btn primary" type="submit" data-i18n="login">Sign in</button>
   </form>
 </div>
 
 <div class="app" id="app" hidden>
-  <nav class="rail" aria-label="NXBeam">
-    <div class="brand"><svg><use href="#i-logo"/></svg><span>NXBeam</span></div>
-    <button class="rail-btn active" data-page="stage" data-i18n-title="stage"><svg><use href="#i-screen"/></svg><span data-i18n="stage"></span></button>
-    <button class="rail-btn" data-page="library" data-i18n-title="library"><svg><use href="#i-library"/></svg><span data-i18n="library"></span></button>
-    <button class="rail-btn" data-page="stats" data-i18n-title="stats"><svg><use href="#i-stats"/></svg><span data-i18n="stats"></span></button>
-    <button class="rail-btn" data-page="settings" data-i18n-title="settings"><svg><use href="#i-settings"/></svg><span data-i18n="settings"></span><i class="rail-badge" id="updBadge" hidden></i></button>
-    <div class="rail-foot" id="railConn" title="">
-      <span class="dot" id="connDot"></span>
-      <svg id="connIcon"><use href="#i-wifi"/></svg>
-    </div>
-  </nav>
-
   <main class="stage" id="stage">
-    <div class="update-bar" id="updateBar" role="status" hidden>
-      <svg aria-hidden="true"><use href="#i-download"/></svg>
-      <div class="update-text">
-        <strong id="updTitle"></strong>
-        <span id="updDetail"></span>
-      </div>
-      <div class="update-progress" id="updProgress" hidden><i id="updFill"></i></div>
-      <button class="btn primary" id="updApply" type="button"></button>
-      <button class="icon-btn" id="updLater" type="button" data-i18n-title="updLater" aria-label="Later"><svg><use href="#i-close"/></svg></button>
-    </div>
-    <header class="signal" id="signal">
-      <div class="signal-text menu-wrap">
-        <button class="conn-btn" id="connBtn" aria-haspopup="true">
-          <svg id="connBtnIcon"><use href="#i-wifi"/></svg>
-          <strong id="sigState" data-i18n="searching">Mencari konsol</strong>
-          <svg class="chev" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5"/></svg>
-        </button>
-        <span id="sigPeer"></span>
-        <div class="menu down" id="connMenu" hidden>
-          <p class="menu-label" data-i18n="modeTitle"></p>
-          <button data-mode="auto"><span class="mi"><svg><use href="#i-refresh"/></svg><span data-i18n="mAuto"></span></span><svg class="tick" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></button>
-          <button data-mode="usb"><span class="mi"><svg><use href="#i-usb"/></svg><span data-i18n="mUsb"></span></span><svg class="tick" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></button>
-          <button data-mode="network"><span class="mi"><svg><use href="#i-wifi"/></svg><span data-i18n="mNet"></span></span><svg class="tick" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></button>
-          <hr>
-          <button id="menuReconnect"><span class="mi"><svg><use href="#i-refresh"/></svg><span data-i18n="reconnect"></span></span></button>
-          <button id="menuUsbCheck"><span class="mi"><svg><use href="#i-usb"/></svg><span data-i18n="usbCheck"></span></span></button>
-        </div>
-      </div>
-      <canvas class="signal-bars" id="sigBars" aria-hidden="true"></canvas>
-      <div class="signal-nums">
-        <span><b id="sigRes">-</b></span>
-        <span><b id="sigFps">0</b> fps</span>
-        <span><b id="sigKbps">0</b> kbps</span>
-        <span class="sig-viewers" title=""><svg><use href="#i-users"/></svg><b id="sigViewers">1</b></span>
-        <span class="rec-badge" id="recBadge" hidden><i></i><b id="recTime">00:00</b></span>
-        <span class="live-badge" id="liveBadge" hidden>LIVE</span>
-      </div>
-    </header>
-
     <div class="screen" id="screen">
       <canvas id="video"></canvas>
-      <div class="empty-state" id="placeholder">
-        <svg class="pulse"><use href="#i-logo"/></svg>
-        <h2 id="phTitle" data-i18n="noConsole">Belum ada konsol</h2>
-        <p id="phText" data-i18n="noConsoleHint"></p>
-        <div class="mode-switch" role="radiogroup" id="modeSwitch">
-          <button role="radio" data-mode="auto"><svg><use href="#i-refresh"/></svg><span data-i18n="mAuto"></span></button>
-          <button role="radio" data-mode="usb"><svg><use href="#i-usb"/></svg><span data-i18n="mUsb"></span></button>
-          <button role="radio" data-mode="network"><svg><use href="#i-wifi"/></svg><span data-i18n="mNet"></span></button>
+
+      <section class="connect" id="placeholder">
+        <div class="connect-inner">
+          <div class="connect-head">
+            <p class="tally"><span class="dot busy" id="phDot"></span><span id="phStatus" data-i18n="noSignal">No signal yet</span></p>
+            <h1 id="phTitle" data-i18n="noConsole">No console yet</h1>
+            <p class="lead" id="phText" data-i18n="noConsoleHint"></p>
+          </div>
+          <ol class="checks" id="connChecks"></ol>
+          <div class="connect-ways" id="connWays">
+            <div class="way">
+              <h2 data-i18n="wayTitle">Connect over</h2>
+              <div class="seg" role="radiogroup" id="modeSwitch">
+                <button role="radio" data-mode="auto"><span data-i18n="mAuto"></span></button>
+                <button role="radio" data-mode="usb"><span data-i18n="mUsb"></span></button>
+                <button role="radio" data-mode="network"><span data-i18n="mNet"></span></button>
+              </div>
+              <form class="ip-form" id="ipForm">
+                <label for="ipInput" data-i18n="enterIp"></label>
+                <div class="row"><input id="ipInput" placeholder="192.168.1.23" inputmode="decimal" autocomplete="off"><button class="btn primary" type="submit" data-i18n="connect">Connect</button></div>
+              </form>
+            </div>
+            <div class="way">
+              <h2 data-i18n="wayUsb">Over USB</h2>
+              <p class="note" data-i18n="wayUsbText"></p>
+              <div class="usb-diag" id="usbDiag" hidden>
+                <button class="link-btn" id="btnUsbCheck" type="button" data-i18n="usbCheckLink"></button>
+                <div id="usbResult"></div>
+              </div>
+            </div>
+          </div>
+          <p class="warn" id="unsupported" hidden data-i18n="unsupported"></p>
         </div>
-        <div class="usb-diag" id="usbDiag" hidden>
-          <button class="btn" id="btnUsbCheck" type="button"><svg><use href="#i-usb"/></svg><span data-i18n="usbCheck"></span></button>
-          <div id="usbResult"></div>
-        </div>
-        <form class="ip-form" id="ipForm">
-          <label for="ipInput" data-i18n="enterIp"></label>
-          <div class="row"><input id="ipInput" placeholder="192.168.1.20" inputmode="decimal" autocomplete="off"><button class="btn" type="submit" data-i18n="connect">Sambungkan</button></div>
-        </form>
-        <p class="warn" id="unsupported" hidden data-i18n="unsupported"></p>
-      </div>
+      </section>
+
       <button class="sound-hint" id="soundHint" hidden><svg><use href="#i-mute"/></svg><span data-i18n="tapForSound"></span></button>
 
       <div class="touchpad" id="touchpad" hidden>
@@ -150,97 +120,178 @@
           <div class="tp-stick" data-stick="r"><div class="knob"></div></div>
         </div>
       </div>
-      <div class="fps-guard" id="fpsGuard" hidden role="alert">
-        <div>
-          <strong id="fgTitle"></strong>
-          <p id="fgText"></p>
-        </div>
-        <div class="fg-actions">
-          <button class="btn" id="fgLater" data-i18n="fgLater"></button>
-          <button class="icon-btn" id="fgClose" aria-label="Close"><svg><use href="#i-close"/></svg></button>
-        </div>
-      </div>
       <div class="play-hud" id="playHud" hidden><b id="hudFps">0</b> fps</div>
       <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
     </div>
 
-    <footer class="deck" id="deck">
-      <div class="deck-group">
-        <button class="deck-btn" id="btnSound"><svg><use href="#i-mute"/></svg><span data-i18n="soundOff"></span></button>
-        <input type="range" id="volume" min="0" max="1" step="0.01" value="1" aria-label="Volume">
+    <!-- status pill, top left: the tally light of the stream -->
+    <header class="chrome pill status-pill" id="signal">
+      <button class="conn-btn" id="connBtn" aria-haspopup="true">
+        <span class="dot" id="connDot"></span>
+        <strong id="sigState" data-i18n="searching">Looking for the console</strong>
+        <svg class="chev" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5"/></svg>
+      </button>
+      <span class="pill-num" id="sigFpsWrap"><b id="sigFps">0</b> fps</span>
+      <span class="pill-num" id="sigLatWrap"><b id="sigLat">-</b> ms</span>
+      <span class="pill-num sig-viewers" id="sigViewersWrap" hidden><svg><use href="#i-users"/></svg><b id="sigViewers">1</b></span>
+      <div class="menu down" id="connMenu" hidden>
+        <p class="menu-label" id="sigPeer"></p>
+        <p class="menu-label" data-i18n="modeTitle"></p>
+        <button data-mode="auto"><span class="mi"><svg><use href="#i-refresh"/></svg><span data-i18n="mAuto"></span></span><svg class="tick" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></button>
+        <button data-mode="usb"><span class="mi"><svg><use href="#i-usb"/></svg><span data-i18n="mUsb"></span></span><svg class="tick" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></button>
+        <button data-mode="network"><span class="mi"><svg><use href="#i-wifi"/></svg><span data-i18n="mNet"></span></span><svg class="tick" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></button>
+        <hr>
+        <button id="menuReconnect"><span class="mi"><svg><use href="#i-refresh"/></svg><span data-i18n="reconnect"></span></span></button>
+        <button id="menuUsbCheck"><span class="mi"><svg><use href="#i-usb"/></svg><span data-i18n="usbCheck"></span></span></button>
       </div>
-      <div class="deck-group main">
-        <button class="deck-btn" id="btnShot"><svg><use href="#i-camera"/></svg><span data-i18n="screenshot"></span></button>
-        <button class="deck-btn" id="btnClip"><svg><use href="#i-clip"/></svg><span data-i18n="clip"></span><small id="clipLen"></small></button>
-        <button class="deck-btn rec" id="btnRec"><svg><use href="#i-rec"/></svg><span data-i18n="record"></span></button>
+    </header>
+
+    <!-- recording / live pill, top right -->
+    <div class="chrome pill rec-pill" id="recPill" hidden>
+      <span class="rec-badge" id="recBadge" hidden><i></i><span data-i18n="recording">Recording</span><b id="recTime">00:00</b></span>
+      <span class="live-badge" id="liveBadge" hidden><i></i>LIVE</span>
+    </div>
+
+    <div class="update-bar chrome" id="updateBar" role="status" hidden>
+      <svg aria-hidden="true"><use href="#i-download"/></svg>
+      <div class="update-text">
+        <strong id="updTitle"></strong>
+        <span id="updDetail"></span>
+      </div>
+      <div class="update-progress" id="updProgress" hidden><i id="updFill"></i></div>
+      <button class="btn primary" id="updApply" type="button"></button>
+      <button class="icon-btn" id="updLater" type="button" data-i18n-title="updLater" aria-label="Later"><svg><use href="#i-close"/></svg></button>
+    </div>
+
+    <div class="fps-guard" id="fpsGuard" hidden role="alert">
+      <div>
+        <strong id="fgTitle"></strong>
+        <p id="fgText"></p>
+      </div>
+      <div class="fg-actions">
+        <button class="btn" id="fgLater" data-i18n="fgLater"></button>
+        <button class="icon-btn" id="fgClose" aria-label="Close"><svg><use href="#i-close"/></svg></button>
+      </div>
+    </div>
+
+    <!-- the control dock, bottom centre -->
+    <nav class="chrome dock" id="deck" data-i18n-aria="controls">
+      <div class="dock-group">
+        <button class="dock-btn icon" id="btnSound"><svg><use href="#i-mute"/></svg><span class="vh" data-i18n="soundOff"></span></button>
+        <input type="range" id="volume" min="0" max="1" step="0.01" value="1" data-i18n-aria="volume">
+        <button class="dock-btn icon" id="btnShot" data-i18n-title="screenshot"><svg><use href="#i-camera"/></svg><span class="vh" data-i18n="screenshot"></span></button>
+        <button class="dock-btn rec" id="btnRec"><svg><use href="#i-rec"/></svg><span data-i18n="record"></span></button>
+        <button class="dock-btn" id="btnClip"><svg><use href="#i-clip"/></svg><span data-i18n="clip"></span><small id="clipLen"></small></button>
         <div class="menu-wrap">
-          <button class="deck-btn" id="btnLive" aria-haspopup="true"><svg><use href="#i-live"/></svg><span data-i18n="restream"></span></button>
+          <button class="dock-btn icon" id="btnLive" aria-haspopup="true" data-i18n-title="restream"><svg><use href="#i-live"/></svg><span class="vh" data-i18n="restream"></span></button>
           <div class="menu" id="liveMenu" hidden></div>
         </div>
-        <button class="deck-btn play" id="btnPlay"><svg><use href="#i-play"/></svg><span data-i18n="playMode"></span></button>
-        <button class="deck-btn" id="btnControl"><svg><use href="#i-pad"/></svg><span data-i18n="control"></span></button>
       </div>
-      <div class="deck-group">
-        <button class="deck-btn icon" id="btnTouch" data-i18n-title="touchPad" hidden><svg><use href="#i-touch"/></svg></button>
-        <button class="deck-btn icon" id="btnFull" data-i18n-title="fullscreen"><svg><use href="#i-full"/></svg></button>
+      <span class="dock-sep" aria-hidden="true"></span>
+      <div class="dock-group">
+        <button class="dock-btn play" id="btnPlay"><svg><use href="#i-play"/></svg><span data-i18n="playMode"></span></button>
+        <button class="dock-btn icon" id="btnControl"><svg><use href="#i-pad"/></svg><span class="vh" data-i18n="control"></span></button>
+        <button class="dock-btn icon" id="btnTouch" data-i18n-title="touchPad" hidden><svg><use href="#i-touch"/></svg></button>
       </div>
-    </footer>
+      <span class="dock-sep" aria-hidden="true"></span>
+      <div class="dock-group">
+        <button class="dock-btn icon nav-btn" data-page="library" data-i18n-title="library"><svg><use href="#i-library"/></svg></button>
+        <button class="dock-btn icon nav-btn" data-page="stats" data-i18n-title="stats"><svg><use href="#i-stats"/></svg></button>
+        <button class="dock-btn icon nav-btn" data-page="settings" data-i18n-title="settings"><svg><use href="#i-settings"/></svg><i class="badge" id="updBadge" hidden></i></button>
+        <button class="dock-btn icon" id="btnFull" data-i18n-title="fullscreen"><svg><use href="#i-full"/></svg></button>
+      </div>
+    </nav>
   </main>
 
   <aside class="panel" id="panel" hidden>
     <header class="panel-head">
       <h2 id="panelTitle"></h2>
+      <p class="panel-sub" id="panelSub"></p>
       <button class="icon-btn" id="panelClose" aria-label="Close"><svg><use href="#i-close"/></svg></button>
     </header>
 
     <section class="page" data-page="library" hidden>
-      <div class="tabs" role="tablist">
-        <button role="tab" class="tab active" data-kind="clips" data-i18n="clips"></button>
+      <div class="seg tabs" role="tablist">
+        <button role="tab" class="tab on" data-kind="clips" data-i18n="clips"></button>
         <button role="tab" class="tab" data-kind="recordings" data-i18n="recordings"></button>
         <button role="tab" class="tab" data-kind="screenshots" data-i18n="screenshots"></button>
       </div>
       <div class="media-grid" id="mediaGrid"></div>
     </section>
 
-    <section class="page" data-page="stats" hidden>
+    <section class="page stats" data-page="stats" hidden>
+      <div class="tiles">
+        <div class="tile">
+          <div class="tile-head"><span data-i18n="fpsGraph"></span><b id="tileFps">0</b></div>
+          <canvas class="graph" id="graphFps"></canvas>
+        </div>
+        <div class="tile">
+          <div class="tile-head"><span data-i18n="latency"></span><b><span id="tileLat">-</span> <small>ms</small></b></div>
+          <canvas class="graph" id="graphLat"></canvas>
+        </div>
+        <div class="tile">
+          <div class="tile-head"><span data-i18n="bitrate"></span><b><span id="tileMbps">0</span> <small>Mbps</small></b></div>
+          <canvas class="graph" id="graphKbps"></canvas>
+        </div>
+        <div class="tile facts">
+          <dl class="kv" id="statsFacts"></dl>
+        </div>
+      </div>
       <div class="diag" id="diag" hidden><strong id="diagTitle"></strong><p id="diagText"></p></div>
-      <dl class="kv" id="statsKv"></dl>
-      <h3 data-i18n="fpsGraph"></h3>
-      <canvas class="graph" id="graphFps"></canvas>
-      <h3 data-i18n="kbpsGraph"></h3>
-      <canvas class="graph" id="graphKbps"></canvas>
-      <h3 data-i18n="viewers"></h3>
-      <ul class="viewer-list" id="viewerList"></ul>
+      <details class="more">
+        <summary data-i18n="allDetails">All details</summary>
+        <div class="more-body">
+          <dl class="kv" id="statsKv"></dl>
+          <h3 data-i18n="viewers"></h3>
+          <ul class="viewer-list" id="viewerList"></ul>
+        </div>
+      </details>
     </section>
 
     <section class="page settings" data-page="settings" hidden>
-      <fieldset class="upd-panel">
-        <legend data-i18n="updTitle"></legend>
-        <dl class="kv upd-kv">
-          <dt data-i18n="updInstalled"></dt><dd id="updCur">-</dd>
-          <dt data-i18n="updLatest"></dt><dd id="updNew">-</dd>
-        </dl>
-        <p class="note" id="updStatus"></p>
-        <div class="update-progress wide" id="updProgress2" hidden><i id="updFill2"></i></div>
-        <div class="row">
-          <button class="btn primary" id="updApply2" type="button" hidden><svg><use href="#i-download"/></svg><span data-i18n="updApply"></span></button>
-          <button class="btn" id="updCheck" type="button"><svg><use href="#i-refresh"/></svg><span data-i18n="updCheck"></span></button>
+      <fieldset>
+        <legend data-i18n="language"></legend>
+        <div class="seg" role="radiogroup" id="langSwitch">
+          <button type="button" role="radio" data-lang="en">English</button>
+          <button type="button" role="radio" data-lang="id">Bahasa Indonesia</button>
         </div>
       </fieldset>
 
       <fieldset>
-        <legend data-i18n="res1080Title"></legend>
+        <legend data-i18n="connection"></legend>
+        <div class="seg" role="radiogroup" id="setModeSeg">
+          <button type="button" role="radio" data-setmode="auto" data-i18n="mAuto"></button>
+          <button type="button" role="radio" data-setmode="usb" data-i18n="mUsb"></button>
+          <button type="button" role="radio" data-setmode="network" data-i18n="mNet"></button>
+        </div>
+        <input type="hidden" id="setMode">
+        <label><span data-i18n="consoleIp"></span><input id="setHost" placeholder="192.168.1.23" autocomplete="off"></label>
+        <label class="check"><input type="checkbox" id="setScan"><span data-i18n="scanSubnet"></span></label>
+        <div class="row"><button class="btn" id="btnReconnect"><svg><use href="#i-refresh"/></svg><span data-i18n="reconnect"></span></button></div>
+      </fieldset>
+
+      <fieldset>
+        <legend data-i18n="pictureTitle"></legend>
+        <label class="slider"><span><span data-i18n="sharpen"></span><output id="outSharp"></output></span><input type="range" id="adjSharp" min="0" max="1" step="0.01"></label>
+        <label class="slider"><span><span data-i18n="brightness"></span><output id="outBright"></output></span><input type="range" id="adjBright" min="-0.3" max="0.3" step="0.01"></label>
+        <label class="slider"><span><span data-i18n="contrast"></span><output id="outContrast"></output></span><input type="range" id="adjContrast" min="0.6" max="1.6" step="0.01"></label>
+        <label class="slider"><span><span data-i18n="saturation"></span><output id="outSat"></output></span><input type="range" id="adjSat" min="0" max="2" step="0.01"></label>
+        <label class="check"><input type="checkbox" id="setFrameGen"><span><span data-i18n="frameGenOpt"></span><small data-i18n="frameGenNote"></small></span></label>
+        <label><span data-i18n="fpsCapLabel"></span>
+          <select id="setFpsCap"><option value="auto" data-i18n="capAuto"></option><option value="60" data-i18n="cap60"></option><option value="30" data-i18n="cap30"></option></select>
+        </label>
+        <label><span data-i18n="smoothMode"></span>
+          <select id="setSmooth"><option value="latency" data-i18n="modeLatency"></option><option value="balanced" data-i18n="modeBalanced"></option><option value="smooth" data-i18n="modeSmooth"></option></select>
+        </label>
+        <label class="check"><input type="checkbox" id="setLight"><span data-i18n="lightOpt"></span></label>
+        <label class="check"><input type="checkbox" id="setWorker"><span data-i18n="workerOpt"></span></label>
+        <div class="row"><button class="btn ghost" id="btnResetPic" type="button" data-i18n="resetPicture"></button></div>
         <p class="note" data-i18n="res1080Help"></p>
       </fieldset>
 
       <fieldset>
-        <legend data-i18n="connection"></legend>
-        <label><span data-i18n="mode"></span>
-          <select id="setMode"><option value="auto" data-i18n="modeAuto"></option><option value="network" data-i18n="modeNetwork"></option><option value="usb" data-i18n="modeUsb"></option></select>
-        </label>
-        <label><span data-i18n="consoleIp"></span><input id="setHost" placeholder="192.168.1.20" autocomplete="off"></label>
-        <label class="check"><input type="checkbox" id="setScan"><span data-i18n="scanSubnet"></span></label>
-        <div class="row"><button class="btn" id="btnReconnect"><svg><use href="#i-refresh"/></svg><span data-i18n="reconnect"></span></button></div>
+        <legend data-i18n="soundTitle"></legend>
+        <label class="slider"><span><span data-i18n="audioBuffer"></span><output id="adjAudioOut"></output></span><input type="range" id="adjAudio" min="20" max="250" step="10"></label>
       </fieldset>
 
       <fieldset>
@@ -264,31 +315,10 @@
       </fieldset>
 
       <fieldset>
-        <legend data-i18n="pictureTitle"></legend>
-        <label><span data-i18n="fpsCapLabel"></span>
-          <select id="setFpsCap"><option value="auto" data-i18n="capAuto"></option><option value="60" data-i18n="cap60"></option><option value="30" data-i18n="cap30"></option></select>
-        </label>
-        <label class="check"><input type="checkbox" id="setFrameGen"><span data-i18n="frameGenOpt"></span></label>
-        <p class="note" data-i18n="frameGenNote"></p>
-        <label><span data-i18n="smoothMode"></span>
-          <select id="setSmooth"><option value="latency" data-i18n="modeLatency"></option><option value="balanced" data-i18n="modeBalanced"></option><option value="smooth" data-i18n="modeSmooth"></option></select>
-        </label>
-        <label class="check"><input type="checkbox" id="setWorker"><span data-i18n="workerOpt"></span></label>
-        <label class="check"><input type="checkbox" id="setLight"><span data-i18n="lightOpt"></span></label>
-        <label><span data-i18n="brightness"></span><input type="range" id="adjBright" min="-0.3" max="0.3" step="0.01"></label>
-        <label><span data-i18n="contrast"></span><input type="range" id="adjContrast" min="0.6" max="1.6" step="0.01"></label>
-        <label><span data-i18n="saturation"></span><input type="range" id="adjSat" min="0" max="2" step="0.01"></label>
-        <label><span data-i18n="sharpen"></span><input type="range" id="adjSharp" min="0" max="1" step="0.01"></label>
-        <label><span data-i18n="audioBuffer"></span><input type="range" id="adjAudio" min="20" max="250" step="10"><output id="adjAudioOut"></output></label>
-        <div class="row"><button class="btn ghost" id="btnResetPic" type="button" data-i18n="resetPicture"></button></div>
-      </fieldset>
-
-
-      <fieldset>
         <legend data-i18n="overlayTitle"></legend>
         <p class="note" data-i18n="overlayHint"></p>
         <div class="copy-row"><code id="ovlVideo"></code><button class="icon-btn" data-copy="ovlVideo" data-i18n-title="copy"><svg><use href="#i-copy"/></svg></button></div>
-        <small data-i18n="overlayVideo"></small>
+        <p class="note" data-i18n="overlayVideo"></p>
       </fieldset>
 
       <fieldset>
@@ -298,13 +328,26 @@
 
       <fieldset>
         <legend data-i18n="security"></legend>
+        <label><span data-i18n="deviceName"></span><input id="setName" maxlength="32"></label>
         <label><span data-i18n="pin"></span><input id="setPin" type="password" inputmode="numeric" autocomplete="new-password"></label>
         <p class="note" data-i18n="pinHint"></p>
-        <label><span data-i18n="deviceName"></span><input id="setName" maxlength="32"></label>
-        <label><span data-i18n="language"></span><select id="setLang"><option value="id">Bahasa Indonesia</option><option value="en">English</option></select></label>
       </fieldset>
 
-      <div class="save-bar"><button class="btn primary" id="btnSave" data-i18n="save"></button></div>
+      <fieldset class="upd-panel">
+        <legend data-i18n="updTitle"></legend>
+        <dl class="kv upd-kv">
+          <dt data-i18n="updInstalled"></dt><dd id="updCur">-</dd>
+          <dt data-i18n="updLatest"></dt><dd id="updNew">-</dd>
+        </dl>
+        <p class="note" id="updStatus"></p>
+        <div class="update-progress wide" id="updProgress2" hidden><i id="updFill2"></i></div>
+        <div class="row">
+          <button class="btn primary" id="updApply2" type="button" hidden><svg><use href="#i-download"/></svg><span data-i18n="updApply"></span></button>
+          <button class="btn" id="updCheck" type="button"><svg><use href="#i-refresh"/></svg><span data-i18n="updCheck"></span></button>
+        </div>
+      </fieldset>
+
+      <div class="save-bar"><span class="sign">Haris DevLab</span><button class="btn primary" id="btnSave" data-i18n="save"></button></div>
     </section>
   </aside>
 </div>

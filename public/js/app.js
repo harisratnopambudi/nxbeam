@@ -26,7 +26,7 @@ const icon = (el, id) => { const u = el.querySelector('use'); if (u) u.setAttrib
 /* ------------------------------------------------------------ state */
 const S = {
   ws: null, myId: null, state: null, clients: [], stats: null, history: [],
-  serverOffset: 0, page: 'stage', mediaKind: 'clips', config: null,
+  serverOffset: 0, page: 'stage', latHistory: [], mediaKind: 'clips', config: null,
   controlling: false, firstFrame: false, touchShown: store.get('touch', null),
 };
 
@@ -123,6 +123,7 @@ function onJson(m) {
     case 'stats':
       S.stats = m.stats;
       if (m.stats.last) { S.history.push(m.stats.last); if (S.history.length > 180) S.history.shift(); }
+      S.latHistory.push((S.local && S.local.lat) || 0); if (S.latHistory.length > 180) S.latHistory.shift();
       renderSignal(); renderStatsPage();
       {
         const dg = diagnose();
@@ -214,48 +215,24 @@ function renderSignal() {
   const st = S.state;
   if (!st) return;
   const c = st.conn;
-  $('#sigState').textContent = connLabel(c);
-  $('#sigPeer').textContent = c.state === 'connected' ? (c.kind === 'usb' ? 'USB' : c.peer || '') : (c.error || '');
-  $('#sigRes').textContent = st.video ? `${st.video.width}×${st.video.height}` : '-';
+  const on = c.state === 'connected';
+  $('#sigState').textContent = on ? t(c.kind === 'usb' ? 'connectedUsb' : 'connectedNet') : connLabel(c);
+  $('#sigPeer').textContent = on ? (c.kind === 'usb' ? 'USB' : c.peer || '') : (c.error || '');
   $('#sigFps').textContent = S.stats ? S.stats.fps : 0;
-  $('#sigKbps').textContent = S.stats ? S.stats.kbps.toLocaleString() : 0;
-  $('#sigViewers').textContent = S.clients.filter((x) => x.role === 'viewer').length || 1;
-  const dot = $('#connDot');
-  dot.className = 'dot ' + (c.state === 'connected' ? 'ok' : c.state === 'hub-offline' ? '' : 'busy');
-  icon($('#connIcon').parentElement, c.kind === 'usb' ? 'i-usb' : 'i-wifi');
-  $('#railConn').title = connLabel(c);
+  $('#sigFpsWrap').hidden = !on;
+  const lat = S.local && S.local.lat;
+  $('#sigLat').textContent = lat || '-';
+  $('#sigLatWrap').hidden = !on || !lat;
+  const viewers = S.clients.filter((x) => x.role === 'viewer').length || 1;
+  $('#sigViewers').textContent = viewers;
+  $('#sigViewersWrap').hidden = viewers < 2;
+  $('#sigViewersWrap').title = `${t('viewers')}: ${viewers}`;
+  $('#connDot').className = 'dot ' + (on ? 'ok' : c.state === 'hub-offline' ? 'bad' : 'busy');
+  const live = !!(st.restreams && st.restreams.length);
   $('#recBadge').hidden = !st.recording;
-  $('#liveBadge').hidden = !(st.restreams && st.restreams.length);
-  drawBars();
+  $('#liveBadge').hidden = !live;
+  $('#recPill').hidden = !st.recording && !live;
 }
-
-/* the signal strip: one bar per second of video bitrate, newest at the right */
-function drawBars() {
-  const cv = $('#sigBars');
-  if (!cv.offsetWidth) return;
-  const dpr = window.devicePixelRatio || 1;
-  const w = cv.offsetWidth * dpr, h = cv.offsetHeight * dpr;
-  if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
-  const g = cv.getContext('2d');
-  g.clearRect(0, 0, w, h);
-  const bw = 4 * dpr, gap = 2 * dpr;
-  const n = Math.floor(w / (bw + gap));
-  const data = S.history.slice(-n);
-  const max = Math.max(4000, ...data.map((d) => d.kbps));
-  const live = S.state && S.state.conn.state === 'connected';
-  data.forEach((d, i) => {
-    const x = w - (data.length - i) * (bw + gap);
-    const bh = Math.max(2 * dpr, (d.kbps / max) * h);
-    const fresh = i >= data.length - 1;
-    g.fillStyle = !live ? '#2d3948' : d.fps === 0 ? '#3a4656' : fresh ? '#f2b84b' : 'rgba(242,184,75,0.55)';
-    g.fillRect(x, h - bh, bw, bh);
-  });
-  if (data.length < n) {
-    g.fillStyle = '#2d3948';
-    for (let i = 0; i < n - data.length; i++) g.fillRect(i * (bw + gap), h - 2 * dpr, bw, 2 * dpr);
-  }
-}
-window.addEventListener('resize', drawBars);
 
 function renderMode() {
   const st = S.state;
@@ -266,8 +243,8 @@ function renderMode() {
     if (b.getAttribute('role') === 'radio') b.setAttribute('aria-checked', String(b.dataset.mode === mode));
   });
   const kind = st.conn.state === 'connected' ? st.conn.kind : mode === 'usb' ? 'usb' : 'network';
-  icon($('#connBtn'), kind === 'usb' ? 'i-usb' : 'i-wifi');
   $('#usbDiag').hidden = mode === 'network' || st.conn.state === 'connected';
+  void kind;
 }
 
 async function setMode(mode) {
@@ -323,13 +300,17 @@ function renderStage() {
   const connected = st && st.conn.state === 'connected';
   const showPicture = connected && S.firstFrame;
   screen.classList.toggle('blank', !showPicture);
+  document.body.classList.toggle('has-picture', !!showPicture);
   ph.hidden = showPicture;
+  if (!showPicture) renderChecks(st);
   if (!showPicture) {
     if (connected) {
       $('#phTitle').textContent = st.consoleStatus ? st.consoleStatus.head : t('connected');
       $('#phText').textContent = st.consoleStatus ? st.consoleStatus.detail : t('waitingPicture');
       $('#ipForm').hidden = true;
+      $('#connWays').hidden = true;
     } else {
+      $('#connWays').hidden = false;
       const usbMode = st && st.mode === 'usb';
       const usbMsg = { absent: 'usbAbsent', driver: 'usbDriver', permission: 'usbPermission', busy: 'usbBusy', nolib: 'usbNolib', error: 'usbError' };
       const err = (st && st.conn.error) || '';
@@ -353,6 +334,44 @@ function renderStage() {
   $('#soundHint').hidden = !(showPicture && st.audio && !audio.enabled && !store.get('muted', false));
 }
 
+/* the connect screen: what NXBeam is checking right now, one line per way in */
+function renderChecks(st) {
+  const ul = $('#connChecks');
+  ul.innerHTML = '';
+  const dot = $('#phDot'), status = $('#phStatus');
+  if (!st || st.conn.state === 'hub-offline') { dot.className = 'dot bad'; status.textContent = t('hubOffline'); return; }
+  const c = st.conn, mode = st.mode || 'auto';
+  const on = c.state === 'connected';
+  dot.className = 'dot ' + (on ? 'ok' : 'busy');
+  status.textContent = on ? t(c.kind === 'usb' ? 'connectedUsb' : 'connectedNet') : t('noSignal');
+  const row = (cls, ic, label, note) => {
+    const li = document.createElement('li');
+    li.className = cls;
+    li.innerHTML = `<svg aria-hidden="true"><use href="#${ic}"/></svg><span></span><small></small>`;
+    li.children[1].textContent = label;
+    li.children[2].textContent = note || '';
+    ul.append(li);
+  };
+  // USB
+  if (mode === 'network') row('off', 'i-minus', t('chkUsb'), t('stOff'));
+  else if (on && c.kind === 'usb') row('ok', 'i-check', t('chkUsb'), t('stWaiting'));
+  else {
+    const p = st.usbProblem;
+    const bad = { driver: 'stDriver', permission: 'stPerm', busy: 'stBusy', nolib: 'stNolib', error: 'stErr' }[p];
+    if (bad) row('bad', 'i-alert', t('chkUsb'), t(bad));
+    else row('wait', 'i-ring', t('chkUsb'), t('stNotSeen'));
+  }
+  // network
+  const err = c.error || '';
+  const ip = (/^([\d.]+):/.exec(err) || [])[1] || (c.kind === 'network' && c.peer) || '';
+  const netLabel = ip ? t('chkNetAt', ip) : t('chkNet');
+  if (mode === 'usb') row('off', 'i-minus', t('chkNet'), t('stOff'));
+  else if (on && c.kind === 'network') row('ok', 'i-check', netLabel, t('stWaiting'));
+  else if (/ECONNREFUSED/.test(err)) row('bad', 'i-alert', netLabel, t('stRefused'));
+  else if (/ETIMEDOUT|EHOSTUNREACH|ENETUNREACH|timeout/.test(err)) row('bad', 'i-alert', netLabel, t('stTimeout'));
+  else row('wait', 'i-ring', netLabel, t(c.state === 'connecting' ? 'stConnecting' : 'stScanning'));
+}
+
 function renderDeck() {
   const st = S.state;
   if (!st) return;
@@ -360,6 +379,7 @@ function renderDeck() {
   const snd = $('#btnSound');
   icon(snd, audio.enabled ? 'i-vol' : 'i-mute');
   snd.querySelector('span').textContent = audio.enabled ? t('soundOn') : t('soundOff');
+  snd.title = snd.querySelector('span').textContent;
   $('#btnShot').disabled = !S.firstFrame;
   $('#btnClip').disabled = !connected || !st.replaySeconds;
   $('#clipLen').textContent = st.replaySeconds ? `${st.replaySeconds}s` : '';
@@ -375,6 +395,8 @@ function renderDeck() {
   const ctl = $('#btnControl');
   ctl.classList.toggle('on', S.controlling);
   ctl.querySelector('span').textContent = S.controlling ? t('releaseControl') : t('control');
+  ctl.title = ctl.querySelector('span').textContent;
+  document.body.classList.toggle('touch', !$('#touchpad').hidden);
   ctl.disabled = !connected && !S.controlling;
   $('#btnTouch').hidden = !S.controlling;
   $('#btnTouch').classList.toggle('on', !$('#touchpad').hidden);
@@ -485,12 +507,21 @@ document.addEventListener('fullscreenchange', () => {
   if (!document.fullscreenElement) { document.body.classList.remove('fs'); if (S.playing) { S.playing = false; $('#playHud').hidden = true; renderDeck(); } }
   player.remeasure();
 });
+/* the floating controls fade out while the picture plays and nobody touches the mouse */
 let idleTimer;
-document.addEventListener('pointermove', () => {
+function wake() {
   document.body.classList.remove('idle');
   clearTimeout(idleTimer);
-  idleTimer = setTimeout(() => { if (document.body.classList.contains('fs')) document.body.classList.add('idle'); }, 2500);
-});
+  idleTimer = setTimeout(() => {
+    const b = document.body;
+    const busy = !b.classList.contains('has-picture') || (S.page !== 'stage' && !b.classList.contains('fs'))
+      || !$('#connMenu').hidden || !$('#liveMenu').hidden || $('#deck').matches(':hover') || $('#signal').matches(':hover');
+    if (busy) wake(); else b.classList.add('idle');
+  }, b0());
+}
+const b0 = () => (document.body.classList.contains('fs') ? 2500 : 3500);
+['pointermove', 'pointerdown', 'keydown'].forEach((ev) => document.addEventListener(ev, (e) => { if (ev === 'keydown' && S.controlling) return; wake(); }));
+wake();
 
 /* ------------------------------------------------------------ play mode */
 /* one click to play: sound on, controller taken, fullscreen, only the picture and a small fps counter */
@@ -563,21 +594,24 @@ $('#ipForm').onsubmit = async (e) => {
 /* ------------------------------------------------------------ panel / pages */
 function openPage(page) {
   S.page = page;
-  $$('.rail-btn').forEach((b) => b.classList.toggle('active', b.dataset.page === page));
+  $$('.nav-btn').forEach((b) => b.classList.toggle('active', b.dataset.page === page));
   const panel = $('#panel');
-  if (page === 'stage') { panel.hidden = true; return; }
+  if (page === 'stage') { panel.hidden = true; setTimeout(() => player.remeasure(), 50); return; }
   panel.hidden = false;
+  panel.className = 'panel' + (page === 'stats' ? ' sheet' : '');
   $('#panelTitle').textContent = t(page);
+  $('#panelSub').textContent = '';
+  setTimeout(() => player.remeasure(), 50);
   $$('.page').forEach((p) => { p.hidden = p.dataset.page !== page; });
   if (page === 'library') loadMedia();
   if (page === 'settings') loadSettings();
   if (page === 'stats') renderStatsPage();
 }
-$$('.rail-btn').forEach((b) => { b.onclick = () => openPage(S.page === b.dataset.page && b.dataset.page !== 'stage' ? 'stage' : b.dataset.page); });
+$$('.nav-btn').forEach((b) => { b.onclick = () => openPage(S.page === b.dataset.page && b.dataset.page !== 'stage' ? 'stage' : b.dataset.page); });
 $('#panelClose').onclick = () => openPage('stage');
 
 /* library */
-$$('.tab').forEach((tb) => { tb.onclick = () => { S.mediaKind = tb.dataset.kind; $$('.tab').forEach((x) => x.classList.toggle('active', x === tb)); loadMedia(); }; });
+$$('.tab').forEach((tb) => { tb.onclick = () => { S.mediaKind = tb.dataset.kind; $$('.tab').forEach((x) => x.classList.toggle('on', x === tb)); loadMedia(); }; });
 async function loadMedia() {
   const grid = $('#mediaGrid');
   let list;
@@ -638,13 +672,30 @@ function renderStatsPage() {
     [t('replayBuffer'), `${s.replaySeconds || 0} / ${st.replaySeconds} s`],
   ];
   const dg = diagnose();
-  $('#diag').hidden = !dg;
-  if (dg) { $('#diag').className = `diag ${dg.cls === 'ok' ? '' : dg.cls}`; $('#diagTitle').textContent = dg.title; $('#diagText').textContent = dg.text; }
+  $('#diag').hidden = !dg || dg.cls === 'ok';
+  if (dg) { $('#diag').className = `diag ${dg.cls}`; $('#diagTitle').textContent = dg.title; $('#diagText').textContent = dg.text; }
+  const on = st.conn.state === 'connected' && S.firstFrame;
+  $('#panel').className = `panel sheet st-${!on ? 'idle' : dg ? dg.cls : 'ok'}`;
+  $('#panelTitle').textContent = !on ? (st.conn.state === 'connected' ? t('statsWaiting') : connLabel(st.conn)) : dg && dg.cls !== 'ok' ? dg.title : t('statsSteady');
+  $('#panelSub').textContent = on ? [st.conn.kind === 'usb' ? 'USB' : `Wi-Fi ${st.conn.peer || ''}`.trim(), st.video ? `${st.video.width} \u00d7 ${st.video.height}` : '', l.hw === 'gpu' ? t('hwDecoder') : l.hw ? t('swDecoder') : ''].filter(Boolean).join(', ') : '';
+  $('#tileFps').textContent = on ? String(l.fps || s.fps || 0) : '0';
+  $('#tileLat').textContent = on && l.lat ? String(l.lat) : '-';
+  $('#tileMbps').textContent = ((s.kbps || 0) / 1000).toFixed(1);
+  const facts = [
+    [t('dropped'), String((l.dropped || 0) + (l.skipped || 0))],
+    [t('viewers'), String(S.clients.filter((x) => x.role === 'viewer').length || 1)],
+    [t('audio'), st.audio ? `${(st.audio.rate / 1000).toFixed(st.audio.rate % 1000 ? 1 : 0)} kHz, ${st.audio.channels} ch` : '-'],
+    [t('frameGenRow'), !adj.framegen ? t('off') : l.fgAvail === false ? t('frameGenNoGpu') : l.fg ? t('frameGenOn', l.fps || 0, (l.fps || 0) + (l.gen || 0)) : t('frameGenIdle')],
+  ];
+  const fk = $('#statsFacts');
+  fk.innerHTML = '';
+  for (const [k, v] of facts) { const dt = document.createElement('dt'); dt.textContent = k; const dd = document.createElement('dd'); dd.textContent = v; fk.append(dt, dd); }
   const kv = $('#statsKv');
   kv.innerHTML = '';
   for (const [k, v] of rows) { const dt = document.createElement('dt'); dt.textContent = k; const dd = document.createElement('dd'); dd.textContent = v; kv.append(dt, dd); }
   graph($('#graphFps'), S.history.map((h) => h.fps), 70);
-  graph($('#graphKbps'), S.history.map((h) => h.kbps), null);
+  graph($('#graphLat'), S.latHistory, null, 40);
+  graph($('#graphKbps'), S.history.map((h) => h.kbps), null, 1000);
   const ul = $('#viewerList');
   ul.innerHTML = '';
   for (const c of S.clients) {
@@ -678,24 +729,22 @@ function diagnose() {
   return { cls: 'ok', title: t('dgOk'), text: t('dgOkText', fps), fps, res };
 }
 
-function graph(cv, values, fixedMax) {
+function graph(cv, values, fixedMax, floor = 1000) {
   const dpr = window.devicePixelRatio || 1;
   const w = cv.offsetWidth * dpr, h = cv.offsetHeight * dpr;
   if (!w) return;
   if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
   const g = cv.getContext('2d');
   g.clearRect(0, 0, w, h);
-  const max = fixedMax || Math.max(1000, ...values) * 1.15;
-  g.strokeStyle = '#2d3948'; g.lineWidth = 1;
-  for (let i = 1; i < 4; i++) { const y = (h / 4) * i; g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); }
+  const max = fixedMax || Math.max(floor, ...values) * 1.15;
+  g.strokeStyle = '#2A2E33'; g.lineWidth = 1;
+  for (let i = 1; i < 4; i++) { const y = Math.round((h / 4) * i) + 0.5; g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); }
   if (values.length < 2) return;
   const step = w / 179;
   const x0 = w - (values.length - 1) * step;
   g.beginPath();
   values.forEach((v, i) => { const x = x0 + i * step, y = h - (v / max) * (h - 6) - 3; i ? g.lineTo(x, y) : g.moveTo(x, y); });
-  g.strokeStyle = '#f2b84b'; g.lineWidth = 2 * dpr; g.stroke();
-  g.fillStyle = '#8f9cae'; g.font = `${11 * dpr}px Bahnschrift, sans-serif`;
-  g.fillText(String(Math.round(max)), 6 * dpr, 13 * dpr);
+  g.strokeStyle = '#F2B84B'; g.lineWidth = 1.6 * dpr; g.lineJoin = 'round'; g.stroke();
 }
 
 /* settings */
@@ -703,6 +752,7 @@ async function loadSettings() {
   const cfg = await api('/api/config');
   S.config = cfg;
   $('#setMode').value = cfg.connection.mode;
+  syncSeg();
   $('#setHost').value = cfg.connection.host || '';
   $('#setScan').checked = cfg.connection.scan !== false;
   $('#setReplay').value = cfg.replaySeconds;
@@ -716,11 +766,12 @@ async function loadSettings() {
   $('#setPin').value = '';
   $('#setPin').placeholder = cfg.pinSet ? '••••' : '';
   $('#setName').value = deviceName();
-  $('#setLang').value = getLang();
+  syncSeg();
   $('#ffmpegNote').hidden = !!(S.state && S.state.ffmpeg);
   renderTargets(cfg.restreamTargets);
   $('#adjBright').value = adj.bright; $('#adjContrast').value = adj.contrast; $('#adjSat').value = adj.sat;
   $('#adjSharp').value = adj.sharp; $('#adjAudio').value = adj.audioMs; $('#adjAudioOut').textContent = `${adj.audioMs} ms`;
+  showAdj();
   const base = `${location.protocol}//${location.host}`;
   $('#ovlVideo').textContent = `${base}/overlay`;
   $('#keyTable').innerHTML = KEY_HELP.map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join('');
@@ -776,11 +827,26 @@ $('#btnSave').onclick = async () => {
 $('#btnReconnect').onclick = async () => {
   await api('/api/connect', $('#setMode').value === 'usb' ? {} : { host: $('#setHost').value.trim() });
 };
-$('#setLang').onchange = (e) => { setLang(e.target.value); openPage(S.page); renderAll(); };
+/* segmented controls: language applies right away, the connection mode on Save */
+function syncSeg() {
+  $$('#langSwitch [data-lang]').forEach((b) => { const on = b.dataset.lang === getLang(); b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); });
+  $$('#setModeSeg [data-setmode]').forEach((b) => { const on = b.dataset.setmode === $('#setMode').value; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); });
+}
+$$('#langSwitch [data-lang]').forEach((b) => { b.onclick = () => { setLang(b.dataset.lang); syncSeg(); loadSettings(); openPage(S.page); renderAll(); renderUpdate(S.update); }; });
+$$('#setModeSeg [data-setmode]').forEach((b) => { b.onclick = () => { $('#setMode').value = b.dataset.setmode; syncSeg(); }; });
+const pct = (v) => `${Math.round(v * 100)}%`;
+const signed = (v) => (v > 0 ? '+' : '') + Math.round(v * 100);
+function showAdj() {
+  $('#outSharp').textContent = pct(adj.sharp);
+  $('#outBright').textContent = signed(adj.bright);
+  $('#outContrast').textContent = pct(adj.contrast);
+  $('#outSat').textContent = pct(adj.sat);
+}
 
 const onAdj = () => {
   adj = { bright: +$('#adjBright').value, contrast: +$('#adjContrast').value, sat: +$('#adjSat').value, sharp: +$('#adjSharp').value, audioMs: +$('#adjAudio').value, smooth: $('#setSmooth').value, light: $('#setLight').checked, fpsCap: $('#setFpsCap').value, framegen: $('#setFrameGen').checked };
   $('#adjAudioOut').textContent = `${adj.audioMs} ms`;
+  showAdj();
   player.setAdjust(adj); player.setMode(adj.smooth); audio.targetMs = adj.audioMs; store.set('adjust', adj);
 };
 ['#adjBright', '#adjContrast', '#adjSat', '#adjSharp', '#adjAudio', '#setSmooth', '#setFpsCap', '#setFrameGen'].forEach((s) => { $(s).oninput = onAdj; $(s).onchange = onAdj; });
