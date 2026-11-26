@@ -1,6 +1,8 @@
 /* NXBeam UI strings: English (default) and Indonesian */
 const DICT = {
   id: {
+    decodeFailTitle: 'Video sampai, tapi PC ini gagal menampilkannya',
+    decodeFailText: 'Dekoder H.264 di PC ini menolak videonya. Perbarui driver kartu grafis dan Microsoft Edge WebView2. Di Windows edisi N, pasang Media Feature Pack dari Settings > Apps > Optional features. Remote desktop juga bisa memicu ini. Sambil menunggu, buka NXBeam di Chrome atau Edge lewat alamat http://localhost:8198.',
     noSignal: 'Belum ada sinyal', wayTitle: 'Sambung lewat', wayUsb: 'Lewat USB',
     wayUsbText: 'Di overlay NXBeam pada Switch, pilih mode USB, lalu colok kabel data ke PC ini.',
     usbCheckLink: 'Kabel sudah dicolok tapi tidak terbaca?', controls: 'Kontrol', volume: 'Volume', recording: 'Merekam',
@@ -102,6 +104,8 @@ const DICT = {
     errTimeout: 'Switch hanya melayani satu penonton: kalau NXBeam di HP atau PC lain sedang tersambung, tutup dulu. Selain itu, pastikan Switch tidak dalam mode tidur dan IP-nya benar (lihat overlay NXBeam). Beda frekuensi 2,4/5 GHz tidak masalah selama satu router.',
   },
   en: {
+    decodeFailTitle: 'Video arrives, but this PC cannot show it',
+    decodeFailText: "This PC's H.264 decoder rejects the video. Update the graphics driver and Microsoft Edge WebView2. On Windows N editions, install the Media Feature Pack from Settings > Apps > Optional features. Remote desktop can cause this too. In the meantime, open NXBeam in Chrome or Edge at http://localhost:8198.",
     noSignal: 'No signal yet', wayTitle: 'Connect over', wayUsb: 'Over USB',
     wayUsbText: 'In the NXBeam overlay on the Switch, choose USB mode, then plug a data cable into this PC.',
     usbCheckLink: 'Cable plugged in but not found?', controls: 'Controls', volume: 'Volume', recording: 'Recording',

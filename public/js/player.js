@@ -196,7 +196,7 @@ export class VideoPlayer {
     this.mode = 'balanced';
     this.dirty = false;
     this.adjust = { bright: 0, contrast: 1, sat: 1, sharp: 0.35, framegen: false };
-    this.stat = { decoded: 0, shown: 0, dropped: 0, skipped: 0, lat: 0, w: 0, h: 0, depth: 0, target: 0, jitter: 0, fps: 0, late: 0, hw: '', light: false, fpsIn: 0, cap: 0, capped: 0, gen: 0, fg: false };
+    this.stat = { decoded: 0, shown: 0, dropped: 0, skipped: 0, lat: 0, w: 0, h: 0, fails: 0, err: '', depth: 0, target: 0, jitter: 0, fps: 0, late: 0, hw: '', light: false, fpsIn: 0, cap: 0, capped: 0, gen: 0, fg: false };
     this.capMode = 'auto';
     this.cap = 0;
     this._skipMark = 0;
@@ -442,6 +442,9 @@ export class VideoPlayer {
       if (key && this.decoder && this.decoder.state === 'unconfigured') this.pendingKey = { u8: u8.slice(), w: width, h: height };
       return;
     }
+    // configured a while ago, fed, and still not one picture: this decoder will not work here
+    if (!this.fedAt) this.fedAt = now;
+    else if (!this.outCount && now - this.fedAt > 2500) { this._fail(new Error('the decoder gives no picture')); return; }
     if (this.decoder.decodeQueueSize > 60) {
       // the device really cannot keep up: skip to the next keyframe
       this.stat.dropped++;
@@ -501,7 +504,8 @@ export class VideoPlayer {
     const decoder = this.decoder;
     // 1080p60 in software can eat a whole CPU core: ask for the GPU's decoder when the browser has one
     const pick = async () => {
-      for (const hw of ['prefer-hardware', 'no-preference']) {
+      // after the GPU decoder failed here, stay on the software one for this session
+      for (const hw of this.forceSoft ? ['prefer-software', 'no-preference'] : ['prefer-hardware', 'no-preference']) {
         try { const r = await VideoDecoder.isConfigSupported({ ...base, hardwareAcceleration: hw }); if (r.supported) return hw; } catch { /* next */ }
       }
       return 'no-preference';
@@ -510,6 +514,8 @@ export class VideoPlayer {
     pick().then((hw) => {
       if (this.decoder !== decoder || decoder.state === 'closed') return;
       this.stat.hw = hw === 'prefer-hardware' ? 'gpu' : 'auto';
+      this.hwUsed = hw;
+      this.fedAt = 0; this.outCount = 0;
       try { decoder.configure({ ...base, hardwareAcceleration: hw }); } catch (e) { this._fail(e); return; }
       if (this.pendingKey) { const k = this.pendingKey; this.pendingKey = null; this.waitKey = false; this.push(k.u8, true, k.w, k.h); }
     });
@@ -517,6 +523,12 @@ export class VideoPlayer {
 
   _fail(e) {
     console.warn('decoder:', e);
+    this.stat.fails++;
+    this.stat.err = String((e && e.message) || e).slice(0, 160);
+    // some GPU decoders (drivers, remote desktop, older iGPUs) accept H.264 and then fail or
+    // never give a picture: fall back to the software decoder
+    if (this.hwUsed !== 'prefer-software') this.forceSoft = true;
+    this.fedAt = 0;
     this.codec = null;
     this.waitKey = true;
     this.onNeedKey();
@@ -526,6 +538,7 @@ export class VideoPlayer {
     const t0 = this.recvTimes.get(f.timestamp);
     if (t0 !== undefined) { this.stat.lat = Math.round(performance.now() - t0); this.recvTimes.delete(f.timestamp); }
     this.stat.decoded++;
+    this.outCount = (this.outCount || 0) + 1;
     this.queue.push(f);
     // a hardware decoder has few buffers: never hold many
     while (this.queue.length > 8) { this.queue.shift().close(); this.stat.skipped++; }

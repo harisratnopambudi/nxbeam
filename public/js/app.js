@@ -143,7 +143,12 @@ function onJson(m) {
 const player = new StreamView($('#video'), {
   onJson,
   onAudio: (u8, rate, ch) => audio.push(u8, rate, ch),
-  onStats: (s) => { S.local = s; renderStatsPage(); },
+  onStats: (s) => {
+    const was = S.local && S.local.fails;
+    S.local = s;
+    renderStatsPage();
+    if (!S.firstFrame && s.fails !== was) renderStage();
+  },
   onFirstFrame: () => {
     S.firstFrame = true; renderStage(); renderDeck();
     clearTimeout(S.audioCheck);
@@ -305,8 +310,10 @@ function renderStage() {
   if (!showPicture) renderChecks(st);
   if (!showPicture) {
     if (connected) {
-      $('#phTitle').textContent = st.consoleStatus ? st.consoleStatus.head : t('connected');
-      $('#phText').textContent = st.consoleStatus ? st.consoleStatus.detail : t('waitingPicture');
+      // video reaches NXBeam but this browser cannot turn it into a picture
+      const decodeBad = S.local && S.local.fails >= 3 && S.stats && S.stats.fps > 0;
+      $('#phTitle').textContent = decodeBad ? t('decodeFailTitle') : st.consoleStatus ? st.consoleStatus.head : t('connected');
+      $('#phText').textContent = decodeBad ? t('decodeFailText') : st.consoleStatus ? st.consoleStatus.detail : t('waitingPicture');
       $('#ipForm').hidden = true;
       $('#connWays').hidden = true;
     } else {
