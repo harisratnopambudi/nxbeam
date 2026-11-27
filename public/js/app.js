@@ -177,6 +177,8 @@ audio.init().then(() => {
 }).catch(() => {});
 const input = new InputManager((state, index = 0) => send(index ? { type: 'pad', state, index } : { type: 'pad', state }));
 input.bindTouch($('#touchpad'));
+input.keysOwn = store.get('keysOwn', false);
+$('#setKeysOwn').onchange = (e) => { input.keysOwn = e.target.checked; store.set('keysOwn', input.keysOwn); };
 
 /* ------------------------------------------------------------ connection */
 function send(m) { player.send(m); }
@@ -490,7 +492,7 @@ $('#btnControl').onclick = () => {
   send({ type: 'takeControl' });
   setControlling(true);
   toast(S.state.takesInput ? t('controlOn') : t('consoleNoInput'), S.state.takesInput ? 'ok' : 'info', 6000);
-  if (S.state.takesInput && !S.state.multiPad && input.padCount() > 1) toast(t('onePlayerOnly'), 'info', 9000);
+  if (S.state.takesInput && !S.state.multiPad && input.padCount() + (input.keysOwn && input.padCount() ? 1 : 0) > 1) toast(t('onePlayerOnly'), 'info', 9000);
   if (document.activeElement) document.activeElement.blur();
 };
 $('#btnTouch').onclick = () => {
@@ -785,6 +787,7 @@ async function loadSettings() {
   showAdj();
   const base = `${location.protocol}//${location.host}`;
   $('#ovlVideo').textContent = `${base}/overlay`;
+  $('#setKeysOwn').checked = input.keysOwn;
   $('#keyTable').innerHTML = KEY_HELP.map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join('');
 }
 

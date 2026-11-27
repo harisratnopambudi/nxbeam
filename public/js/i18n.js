@@ -1,6 +1,8 @@
 /* NXBeam UI strings: English (default) and Indonesian */
 const DICT = {
   id: {
+    keysOwnOpt: 'Keyboard jadi pemain sendiri',
+    keysOwnNote: 'Saat joystick tersambung, keyboard menjadi pemain berikutnya (misalnya joystick player 1, keyboard player 2). Butuh paket Switch NXBeam yang mendukung banyak pemain.',
     playersOn: (n) => `${n} joystick bermain: player 1 sampai ${n}`,
     onePlayerOnly: 'Sysmodule di Switch ini baru menerima 1 joystick. Perbarui paket Switch NXBeam supaya joystick kedua jadi player 2.',
     decodeFailTitle: 'Video sampai, tapi PC ini gagal menampilkannya',
@@ -106,6 +108,8 @@ const DICT = {
     errTimeout: 'Switch hanya melayani satu penonton: kalau NXBeam di HP atau PC lain sedang tersambung, tutup dulu. Selain itu, pastikan Switch tidak dalam mode tidur dan IP-nya benar (lihat overlay NXBeam). Beda frekuensi 2,4/5 GHz tidak masalah selama satu router.',
   },
   en: {
+    keysOwnOpt: 'Keyboard is a player of its own',
+    keysOwnNote: 'With a gamepad connected, the keyboard becomes the next player (for example gamepad player 1, keyboard player 2). Needs an NXBeam Switch pack that takes several players.',
     playersOn: (n) => `${n} controllers playing: players 1 to ${n}`,
     onePlayerOnly: 'The sysmodule on this Switch takes one controller only. Update the NXBeam Switch pack so the second controller becomes player 2.',
     decodeFailTitle: 'Video arrives, but this PC cannot show it',

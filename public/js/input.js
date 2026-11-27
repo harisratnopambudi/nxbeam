@@ -39,6 +39,7 @@ export class InputManager {
     this.last = [];
     this.lastSent = [];
     this.multi = false;   // the console takes players 2-4 too: each extra gamepad is one of them
+    this.keysOwn = false; // the keyboard is a player of its own (after the gamepads), not part of player 1
     this.padName = '';
     this.keyTarget = null;
     window.addEventListener('keydown', (e) => this._key(e, true));
@@ -85,19 +86,32 @@ export class InputManager {
     });
   }
 
-  read() {
-    let buttons = 0, lx = 0, ly = 0, rx = 0, ry = 0;
-    const p = this._firstPad();
-    if (p) ({ buttons, lx, ly, rx, ry } = InputManager.padState(p));
+  /* the keyboard as a player of its own: with a gamepad there and a console that takes several */
+  _keysApart() { return this.keysOwn && this.multi && !!this._firstPad(); }
+
+  _keyState() {
+    const s = { buttons: 0, lx: 0, ly: 0, rx: 0, ry: 0 };
+    this._addKeys(s);
+    return { buttons: s.buttons >>> 0, lx: Math.round(s.lx), ly: Math.round(s.ly), rx: Math.round(s.rx), ry: Math.round(s.ry) };
+  }
+
+  _addKeys(st) {
     let kl = [0, 0], kr = [0, 0];
     for (const k of this.keys) {
-      if (k in KEY_MAP) buttons |= 1 << KEY_MAP[k];
+      if (k in KEY_MAP) st.buttons |= 1 << KEY_MAP[k];
       const s = KEY_STICK[k];
       if (s) { const t = s[0] === 'l' ? kl : kr; t[0] += s[1]; t[1] += s[2]; }
     }
     const norm = (v) => { const m = Math.hypot(v[0], v[1]); return m ? [v[0] / m * 32767, v[1] / m * 32767] : [0, 0]; };
-    if (kl[0] || kl[1]) [lx, ly] = norm(kl);
-    if (kr[0] || kr[1]) [rx, ry] = norm(kr);
+    if (kl[0] || kl[1]) [st.lx, st.ly] = norm(kl);
+    if (kr[0] || kr[1]) [st.rx, st.ry] = norm(kr);
+  }
+
+  read() {
+    let buttons = 0, lx = 0, ly = 0, rx = 0, ry = 0;
+    const p = this._firstPad();
+    if (p) ({ buttons, lx, ly, rx, ry } = InputManager.padState(p));
+    if (!this._keysApart()) { const st = { buttons, lx, ly, rx, ry }; this._addKeys(st); ({ buttons, lx, ly, rx, ry } = st); }
     buttons |= this.touch.buttons;
     if (this.touch.lx || this.touch.ly) { lx = this.touch.lx; ly = this.touch.ly; }
     if (this.touch.rx || this.touch.ry) { rx = this.touch.rx; ry = this.touch.ry; }
@@ -108,6 +122,7 @@ export class InputManager {
     requestAnimationFrame(this._tick);
     if (!this.active) return;
     const all = [this.read(), ...(this.multi ? this.readExtra() : [])];
+    if (this._keysApart() && all.length < 4) all.push(this._keyState());
     const now = performance.now();
     all.forEach((s, i) => {
       const sig = `${s.buttons},${s.lx},${s.ly},${s.rx},${s.ry}`;
