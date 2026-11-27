@@ -314,7 +314,8 @@ function createServer(hub, config, saveConfig) {
         case 'takeControl': hub.takeControl(client); break;
         case 'releaseControl': hub.releaseControl(client); break;
         case 'pad':
-          if (m.state && typeof m.state === 'object') hub.pad(client, m.state);
+          if (m.state && typeof m.state === 'object') hub.pad(client, m.state, m.index | 0);
+          else if (m.state === null && (m.index | 0) > 0) hub.pad(client, null, m.index | 0);
           break;
         default: break;
       }

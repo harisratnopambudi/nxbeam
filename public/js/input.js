@@ -36,8 +36,9 @@ export class InputManager {
     this.active = false;
     this.keys = new Set();
     this.touch = { buttons: 0, lx: 0, ly: 0, rx: 0, ry: 0 };
-    this.last = '';
-    this.lastSent = 0;
+    this.last = [];
+    this.lastSent = [];
+    this.multi = false;   // the console takes players 2-4 too: each extra gamepad is one of them
     this.padName = '';
     this.keyTarget = null;
     window.addEventListener('keydown', (e) => this._key(e, true));
@@ -49,7 +50,7 @@ export class InputManager {
     requestAnimationFrame(this._tick);
   }
 
-  setActive(on) { this.active = on; this.keys.clear(); this.last = ''; }
+  setActive(on) { this.active = on; this.keys.clear(); this.last = []; this.lastSent = []; }
 
   _key(e, down) {
     if (!this.active) return;
@@ -60,20 +61,34 @@ export class InputManager {
     if (down) this.keys.add(e.code); else this.keys.delete(e.code);
   }
 
-  _firstPad() {
+  _pads() {
     const pads = navigator.getGamepads ? navigator.getGamepads() : [];
-    for (const p of pads) if (p && p.connected) return p;
-    return null;
+    return [...pads].filter((p) => p && p.connected);
+  }
+
+  _firstPad() { return this._pads()[0] || null; }
+
+  /* the gamepads plugged in now, player 1 first (as the browser numbers them) */
+  padCount() { return this._pads().length; }
+
+  static padState(p) {
+    let buttons = 0;
+    p.buttons.forEach((b, i) => { if ((b.pressed || b.value > 0.5) && PAD_MAP[i] !== undefined) buttons |= 1 << PAD_MAP[i]; });
+    return { buttons, lx: axis(p.axes[0] || 0), ly: -axis(p.axes[1] || 0), rx: axis(p.axes[2] || 0), ry: -axis(p.axes[3] || 0) };
+  }
+
+  /* players 2-4: the second, third and fourth gamepad */
+  readExtra() {
+    return this._pads().slice(1, 4).map((p) => {
+      const s = InputManager.padState(p);
+      return { buttons: s.buttons >>> 0, lx: s.lx, ly: s.ly, rx: s.rx, ry: s.ry };
+    });
   }
 
   read() {
     let buttons = 0, lx = 0, ly = 0, rx = 0, ry = 0;
     const p = this._firstPad();
-    if (p) {
-      p.buttons.forEach((b, i) => { if ((b.pressed || b.value > 0.5) && PAD_MAP[i] !== undefined) buttons |= 1 << PAD_MAP[i]; });
-      lx = axis(p.axes[0] || 0); ly = -axis(p.axes[1] || 0);
-      rx = axis(p.axes[2] || 0); ry = -axis(p.axes[3] || 0);
-    }
+    if (p) ({ buttons, lx, ly, rx, ry } = InputManager.padState(p));
     let kl = [0, 0], kr = [0, 0];
     for (const k of this.keys) {
       if (k in KEY_MAP) buttons |= 1 << KEY_MAP[k];
@@ -92,13 +107,19 @@ export class InputManager {
   _tick() {
     requestAnimationFrame(this._tick);
     if (!this.active) return;
-    const s = this.read();
-    const sig = `${s.buttons},${s.lx},${s.ly},${s.rx},${s.ry}`;
+    const all = [this.read(), ...(this.multi ? this.readExtra() : [])];
     const now = performance.now();
-    if (sig !== this.last || now - this.lastSent > 500) {
-      this.last = sig;
-      this.lastSent = now;
-      this.onState(s);
+    all.forEach((s, i) => {
+      const sig = `${s.buttons},${s.lx},${s.ly},${s.rx},${s.ry}`;
+      if (sig !== this.last[i] || now - (this.lastSent[i] || 0) > 500) {
+        this.last[i] = sig;
+        this.lastSent[i] = now;
+        this.onState(s, i);
+      }
+    });
+    // a gamepad unplugged: let go of that player on the console
+    for (let i = all.length; i < this.last.length; i++) {
+      if (this.last[i] !== undefined) { this.last[i] = undefined; this.onState(null, i); }
     }
   }
 

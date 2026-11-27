@@ -1,0 +1,322 @@
+diff --git a/tier4/applet-mitm/source/applet_mitm_main.cpp b/tier4/applet-mitm/source/applet_mitm_main.cpp
+index f6313a4..2b9723e 100644
+--- a/tier4/applet-mitm/source/applet_mitm_main.cpp
++++ b/tier4/applet-mitm/source/applet_mitm_main.cpp
+@@ -1152,7 +1152,7 @@ namespace ams {
+         /* M76: this line used to print jpg=off before jpg was parsed, and
+          * called every build a "read-only observer". The flag dump below is
+          * the record of what this boot armed. */
+-        mitm::applet::LogLine("applet-mitm v0.7.22: up (grc IPC interceptor %s), built against Atmosphere %d.%d.%d",
++        mitm::applet::LogLine("applet-mitm v0.7.22-nxbeam1: up (grc IPC interceptor %s), built against Atmosphere %d.%d.%d",
+                               mitm::applet::g_grc_armed ? "ARMED" : "off",
+                               ATMOSPHERE_RELEASE_VERSION_MAJOR, ATMOSPHERE_RELEASE_VERSION_MINOR, ATMOSPHERE_RELEASE_VERSION_MICRO);
+         {
+diff --git a/tier4/applet-mitm/source/applet_mitm_nv.cpp b/tier4/applet-mitm/source/applet_mitm_nv.cpp
+index ebee146..a05b461 100644
+--- a/tier4/applet-mitm/source/applet_mitm_nv.cpp
++++ b/tier4/applet-mitm/source/applet_mitm_nv.cpp
+@@ -3664,6 +3664,13 @@ namespace ams::mitm::applet {
+         void AutoSkipIfClosedAtOnce(const AttachRecord &a) {
+             const u64 ms = (armTicksToNs(armGetSystemTick()) - a.ns) / UINT64_C(1000000);
+             if (!a.candidate || ms * UINT64_C(1000000) > AutoSkipNs) { return; }
++            /* NXBeam: never put an app on the never-stream list by itself - emulators and
++             * ports may quit or crash at start; "Stream this app" in the overlay leaves one out */
++            if (a.candidate) {
++                LogLine("   live: %016llx closed %llu ms after the stream attached - left on the stream (NXBeam)",
++                        static_cast<unsigned long long>(a.tid), static_cast<unsigned long long>(ms));
++                return;
++            }
+             SetExcluded(a.tid, true);
+             LogLine("   live: %016llx closed itself %llu ms after the stream attached (anti-debug, as TiCo) - skipped from now on; \"Stream this app\" in the overlay brings it back",
+                     static_cast<unsigned long long>(a.tid), static_cast<unsigned long long>(ms));
+diff --git a/tier4/applet-mitm/source/applet_mitm_viewermsg.hpp b/tier4/applet-mitm/source/applet_mitm_viewermsg.hpp
+index 0ec500f..709136a 100644
+--- a/tier4/applet-mitm/source/applet_mitm_viewermsg.hpp
++++ b/tier4/applet-mitm/source/applet_mitm_viewermsg.hpp
+@@ -26,6 +26,10 @@ namespace sft::viewermsg {
+ 
+     constexpr uint32_t PadOn = 1;
+ 
++    /* NXBeam: which controller (player 1-4) in flags bits 8-9; 0 from a viewer that has only one */
++    constexpr uint32_t MaxPads = 4;
++    constexpr uint32_t PadIndex(uint32_t flags) { return (flags >> 8) & (MaxPads - 1); }
++
+     /* the buttons a viewer may press: A..Down (bits 0-15), HOME and Capture.
+      * The stick directions (bits 16-17, 20-27) come from the sticks. */
+     constexpr uint64_t PadButtons = 0xFFFFull | (1ull << 18) | (1ull << 19);
+diff --git a/tier4/applet-mitm/source/applet_mitm_vpad.cpp b/tier4/applet-mitm/source/applet_mitm_vpad.cpp
+index f52de12..c830c0d 100644
+--- a/tier4/applet-mitm/source/applet_mitm_vpad.cpp
++++ b/tier4/applet-mitm/source/applet_mitm_vpad.cpp
+@@ -2,6 +2,12 @@
+  * v0.7.20: the viewer's controller as a virtual Pro Controller - see
+  * applet_mitm_vpad.hpp.
+  *
++ * NXBeam: up to four of them (players 1-4). The pad's number travels in
++ * PadMsg.flags bits 8-9; a viewer that sends only flags = PadOn plays pad 0,
++ * as before. One work buffer serves every device (sys-con attaches several
++ * the same way); it is lent when the first pad comes and taken back when
++ * the last one goes.
++ *
+  * hid:dbg's HDLS calls (libnx hiddbg.c): a work buffer lent to hid as
+  * transfer memory (one page; static data can be lent, shared memory can't),
+  * then a device and its state. From 13.0.0 each client has a session of its
+@@ -23,79 +29,122 @@ namespace ams::mitm::applet {
+         constexpr u64 DetachNs  = UINT64_C(3000000000);   /* 3 s: the viewer is gone (it sends every 100 ms) */
+         constexpr u64 RetryNs   = UINT64_C(5000000000);   /* a failed attach: not again before 5 s */
+ 
++        struct Pad {
++            bool open;
++            HiddbgHdlsHandle handle;
++            HiddbgHdlsState state;
++            bool neutral;
++            u64 last_ns;
++            u64 retry_ns;
++            u32 msgs, sets;
++        };
++
+         constinit os::SdkMutex g_lock;
+         alignas(0x1000) constinit u8 g_work[0x1000];
+-        constinit bool g_open = false;
++        constinit bool g_session_open = false;            /* hid:dbg and the work buffer */
+         constinit HiddbgHdlsSessionId g_session = {};
+-        constinit HiddbgHdlsHandle g_handle = {};
+-        constinit HiddbgHdlsState g_state = {};
+-        constinit bool g_neutral = true;
+-        constinit u64 g_last_ns = 0;
+-        constinit u64 g_retry_ns = 0;
+-        constinit u32 g_msgs = 0, g_sets = 0;
++        constinit u64 g_session_retry_ns = 0;
++        constinit Pad g_pads[sft::viewermsg::MaxPads] = {};
+ 
+         u64 NowNs() { return armTicksToNs(armGetSystemTick()); }
+ 
+         constexpr u32 Rgb(u32 r, u32 g, u32 b) { return r | (g << 8) | (b << 16) | (0xFFu << 24); }
+ 
+-        void CloseLocked(const char *why) {
+-            if (!g_open) { return; }
+-            const ::Result rd = hiddbgDetachHdlsVirtualDevice(g_handle);
++        bool AnyOpen() {
++            for (const auto &p : g_pads) { if (p.open) { return true; } }
++            return false;
++        }
++
++        void CloseSessionLocked() {
++            if (!g_session_open || AnyOpen()) { return; }
+             const ::Result rr = hiddbgReleaseHdlsWorkBuffer(g_session);
+             hiddbgExit();
+-            g_open = false;
+-            LogLine("vpad: the viewer's controller is gone (%s) - %u messages, %u changes (detach rc=0x%x, release rc=0x%x)",
+-                    why, g_msgs, g_sets, rd, rr);
++            g_session_open = false;
++            LogLine("vpad: hid:dbg let go (release rc=0x%x)", rr);
+         }
+ 
+-        bool OpenLocked() {
+-            if (g_open) { return true; }
+-            const u64 now = NowNs();
+-            if (now < g_retry_ns) { return false; }
++        void ClosePadLocked(u32 i, const char *why) {
++            Pad &p = g_pads[i];
++            if (!p.open) { return; }
++            const ::Result rd = hiddbgDetachHdlsVirtualDevice(p.handle);
++            p.open = false;
++            LogLine("vpad: controller %u is gone (%s) - %u messages, %u changes (detach rc=0x%x)",
++                    i + 1, why, p.msgs, p.sets, rd);
++            CloseSessionLocked();
++        }
++
++        void CloseAllLocked(const char *why) {
++            for (u32 i = 0; i < sft::viewermsg::MaxPads; ++i) { ClosePadLocked(i, why); }
++            CloseSessionLocked();
++        }
++
++        bool OpenSessionLocked(u64 now) {
++            if (g_session_open) { return true; }
++            if (now < g_session_retry_ns) { return false; }
+             ::Result rc;
+             {
+                 SmUse sm_hiddbg;
+                 rc = hiddbgInitialize();
+             }
+-            ::Result rw = 0, ra = 0;
++            ::Result rw = 0;
+             if (R_SUCCEEDED(rc)) {
+                 rw = hiddbgAttachHdlsWorkBuffer(std::addressof(g_session), g_work, sizeof(g_work));
+-                if (R_SUCCEEDED(rw)) {
+-                    HiddbgHdlsDeviceInfo info = {};
+-                    info.deviceType = HidDeviceType_FullKey3;                 /* a Pro Controller */
+-                    info.npadInterfaceType = HidNpadInterfaceType_Bluetooth;
+-                    info.singleColorBody = Rgb(0x2D, 0x2D, 0x2D);
+-                    info.singleColorButtons = Rgb(0xE6, 0xE6, 0xE6);
+-                    info.colorLeftGrip = Rgb(0x2D, 0x2D, 0x2D);
+-                    info.colorRightGrip = Rgb(0x2D, 0x2D, 0x2D);
+-                    ra = hiddbgAttachHdlsVirtualDevice(std::addressof(g_handle), std::addressof(info));
+-                    if (R_FAILED(ra)) { static_cast<void>(hiddbgReleaseHdlsWorkBuffer(g_session)); }
+-                }
+-                if (R_FAILED(rw) || R_FAILED(ra)) { hiddbgExit(); }
++                if (R_FAILED(rw)) { hiddbgExit(); }
+             }
+-            LogLine("vpad: the viewer's controller %s (hid:dbg rc=0x%x, work buffer rc=0x%x, device rc=0x%x)",
+-                    R_SUCCEEDED(rc) && R_SUCCEEDED(rw) && R_SUCCEEDED(ra) ? "attached as a Pro Controller" : "could not attach",
+-                    rc, rw, ra);
+-            if (R_FAILED(rc) || R_FAILED(rw) || R_FAILED(ra)) { g_retry_ns = now + RetryNs; return false; }
+-            g_open = true;
+-            g_msgs = g_sets = 0;
+-            g_state = {};
+-            g_state.battery_level = 4;    /* full */
+-            g_neutral = true;
++            if (R_FAILED(rc) || R_FAILED(rw)) {
++                LogLine("vpad: could not open hid:dbg (rc=0x%x, work buffer rc=0x%x)", rc, rw);
++                g_session_retry_ns = now + RetryNs;
++                return false;
++            }
++            g_session_open = true;
+             return true;
+         }
+ 
+-        bool SetLocked(const HiddbgHdlsState &s) {
+-            const ::Result rc = hiddbgSetHdlsState(g_handle, std::addressof(s));
++        bool OpenPadLocked(u32 i) {
++            Pad &p = g_pads[i];
++            if (p.open) { return true; }
++            const u64 now = NowNs();
++            if (now < p.retry_ns) { return false; }
++            if (!OpenSessionLocked(now)) { return false; }
++            HiddbgHdlsDeviceInfo info = {};
++            info.deviceType = HidDeviceType_FullKey3;                 /* a Pro Controller */
++            info.npadInterfaceType = HidNpadInterfaceType_Bluetooth;
++            /* player 1 dark grey as before; the others each a colour of their own in the controller menus */
++            static constexpr u32 Body[sft::viewermsg::MaxPads] = {
++                Rgb(0x2D, 0x2D, 0x2D), Rgb(0x1E, 0x5A, 0xA8), Rgb(0xB8, 0x32, 0x32), Rgb(0x2E, 0x8B, 0x57),
++            };
++            info.singleColorBody = Body[i];
++            info.singleColorButtons = Rgb(0xE6, 0xE6, 0xE6);
++            info.colorLeftGrip = Body[i];
++            info.colorRightGrip = Body[i];
++            const ::Result ra = hiddbgAttachHdlsVirtualDevice(std::addressof(p.handle), std::addressof(info));
++            LogLine("vpad: controller %u %s (device rc=0x%x)", i + 1,
++                    R_SUCCEEDED(ra) ? "attached as a Pro Controller" : "could not attach", ra);
++            if (R_FAILED(ra)) {
++                p.retry_ns = now + RetryNs;
++                CloseSessionLocked();
++                return false;
++            }
++            p.open = true;
++            p.msgs = p.sets = 0;
++            p.state = {};
++            p.state.battery_level = 4;    /* full */
++            p.neutral = true;
++            return true;
++        }
++
++        bool SetLocked(u32 i, const HiddbgHdlsState &s) {
++            Pad &p = g_pads[i];
++            const ::Result rc = hiddbgSetHdlsState(p.handle, std::addressof(s));
+             if (R_FAILED(rc)) {
+                 /* the system dropped it (sleep, a controller change) - the next
+                  * message attaches again */
+-                LogLine("vpad: SetHdlsState rc=0x%x", rc);
+-                CloseLocked("hid refused its state");
++                LogLine("vpad: controller %u SetHdlsState rc=0x%x", i + 1, rc);
++                ClosePadLocked(i, "hid refused its state");
+                 return false;
+             }
+-            g_state = s;
+-            ++g_sets;
++            p.state = s;
++            ++p.sets;
+             return true;
+         }
+ 
+@@ -103,45 +152,52 @@ namespace ams::mitm::applet {
+ 
+     void VPadFromViewer(const sft::viewermsg::PadMsg &m) {
+         std::scoped_lock lk(g_lock);
+-        if (!g_vpad_enabled.load(std::memory_order_relaxed)) { CloseLocked("viewer_input is off"); return; }
+-        g_last_ns = NowNs();
+-        if ((m.flags & sft::viewermsg::PadOn) == 0) { CloseLocked("the viewer has no controller now"); return; }
+-        if (!OpenLocked()) { return; }
+-        ++g_msgs;
+-        HiddbgHdlsState s = g_state;
++        if (!g_vpad_enabled.load(std::memory_order_relaxed)) { CloseAllLocked("viewer_input is off"); return; }
++        const u32 i = sft::viewermsg::PadIndex(m.flags);
++        Pad &p = g_pads[i];
++        p.last_ns = NowNs();
++        if ((m.flags & sft::viewermsg::PadOn) == 0) { ClosePadLocked(i, "the viewer has no controller there now"); return; }
++        if (!OpenPadLocked(i)) { return; }
++        ++p.msgs;
++        HiddbgHdlsState s = p.state;
+         s.buttons = m.buttons & sft::viewermsg::PadButtons;
+         s.analog_stick_l = { sft::viewermsg::ClampStick(m.lx), sft::viewermsg::ClampStick(m.ly) };
+         s.analog_stick_r = { sft::viewermsg::ClampStick(m.rx), sft::viewermsg::ClampStick(m.ry) };
+-        if (s.buttons == g_state.buttons &&
+-            s.analog_stick_l.x == g_state.analog_stick_l.x && s.analog_stick_l.y == g_state.analog_stick_l.y &&
+-            s.analog_stick_r.x == g_state.analog_stick_r.x && s.analog_stick_r.y == g_state.analog_stick_r.y) {
++        if (s.buttons == p.state.buttons &&
++            s.analog_stick_l.x == p.state.analog_stick_l.x && s.analog_stick_l.y == p.state.analog_stick_l.y &&
++            s.analog_stick_r.x == p.state.analog_stick_r.x && s.analog_stick_r.y == p.state.analog_stick_r.y) {
+             return;    /* a keepalive: hid keeps the last state */
+         }
+-        if (SetLocked(s)) {
+-            g_neutral = s.buttons == 0 && s.analog_stick_l.x == 0 && s.analog_stick_l.y == 0 &&
++        if (SetLocked(i, s)) {
++            p.neutral = s.buttons == 0 && s.analog_stick_l.x == 0 && s.analog_stick_l.y == 0 &&
+                         s.analog_stick_r.x == 0 && s.analog_stick_r.y == 0;
+         }
+     }
+ 
+     void VPadTick() {
+         std::scoped_lock lk(g_lock);
+-        if (!g_open) { return; }
+-        if (!g_vpad_enabled.load(std::memory_order_relaxed)) { CloseLocked("viewer_input was turned off"); return; }
+-        const u64 age = NowNs() - g_last_ns;
+-        if (age >= DetachNs) { CloseLocked("no message for 3 s"); return; }
+-        if (age >= NeutralNs && !g_neutral) {
+-            /* a stalled connection must not hold a button down */
+-            HiddbgHdlsState s = g_state;
+-            s.buttons = 0;
+-            s.analog_stick_l = {};
+-            s.analog_stick_r = {};
+-            if (SetLocked(s)) { g_neutral = true; }
++        if (!g_session_open) { return; }
++        if (!g_vpad_enabled.load(std::memory_order_relaxed)) { CloseAllLocked("viewer_input was turned off"); return; }
++        const u64 now = NowNs();
++        for (u32 i = 0; i < sft::viewermsg::MaxPads; ++i) {
++            Pad &p = g_pads[i];
++            if (!p.open) { continue; }
++            const u64 age = now - p.last_ns;
++            if (age >= DetachNs) { ClosePadLocked(i, "no message for 3 s"); continue; }
++            if (age >= NeutralNs && !p.neutral) {
++                /* a stalled connection must not hold a button down */
++                HiddbgHdlsState s = p.state;
++                s.buttons = 0;
++                s.analog_stick_l = {};
++                s.analog_stick_r = {};
++                if (SetLocked(i, s)) { p.neutral = true; }
++            }
+         }
+     }
+ 
+     void VPadRelease(const char *why) {
+         std::scoped_lock lk(g_lock);
+-        CloseLocked(why);
++        CloseAllLocked(why);
+     }
+ 
+ }
+diff --git a/tier4/applet-mitm/source/applet_mitm_vpad.hpp b/tier4/applet-mitm/source/applet_mitm_vpad.hpp
+index af969a4..cd0abc7 100644
+--- a/tier4/applet-mitm/source/applet_mitm_vpad.hpp
++++ b/tier4/applet-mitm/source/applet_mitm_vpad.hpp
+@@ -20,7 +20,9 @@ namespace ams::mitm::applet {
+ 
+     /* stream header flag bit 7: this console takes the viewer's controller */
+     constexpr u16 HdrFlagInput = 128;
+-    inline u16 VPadHdrFlag() { return g_vpad_enabled.load(std::memory_order_relaxed) ? HdrFlagInput : 0; }
++    /* NXBeam: bit 8 - it takes up to four controllers, numbered in PadMsg.flags bits 8-9 */
++    constexpr u16 HdrFlagMultiPad = 256;
++    inline u16 VPadHdrFlag() { return g_vpad_enabled.load(std::memory_order_relaxed) ? (HdrFlagInput | HdrFlagMultiPad) : 0; }
+ 
+     /* a viewer's controller state (any thread) */
+     void VPadFromViewer(const sft::viewermsg::PadMsg &m);

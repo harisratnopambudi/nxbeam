@@ -41,8 +41,9 @@ class Hub extends EventEmitter {
     this.recorder = null;
     this.restreams = new Map();     // id -> {sink, target, startedAt}
     this.pilot = null;              // {id, name, since}
-    this.padState = null;
-    this.padSentAt = 0;
+    this.padStates = [];            // per player (0-3); only 0 on a console without MULTI_PAD
+    this.padSentAt = [];
+    this.multiPad = false;
     this.lastBeacon = 0;
     this.ffmpeg = ffmpegPath(config.ffmpegPath);
     this.mediaDir = path.resolve(config.mediaDir);
@@ -170,6 +171,7 @@ class Hub extends EventEmitter {
     if (this.source) this.source.removeAllListeners();
     this.source = null;
     this.takesInput = false;
+    this.multiPad = false;
     this.gop = [];
     this.lastVideoAt = 0;
     this.srcIntervals = [];
@@ -204,7 +206,8 @@ class Hub extends EventEmitter {
     const isAudio = (h.flags & Flag.AUDIO) !== 0;
     if (!isAudio || (h.flags & Flag.STATUS)) {
       const ti = (h.flags & Flag.INPUT) !== 0;
-      if (ti !== this.takesInput) { this.takesInput = ti; this.emit('state'); }
+      const mp = ti && (h.flags & Flag.MULTI_PAD) !== 0;
+      if (ti !== this.takesInput || mp !== this.multiPad) { this.takesInput = ti; this.multiPad = mp; this.emit('state'); }
     }
     if (isAudio) {
       if (h.flags & Flag.STATUS) {
@@ -410,7 +413,7 @@ class Hub extends EventEmitter {
   takeControl(client) {
     const prev = this.pilot;
     this.pilot = { id: client.id, name: client.name, since: Date.now() };
-    this.padState = null;
+    this._releasePads();
     if (prev && prev.id !== client.id) this.emit('pilotChanged', { from: prev, to: this.pilot });
     this.emit('state');
   }
@@ -418,29 +421,52 @@ class Hub extends EventEmitter {
   releaseControl(client) {
     if (!this.pilot || (client && this.pilot.id !== client.id)) return;
     this.pilot = null;
-    this.padState = null;
+    this._releasePads();
     if (this.source) this.source.send(buildPadMessage(null));
     this.emit('pad', null);
     this.emit('state');
   }
 
-  pad(client, state) {
+  /* state null: that player's controller was unplugged */
+  pad(client, state, index = 0) {
     if (!this.pilot || this.pilot.id !== client.id) return false;
-    this.padState = state;
-    this._sendPad();
-    this.emit('pad', state);
+    index = Math.max(0, Math.min(3, index | 0));
+    if (index > 0 && !this.multiPad) return true;   // an older console takes one controller
+    if (!state) {
+      if (this.padStates[index] && this.source) this.source.send(buildPadMessage(null, index));
+      this.padStates[index] = null;
+      if (index === 0) this.emit('pad', null);
+      this.emit('state');
+      return true;
+    }
+    const isNew = !this.padStates[index];
+    this.padStates[index] = state;
+    this._sendPad(index);
+    if (index === 0) this.emit('pad', state);
+    if (isNew) this.emit('state');
     return true;
   }
 
-  _sendPad() {
-    if (!this.source || !this.padState) return;
-    this.source.send(buildPadMessage(this.padState));
-    this.padSentAt = Date.now();
+  /* let go of players 2-4 (player 1 is released by the caller as before) */
+  _releasePads() {
+    for (let i = 1; i < this.padStates.length; i++) {
+      if (this.padStates[i] && this.source) this.source.send(buildPadMessage(null, i));
+    }
+    this.padStates = [];
+  }
+
+  _sendPad(i) {
+    if (!this.source || !this.padStates[i]) return;
+    this.source.send(buildPadMessage(this.padStates[i], i));
+    this.padSentAt[i] = Date.now();
   }
 
   _padRepeat() {
-    // the console lets the virtual controller go after 3 s of silence
-    if (this.padState && Date.now() - this.padSentAt >= 100) this._sendPad();
+    // the console lets a virtual controller go after 3 s of silence
+    const t = Date.now();
+    for (let i = 0; i < this.padStates.length; i++) {
+      if (this.padStates[i] && t - (this.padSentAt[i] || 0) >= 100) this._sendPad(i);
+    }
   }
 
   /* ------------------------------------------------------------ state */
@@ -450,6 +476,8 @@ class Hub extends EventEmitter {
       conn: this.conn,
       consoleStatus: this.consoleStatus && Date.now() - this.consoleStatus.at < 6000 ? this.consoleStatus : null,
       takesInput: this.takesInput,
+      multiPad: this.multiPad,
+      players: this.padStates.filter(Boolean).length,
       video: this.video ? { width: this.video.width, height: this.video.height, codec: this.video.codec } : null,
       audio: this.audio.seen ? { rate: this.audio.rate, channels: this.audio.channels } : null,
       recording: this.recorder ? { file: path.basename(this.recorder.target), since: this.recorder.startedAt } : null,

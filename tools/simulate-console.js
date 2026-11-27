@@ -31,7 +31,7 @@ if (!FF) { console.error('ffmpeg not found'); process.exit(1); }
 let viewer = null;
 let ff = null;
 let audioTimer = null;
-const BASE_FLAGS = Flag.INPUT;
+const BASE_FLAGS = Flag.INPUT | (args.includes('--multi-pad') ? Flag.MULTI_PAD : 0);
 
 let releaseAt = 0;
 function send(flags, w, h, payload) {
@@ -122,7 +122,7 @@ function stopStreams() {
 }
 
 const names = Object.fromEntries(Object.entries(Button).map(([k, v]) => [v, k]));
-let lastPad = '';
+let lastPad = {};
 function onViewerData(state, d) {
   state.buf = Buffer.concat([state.buf, d]);
   let i = 0;
@@ -136,8 +136,9 @@ function onViewerData(state, d) {
       const b = m.readUInt32LE(8);
       const sticks = [16, 20, 24, 28].map((o) => m.readInt32LE(o));
       const pressed = Object.keys(names).filter((bit) => b & (1 << bit)).map((bit) => names[bit]);
-      const line = on ? `pad: [${pressed.join(' ')}] L(${sticks[0]},${sticks[1]}) R(${sticks[2]},${sticks[3]})` : 'pad: released';
-      if (line !== lastPad) { console.log(line); lastPad = line; }
+      const who = `P${((on >> 8) & 3) + 1}`;
+      const line = (on & 1) ? `${who} pad: [${pressed.join(' ')}] L(${sticks[0]},${sticks[1]}) R(${sticks[2]},${sticks[3]})` : `${who} pad: released`;
+      if (line !== lastPad[who]) { console.log(line); lastPad[who] = line; }
       i += 32;
     } else {
       if (c === 'K') console.log('viewer: keyframe requested');

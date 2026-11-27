@@ -1,0 +1,96 @@
+name: Sysmodule
+
+# Builds the streaming sysmodule (0100000000000C20) from Switch Frame Tap's source
+# (GPL-2.0, Tomas Uribe) with NXBeam's changes in switch-sysmodule/nxbeam.patch,
+# then names its folders for NXBeam (tools/make-switch-pack.py). The result is an
+# artifact; it goes into switch-pack/ by hand after a test on a console.
+on:
+  workflow_dispatch:
+  push:
+    branches: [sysmodule]
+    paths: ['switch-sysmodule/**', '.github/workflows/sysmodule.yml']
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ams: ['1.12.0']
+        plain: [false, true]   # plain: upstream unchanged, to check this build reproduces the bundled one
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sources
+        run: |
+          SFT_TAG=$(cat switch-sysmodule/SFT_TAG)
+          git clone -q --branch "$SFT_TAG" --depth 1 https://github.com/TomasUribe/switch-frame-tap sft
+          if [ "${{ matrix.plain }}" != "true" ]; then git -C sft apply --whitespace=nowarn "$PWD/switch-sysmodule/nxbeam.patch"; fi
+          git clone -q --recursive --depth 1 --branch "${{ matrix.ams }}" https://github.com/Atmosphere-NX/Atmosphere ams
+          python3 sft/tier4/applet-mitm/patch_libstrat.py "$PWD/ams"
+          mkdir -p ams/stratosphere/applet-mitm
+          rsync -a --exclude build.sh --exclude '*.nsp' --exclude patch_libstrat.py --exclude test/ sft/tier4/applet-mitm/ ams/stratosphere/applet-mitm/
+      - name: libnx
+        run: |
+          # Atmosphere's libstratosphere follows libnx master, not the image's packaged libnx.
+          # Pinned to the master of the time Switch Frame Tap v0.7.22 was released.
+          git clone -q https://github.com/switchbrew/libnx libnx
+          git -C libnx checkout -q "$(cat switch-sysmodule/LIBNX_REV)"
+          echo "libnx $(git -C libnx log -1 --format='%h %cI %s')"
+      - name: Build
+        run: |
+          docker run --rm -e MAKEFLAGS=-j4 -v "$PWD/ams":/ams -v "$PWD/libnx":/libnx devkitpro/devkita64:latest bash -lc '
+            set -e
+            make -C /libnx/nx -j4 install >/dev/null 2>&1 || { make -C /libnx/nx -j4 install 2>&1 | tail -30; exit 1; }
+            cd /ams/stratosphere/applet-mitm
+            make nx_release 2>&1 | tail -60; exit ${PIPESTATUS[0]}'
+          sudo chown -R "$(id -u):$(id -g)" ams
+          NSP=$(find ams/stratosphere/applet-mitm/out -name '*.nsp' | head -1)
+          test -n "$NSP"
+          mkdir -p out/raw
+          cp "$NSP" out/raw/exefs.nsp
+      - name: NXBeam names
+        run: |
+          pip install -q lz4
+          python3 tools/make-switch-pack.py out/raw/exefs.nsp switch-pack/atmosphere/contents/0100000000000C21/exefs.nsp out/pack
+          python3 - <<'EOF'
+          import importlib.util
+          spec = importlib.util.spec_from_file_location('m', 'tools/make-switch-pack.py'); m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+          def segs(p):
+              ents, _ = m.pfs0_read(open(p, 'rb').read())
+              return m.nso_segments([b for n, b, _ in ents if n == 'main'][0])
+          old = segs('switch-pack/atmosphere/contents/0100000000000C20/exefs.nsp')
+          new = segs('out/pack/atmosphere/contents/0100000000000C20/exefs.nsp')
+          print('text/ro/data bundled:', [len(x) for x in old])
+          print('text/ro/data built:  ', [len(x) for x in new])
+          r = new[1]
+          assert b'NXBeam/console-settings' in r and b'switch-frame-tap' not in r
+          print('names ok')
+          assert bytes.fromhex('617e185300e0bf527f02006b') in new[0], 'firmware ceiling not patched'
+          print('firmware ceiling ok')
+          if '${{ matrix.plain }}' == 'true':
+              for k, (a, b) in enumerate(zip(old, new)):
+                  d = [i for i in range(min(len(a), len(b))) if a[i] != b[i]]
+                  print('segment', k, 'bytes that differ:', len(d), d[:8])
+                  for i in d[:3]:
+                      print('   bundled', a[max(0, i - 24):i + 24])
+                      print('   built  ', b[max(0, i - 24):i + 24])
+          else:
+              assert b'v0.7.22-nxbeam1' in r
+          EOF
+      - name: Keep it on this branch
+        if: ${{ !matrix.plain }}
+        run: |
+          mkdir -p switch-sysmodule/build
+          cp out/pack/atmosphere/contents/0100000000000C20/exefs.nsp switch-sysmodule/build/exefs.nsp
+          sha256sum switch-sysmodule/build/exefs.nsp
+          git config user.name "github-actions[bot]"
+          git config user.email "41898+github-actions[bot]@users.noreply.github.com"
+          git add switch-sysmodule/build/exefs.nsp
+          git commit -m "Sysmodule build (Atmosphere ${{ matrix.ams }}) [skip ci]" && git push || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sysmodule-ams-${{ matrix.ams }}${{ matrix.plain && '-plain' || '' }}
+          path: out/pack/atmosphere/contents/0100000000000C20/exefs.nsp

@@ -18,3 +18,4 @@ windows/obj/
 windows/bin/
 windows/wdi/
 windows/MicrosoftEdgeWebview2Setup.exe
+__pycache__/

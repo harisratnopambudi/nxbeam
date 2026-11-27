@@ -24,6 +24,7 @@ const Flag = Object.freeze({
   CROP: 32,
   CROP_MID: 64,
   INPUT: 128,
+  MULTI_PAD: 256, // NXBeam's sysmodule: up to four controllers (players 1-4)
 });
 
 const Cmd = Object.freeze({
@@ -74,12 +75,15 @@ function clampStick(v) {
   return v < -32767 ? -32767 : v > 32767 ? 32767 : v;
 }
 
-/* the 32-byte SFTI message; state null = release the virtual controller */
-function buildPadMessage(state) {
+/* the 32-byte SFTI message; state null = release that virtual controller.
+   index (player 1-4 as 0-3) rides in flags bits 8-9; only for a console that sets MULTI_PAD */
+function buildPadMessage(state, index = 0) {
   const m = Buffer.alloc(32);
   m.write('SFTI', 0, 'latin1');
+  const ix = (index & 3) << 8;
+  m.writeUInt32LE(ix, 4);
   if (!state) return m;
-  m.writeUInt32LE(1, 4);
+  m.writeUInt32LE(1 | ix, 4);
   const buttons = (Number(state.buttons) >>> 0) & BUTTON_MASK;
   m.writeUInt32LE(buttons, 8);
   m.writeUInt32LE(0, 12);
