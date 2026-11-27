@@ -32,15 +32,13 @@ jobs:
           python3 sft/tier4/applet-mitm/patch_libstrat.py "$PWD/ams"
           mkdir -p ams/stratosphere/applet-mitm
           rsync -a --exclude build.sh --exclude '*.nsp' --exclude patch_libstrat.py --exclude test/ sft/tier4/applet-mitm/ ams/stratosphere/applet-mitm/
-      - name: libnx of the same time as that Atmosphere
+      - name: libnx
         run: |
-          # Atmosphere's libstratosphere follows libnx master: the image's libnx can be older
-          # or newer than the tag wants. Take libnx as it was a few days after the tag.
-          WHEN=$(git -C ams log -1 --format=%cI)
+          # Atmosphere's libstratosphere follows libnx master, not the image's packaged libnx.
+          # Pinned to the master of the time Switch Frame Tap v0.7.22 was released.
           git clone -q https://github.com/switchbrew/libnx libnx
-          REV=$(git -C libnx rev-list -1 --before="$(date -u -d "$WHEN + 5 days" +%Y-%m-%dT%H:%M:%SZ)" master)
-          git -C libnx checkout -q "$REV"
-          echo "Atmosphere ${{ matrix.ams }} from $WHEN, libnx $(git -C libnx log -1 --format='%h %cI %s')"
+          git -C libnx checkout -q "$(cat switch-sysmodule/LIBNX_REV)"
+          echo "libnx $(git -C libnx log -1 --format='%h %cI %s')"
       - name: Build
         run: |
           docker run --rm -e MAKEFLAGS=-j4 -v "$PWD/ams":/ams -v "$PWD/libnx":/libnx devkitpro/devkita64:latest bash -lc '
