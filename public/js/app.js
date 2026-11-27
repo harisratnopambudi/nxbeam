@@ -175,7 +175,7 @@ audio.init().then(() => {
   if (player.mode === 'worker') S.audioDirect = player.attachAudioPort(audio.connectPort());
   player.setAudio(!store.get('muted', false));
 }).catch(() => {});
-const input = new InputManager((state) => send({ type: 'pad', state }));
+const input = new InputManager((state, index = 0) => send(index ? { type: 'pad', state, index } : { type: 'pad', state }));
 input.bindTouch($('#touchpad'));
 
 /* ------------------------------------------------------------ connection */
@@ -198,6 +198,9 @@ function connectWs() {
 
 function setState(state, clients) {
   const prevConn = S.state && S.state.conn && S.state.conn.state;
+  input.multi = !!state.multiPad;
+  const prevPlayers = S.state ? S.state.players || 0 : 0;
+  if (S.controlling && state.multiPad && (state.players || 0) > 1 && state.players !== prevPlayers) toast(t('playersOn', state.players), 'ok', 5000);
   S.state = state;
   if (clients) S.clients = clients;
   S.serverOffset = state.now - Date.now();
@@ -487,6 +490,7 @@ $('#btnControl').onclick = () => {
   send({ type: 'takeControl' });
   setControlling(true);
   toast(S.state.takesInput ? t('controlOn') : t('consoleNoInput'), S.state.takesInput ? 'ok' : 'info', 6000);
+  if (S.state.takesInput && !S.state.multiPad && input.padCount() > 1) toast(t('onePlayerOnly'), 'info', 9000);
   if (document.activeElement) document.activeElement.blur();
 };
 $('#btnTouch').onclick = () => {
