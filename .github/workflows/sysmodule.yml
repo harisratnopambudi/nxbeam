@@ -10,6 +10,9 @@ on:
     branches: [sysmodule]
     paths: ['switch-sysmodule/**', '.github/workflows/sysmodule.yml']
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -68,10 +71,25 @@ jobs:
           assert b'NXBeam/console-settings' in r and b'switch-frame-tap' not in r
           print('names ok')
           if '${{ matrix.plain }}' == 'true':
-              print('text identical to bundled:', new[0] == old[0], ' ro identical:', new[1] == old[1])
+              for k, (a, b) in enumerate(zip(old, new)):
+                  d = [i for i in range(min(len(a), len(b))) if a[i] != b[i]]
+                  print('segment', k, 'bytes that differ:', len(d), d[:8])
+                  for i in d[:3]:
+                      print('   bundled', a[max(0, i - 24):i + 24])
+                      print('   built  ', b[max(0, i - 24):i + 24])
           else:
               assert b'v0.7.22-nxbeam1' in r
           EOF
+      - name: Keep it on this branch
+        if: ${{ !matrix.plain }}
+        run: |
+          mkdir -p switch-sysmodule/build
+          cp out/pack/atmosphere/contents/0100000000000C20/exefs.nsp switch-sysmodule/build/exefs.nsp
+          sha256sum switch-sysmodule/build/exefs.nsp
+          git config user.name "github-actions[bot]"
+          git config user.email "41898+github-actions[bot]@users.noreply.github.com"
+          git add switch-sysmodule/build/exefs.nsp
+          git commit -m "Sysmodule build (Atmosphere ${{ matrix.ams }}) [skip ci]" && git push || true
       - uses: actions/upload-artifact@v4
         with:
           name: sysmodule-ams-${{ matrix.ams }}${{ matrix.plain && '-plain' || '' }}
