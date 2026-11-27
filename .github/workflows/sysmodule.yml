@@ -30,6 +30,17 @@ jobs:
           if [ "${{ matrix.plain }}" != "true" ]; then git -C sft apply --whitespace=nowarn "$PWD/switch-sysmodule/nxbeam.patch"; fi
           git clone -q --recursive --depth 1 --branch "${{ matrix.ams }}" https://github.com/Atmosphere-NX/Atmosphere ams
           python3 sft/tier4/applet-mitm/patch_libstrat.py "$PWD/ams"
+          # as in the official Switch Frame Tap release: do not stop on a firmware newer than
+          # this Atmosphere knows (its own firmware check, allow_untested_firmware, decides)
+          F=ams/libraries/libstratosphere/source/hos/hos_version_api.cpp
+          python3 - "$F" <<'PY'
+          import sys
+          p = sys.argv[1]; s = open(p).read()
+          a = 'const bool is_safely_tryable_version = (current <= hos::Version_Max) || (major == MaxMajor && minor <= MaxMinor);'
+          b = 'const bool is_safely_tryable_version = (static_cast<u32>(current) <= 0xFF000000u) || (major == MaxMajor && minor <= MaxMinor);'
+          assert s.count(a) == 1, 'hos_version_api.cpp changed'
+          open(p, 'w').write(s.replace(a, b))
+          PY
           mkdir -p ams/stratosphere/applet-mitm
           rsync -a --exclude build.sh --exclude '*.nsp' --exclude patch_libstrat.py --exclude test/ sft/tier4/applet-mitm/ ams/stratosphere/applet-mitm/
       - name: libnx
