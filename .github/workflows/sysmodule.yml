@@ -68,6 +68,8 @@ jobs:
           r = new[1]
           assert b'NXBeam/console-settings' in r and b'switch-frame-tap' not in r
           print('names ok')
+          assert bytes.fromhex('617e185300e0bf527f02006b') in new[0], 'firmware ceiling not patched'
+          print('firmware ceiling ok')
           if '${{ matrix.plain }}' == 'true':
               for k, (a, b) in enumerate(zip(old, new)):
                   d = [i for i in range(min(len(a), len(b))) if a[i] != b[i]]
