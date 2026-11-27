@@ -1,0 +1,14 @@
+---- 2026-11-27 15:27:51 starting NXBeam
+
+  NXBeam 1.21.0
+  ----------------------------------------
+  http://localhost:8090
+  http://10.1.1.45:8090
+  http://172.21.192.1:8090
+  OBS overlay: http://localhost:8090/overlay
+  ffmpeg: C:\Users\runneradmin\AppData\Local\Programs\NXBeam\node_modules\ffmpeg-static\ffmpeg.exe
+  media:  C:\Users\runneradmin\Videos\NXBeam
+  build:  10
+
+
+stopping...

@@ -1,0 +1,12 @@
+
+  Updating NXBeam 1 -> 2 (build 2)...
+  2 files updated. Starting NXBeam again.
+
+
+Name         Length
+----         ------
+tools        
+busy.exe     73728
+busy.exe.old 87077704
+other.txt    5
+

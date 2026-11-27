@@ -1,0 +1,22 @@
+
+Name                                Length
+----                                ------
+driver                              
+node_modules                        
+public                              
+runtime                             
+src                                 
+tools                               
+build.json                          31
+LICENSE                             1090
+Microsoft.Web.WebView2.Core.dll     703328
+Microsoft.Web.WebView2.WinForms.dll 38752
+Microsoft.Web.WebView2.Wpf.dll      86368
+NXBeam.exe                          73728
+NXBeam.exe.config                   174
+package.json                        736
+Start NXBeam.bat                    1320
+unins000.dat                        142201
+unins000.exe                        4382978
+WebView2Loader.dll                  195424
+
