@@ -13,7 +13,8 @@ whose folders are named for NXBeam:
 
 The changes to the programs: the folder names, the USB device name and the
 notice title inside their read-only data, replaced by bytes of exactly the
-same length, and one jump in the code (CODE_PATCHES, below); nothing moves. The segment's SHA-256 in the NSO header is recomputed.
+same length, and at most two instructions in the code (CODE_PATCHES, below);
+nothing moves. The segment's SHA-256 in the NSO header is recomputed.
 
   python3 make-switch-pack.py C20/exefs.nsp C21/exefs.nsp OUTDIR [--dvr DIR]
 Needs: pip install lz4
@@ -69,6 +70,13 @@ def nso_segments(nso):
 CODE_PATCHES = [
     (bytes.fromhex('1f0001eb') + bytes.fromhex('a8010054') + bytes.fromhex('f75340f9') + bytes.fromhex('21008052'),
      bytes.fromhex('1f0001eb') + bytes.fromhex('0d000014') + bytes.fromhex('f75340f9') + bytes.fromhex('21008052')),
+    # For a module built from source (switch-sysmodule/): libstratosphere stops a module
+    # on a firmware newer than the Atmosphere it was built with (hos_version_api.cpp,
+    # current <= Version_Max). The official Switch Frame Tap binaries compare with
+    # 0xFF000000 there, so its own firmware check decides; the same one immediate here:
+    #   lsr w1, w19, #24 / mov w0, #0x17000000 / cmp w19, w0  ->  mov w0, #0xff000000
+    (bytes.fromhex('617e1853') + bytes.fromhex('00e0a252') + bytes.fromhex('7f02006b'),
+     bytes.fromhex('617e1853') + bytes.fromhex('00e0bf52') + bytes.fromhex('7f02006b')),
 ]
 
 def patch_nso(nso):
