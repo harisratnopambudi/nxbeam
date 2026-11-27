@@ -16,14 +16,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ams: ['1.12.0', '1.12.2']
+        ams: ['1.12.0']
+        plain: [false, true]   # plain: upstream unchanged, to check this build reproduces the bundled one
     steps:
       - uses: actions/checkout@v4
       - name: Sources
         run: |
           SFT_TAG=$(cat switch-sysmodule/SFT_TAG)
           git clone -q --branch "$SFT_TAG" --depth 1 https://github.com/TomasUribe/switch-frame-tap sft
-          git -C sft apply --whitespace=nowarn "$PWD/switch-sysmodule/nxbeam.patch"
+          if [ "${{ matrix.plain }}" != "true" ]; then git -C sft apply --whitespace=nowarn "$PWD/switch-sysmodule/nxbeam.patch"; fi
           git clone -q --recursive --depth 1 --branch "${{ matrix.ams }}" https://github.com/Atmosphere-NX/Atmosphere ams
           python3 sft/tier4/applet-mitm/patch_libstrat.py "$PWD/ams"
           mkdir -p ams/stratosphere/applet-mitm
@@ -65,10 +66,13 @@ jobs:
           print('text/ro/data built:  ', [len(x) for x in new])
           r = new[1]
           assert b'NXBeam/console-settings' in r and b'switch-frame-tap' not in r
-          assert b'v0.7.22-nxbeam1' in r
           print('names ok')
+          if '${{ matrix.plain }}' == 'true':
+              print('text identical to bundled:', new[0] == old[0], ' ro identical:', new[1] == old[1])
+          else:
+              assert b'v0.7.22-nxbeam1' in r
           EOF
       - uses: actions/upload-artifact@v4
         with:
-          name: sysmodule-ams-${{ matrix.ams }}
+          name: sysmodule-ams-${{ matrix.ams }}${{ matrix.plain && '-plain' || '' }}
           path: out/pack/atmosphere/contents/0100000000000C20/exefs.nsp
