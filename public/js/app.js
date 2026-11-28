@@ -688,8 +688,12 @@ function renderStatsPage() {
   $('#diag').hidden = !dg || dg.cls === 'ok';
   if (dg) { $('#diag').className = `diag ${dg.cls}`; $('#diagTitle').textContent = dg.title; $('#diagText').textContent = dg.text; }
   const on = st.conn.state === 'connected' && S.firstFrame;
-  $('#panel').className = `panel sheet st-${!on ? 'idle' : dg ? dg.cls : 'ok'}`;
-  $('#panelTitle').textContent = !on ? (st.conn.state === 'connected' ? t('statsWaiting') : connLabel(st.conn)) : dg && dg.cls !== 'ok' ? dg.title : t('statsSteady');
+  // under 20 fps diagnose() stays quiet (menus, loading screens): say so instead of "steady"
+  const rec = S.history.slice(-5);
+  const inFps = rec.length ? Math.round(rec.reduce((a, h) => a + h.fps, 0) / rec.length) : 0;
+  const few = on && !dg && rec.length >= 5 && inFps < 20;
+  $('#panel').className = `panel sheet st-${!on ? 'idle' : few ? 'warn' : dg ? dg.cls : 'ok'}`;
+  $('#panelTitle').textContent = !on ? (st.conn.state === 'connected' ? t('statsWaiting') : connLabel(st.conn)) : few ? t('statsFew', inFps) : dg && dg.cls !== 'ok' ? dg.title : t('statsSteady');
   $('#panelSub').textContent = on ? [st.conn.kind === 'usb' ? 'USB' : `Wi-Fi ${st.conn.peer || ''}`.trim(), st.video ? `${st.video.width} \u00d7 ${st.video.height}` : '', l.hw === 'gpu' ? t('hwDecoder') : l.hw ? t('swDecoder') : ''].filter(Boolean).join(', ') : '';
   $('#tileFps').textContent = on ? String(l.fps || s.fps || 0) : '0';
   $('#tileLat').textContent = on && l.lat ? String(l.lat) : '-';

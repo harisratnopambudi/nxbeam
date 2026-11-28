@@ -1,6 +1,7 @@
 /* NXBeam UI strings: English (default) and Indonesian */
 const DICT = {
   id: {
+    statsFew: (n) => `Hanya ${n} frame per detik yang sampai dari Switch`,
     keysOwnOpt: 'Keyboard jadi pemain sendiri',
     keysOwnNote: 'Saat joystick tersambung, keyboard menjadi pemain berikutnya (misalnya joystick player 1, keyboard player 2). Butuh paket Switch NXBeam yang mendukung banyak pemain.',
     playersOn: (n) => `${n} joystick bermain: player 1 sampai ${n}`,
@@ -108,6 +109,7 @@ const DICT = {
     errTimeout: 'Switch hanya melayani satu penonton: kalau NXBeam di HP atau PC lain sedang tersambung, tutup dulu. Selain itu, pastikan Switch tidak dalam mode tidur dan IP-nya benar (lihat overlay NXBeam). Beda frekuensi 2,4/5 GHz tidak masalah selama satu router.',
   },
   en: {
+    statsFew: (n) => `Only ${n} frames per second arrive from the Switch`,
     keysOwnOpt: 'Keyboard is a player of its own',
     keysOwnNote: 'With a gamepad connected, the keyboard becomes the next player (for example gamepad player 1, keyboard player 2). Needs an NXBeam Switch pack that takes several players.',
     playersOn: (n) => `${n} controllers playing: players 1 to ${n}`,
